@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول - ثانوية التحدي</title>
+  <style>
+    body {
+      font-family: "Cairo", sans-serif;
+      background-color: #f3f6fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #logos { width: 100%; }
+
+    .login-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 350px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #1a237e;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 95%;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #155cc0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="logos"></div>
+
+  <div class="login-box">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="parentCode" placeholder="رقم ولي الأمر">
+    <input type="text" id="studentCode" placeholder="كود الطالب">
+    <button onclick="login()">دخول</button>
+  </div>
+
+  <script>
+    fetch("logos.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("logos").innerHTML = data);
+
+    function login() {
+      const parent = document.getElementById("parentCode").value.trim();
+      const student = document.getElementById("studentCode").value.trim();
+
+      if (parent === "" || student === "") {
+        alert("يرجى إدخال جميع الحقول");
+        return;
+      }
+
+      // مؤقتاً فقط للتحقق المحلي
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("studentCode", student);
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
