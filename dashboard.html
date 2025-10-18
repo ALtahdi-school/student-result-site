@@ -1,94 +1,0 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>حساب الطالب - ثانوية التحدي</title>
-  <style>
-    body { font-family: "Cairo", sans-serif; margin: 0; background-color: #f4f6f9; }
-    #logos { width: 100%; }
-
-    .navbar {
-      background: #1a73e8;
-      color: white;
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      padding: 10px;
-    }
-
-    .navbar a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .navbar a:hover {
-      text-decoration: underline;
-    }
-
-    .content {
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      margin-bottom: 15px;
-    }
-  </style>
-</head>
-<body>
-
-  <div id="logos"></div>
-
-  <div class="navbar">
-    <a href="dashboard.html">🏠 الرئيسية</a>
-    <a href="chat.html">💬 الدردشة</a>
-    <a href="notifications.html">📢 التبليغات</a>
-    <a href="#" onclick="logout()">🚪 تسجيل الخروج</a>
-  </div>
-
-  <div class="content">
-    <h2>مرحباً بك في حساب الطالب</h2>
-
-    <div class="card">
-      <h3>🧾 المعلومات الشخصية</h3>
-      <p>الاسم: أحمد محمد</p>
-      <p>الصف: السادس العلمي</p>
-      <p>القاعة: 2</p>
-    </div>
-
-    <div class="card">
-      <h3>💰 المعلومات المالية</h3>
-      <p>القسط الأول: مدفوع ✅</p>
-      <p>القسط الثاني: غير مدفوع ❌</p>
-    </div>
-
-    <div class="card">
-      <h3>📚 الدرجات</h3>
-      <p>الرياضيات: 88</p>
-      <p>الفيزياء: 91</p>
-      <p>الحاسوب: 95</p>
-    </div>
-  </div>
-
-  <script>
-    fetch("logos.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("logos").innerHTML = data);
-
-    if (localStorage.getItem("loggedIn") !== "true") {
-      window.location.href = "login.html";
-    }
-
-    function logout() {
-      localStorage.clear();
-      window.location.href = "login.html";
-    }
-  </script>
-
-</body>
-</html>
