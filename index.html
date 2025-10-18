@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول - ثانوية التحدي</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>🎓 ثانوية التحدي الأهلية</header>
+
+<div class="login-box">
+  <h2>تسجيل الدخول</h2>
+  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
+  <input type="text" id="studentCode" placeholder="كود الطالب">
+  <button onclick="login()">دخول</button>
+</div>
+
+<script>
+function login() {
+  const code = document.getElementById("studentCode").value.trim();
+  const parent = document.getElementById("parentNumber").value.trim();
+  if(!code || !parent) { alert("يرجى إدخال جميع الحقول"); return; }
+  localStorage.setItem("studentCode", code);
+  localStorage.setItem("parentNumber", parent);
+  localStorage.setItem("loggedIn","true");
+  window.location.href="dashboard.html";
+}
+</script>
+</body>
+</html>
