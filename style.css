@@ -1,0 +1,155 @@
+﻿/* style.css */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e0f0ff, #ffffff);
+}
+
+a { text-decoration: none; }
+
+.navbar {
+  background: #007bff;
+  color: white;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 12px 0;
+  font-weight: bold;
+}
+
+.navbar a { color: white; }
+
+.navbar a:hover { text-decoration: underline; }
+
+header {
+  text-align: center;
+  padding: 20px 10px;
+  font-size: 24px;
+  font-weight: bold;
+  background: #007bff;
+  color: #fff;
+}
+
+header span { display: block; font-size: 16px; font-weight: normal; opacity: 0.8; margin-top: 5px; }
+
+.container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.section {
+  width: 100%;
+  min-height: 350px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-size: 14px;
+  overflow-x: auto;
+}
+
+.section h3 {
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.info { background: #007bff; }
+.finance { background: #28a745; }
+.grades { background: #ffc107; color: #000; }
+.notes { background: #dc3545; }
+
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td { padding: 6px 4px; text-align: right; border: 1px solid #ddd; word-wrap: break-word; }
+tr:hover { background-color: rgba(0,123,255,0.1); }
+
+input, button, select, textarea {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+}
+
+button {
+  background: #28a745;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.login-box {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  width: 350px;
+  text-align: center;
+  margin: 50px auto;
+}
+
+.chat-box {
+  background: white;
+  width: 80%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.messages {
+  height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-bottom: 15px;
+  background-color: #fafafa;
+}
+
+.input-row { display: flex; gap: 10px; }
+
+.notif-box {
+  background: white;
+  width: 80%;
+  max-width: 700px;
+  margin: 30px auto;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.notif {
+  background: #e8f0fe;
+  border-right: 5px solid #1a73e8;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .container { grid-template-columns: 1fr; }
+  th, td { font-size: 11px; padding:2px; }
+  .login-box, .chat-box, .notif-box { width: 90%; }
+}
