@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول - ثانوية التحدي</title>
+<title>تسجيل الدخول</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,19 +14,59 @@
   <h2>تسجيل الدخول</h2>
   <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
   <input type="text" id="studentCode" placeholder="كود الطالب">
-  <button onclick="login()">دخول</button>
+  <button onclick="login()">تسجيل الدخول</button>
+  <p id="status" style="text-align:center; margin-top:10px;"></p>
 </div>
 
 <script>
-function login() {
+async function login(){
   const code = document.getElementById("studentCode").value.trim();
   const parent = document.getElementById("parentNumber").value.trim();
-  if(!code || !parent) { alert("يرجى إدخال جميع الحقول"); return; }
-  localStorage.setItem("studentCode", code);
-  localStorage.setItem("parentNumber", parent);
-  localStorage.setItem("loggedIn","true");
-  window.location.href="dashboard.html";
+  const status = document.getElementById("status");
+  if(!code || !parent){
+    status.textContent = "⚠️ يرجى إدخال كود الطالب ورقم ولي الأمر";
+    return;
+  }
+
+  status.textContent = "⏳ جاري التحقق من البيانات...";
+
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+  
+  try {
+    const resp = await fetch(sheetURL);
+    const text = await resp.text();
+    const rows = text.split("\n").map(r=>r.split(","));
+    const header = rows[0].map(h=>h.trim());
+    const dataRows = rows.slice(1);
+    const objects = dataRows.map(r=>{
+      const obj={};
+      for(let i=0;i<header.length;i++) obj[header[i]]=(r[i]||"").trim();
+      return obj;
+    });
+
+    const student = objects.find(o=>o["كود الطالب"]===code && o["رقم ولي الامر"]===parent);
+    if(!student){
+      status.textContent = "❌ لم يتم العثور على الطالب. تحقق من البيانات.";
+      return;
+    }
+
+    // حفظ البيانات في localStorage
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("studentCode", code);
+    localStorage.setItem("parentNumber", parent);
+    localStorage.setItem("studentClass", student["الصف"]);
+    localStorage.setItem("studentName", student["اسم الطالب"]);
+    localStorage.setItem("studentData", JSON.stringify(student));
+
+    status.textContent = "✅ تم تسجيل الدخول بنجاح!";
+    setTimeout(()=> window.location.href="dashboard.html", 800);
+
+  } catch(err){
+    console.error(err);
+    status.textContent = "⚠️ حدث خطأ أثناء الاتصال بقاعدة البيانات.";
+  }
 }
 </script>
+
 </body>
 </html>
