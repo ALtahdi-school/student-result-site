@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التبليغات - ثانوية التحدي</title>
+  <style>
+    body { font-family: "Cairo", sans-serif; background-color: #f4f6f9; margin: 0; }
+    #logos { width: 100%; }
+    .navbar {
+      background: #1a73e8;
+      color: white;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+    .navbar a { color: white; text-decoration: none; font-weight: bold; }
+
+    .notif-box {
+      background: white;
+      width: 80%;
+      max-width: 700px;
+      margin: 30px auto;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    .notif {
+      background: #e8f0fe;
+      border-right: 5px solid #1a73e8;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="logos"></div>
+
+  <div class="navbar">
+    <a href="dashboard.html">🏠 الرئيسية</a>
+    <a href="chat.html">💬 الدردشة</a>
+    <a href="notifications.html">📢 التبليغات</a>
+    <a href="#" onclick="logout()">🚪 تسجيل الخروج</a>
+  </div>
+
+  <div class="notif-box">
+    <h2>📢 التبليغات العامة</h2>
+
+    <div class="notif">📅 دوام يوم الأحد يبدأ الساعة 8:00 صباحاً.</div>
+    <div class="notif">🧾 إعلان نتائج نصف السنة سيكون الأسبوع القادم.</div>
+    <div class="notif">📚 توزيع الكتب الدراسية يوم الإثنين.</div>
+  </div>
+
+  <script>
+    fetch("logos.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("logos").innerHTML = data);
+
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

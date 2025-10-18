@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الدردشة - ثانوية التحدي</title>
+  <style>
+    body { font-family: "Cairo", sans-serif; background: #f4f6f9; margin: 0; }
+    #logos { width: 100%; }
+    .navbar {
+      background: #1a73e8;
+      color: white;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+    }
+    .navbar a { color: white; text-decoration: none; font-weight: bold; }
+
+    .chat-box {
+      background: white;
+      width: 80%;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+
+    .messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 15px;
+      background-color: #fafafa;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #155cc0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="logos"></div>
+
+  <div class="navbar">
+    <a href="dashboard.html">🏠 الرئيسية</a>
+    <a href="chat.html">💬 الدردشة</a>
+    <a href="notifications.html">📢 التبليغات</a>
+    <a href="#" onclick="logout()">🚪 تسجيل الخروج</a>
+  </div>
+
+  <div class="chat-box">
+    <div class="messages" id="messages"></div>
+    <div class="input-row">
+      <input type="text" id="msgInput" placeholder="اكتب رسالتك...">
+      <button onclick="sendMsg()">إرسال</button>
+    </div>
+  </div>
+
+  <script>
+    fetch("logos.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("logos").innerHTML = data);
+
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+
+    const messages = document.getElementById("messages");
+    const msgInput = document.getElementById("msgInput");
+
+    function sendMsg() {
+      const text = msgInput.value.trim();
+      if (text === "") return;
+      const div = document.createElement("div");
+      div.textContent = "👤 أنت: " + text;
+      messages.appendChild(div);
+      msgInput.value = "";
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function logout() {
+      localStorage.clear();
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>
