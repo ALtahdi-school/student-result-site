@@ -63,7 +63,7 @@ button {
   background: #28a745;
   color: #fff;
   cursor: pointer;
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
 }
 
 button:hover {
@@ -72,17 +72,13 @@ button:hover {
 }
 
 /* زر نسيت الكود */
-.forgot {
-  text-align: center;
-  margin-top: 10px;
+#forgotBtn {
+  background: #ffc107;
+  color: #000;
 }
-.forgot a {
-  color: #007bff;
-  text-decoration: none;
-  font-size: 14px;
-}
-.forgot a:hover {
-  text-decoration: underline;
+#forgotBtn:hover {
+  background: #e0a800;
+  transform: scale(1.05);
 }
 
 .year-label {
@@ -110,11 +106,8 @@ button:hover {
   border-radius: 15px;
   padding: 15px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  font-family: 'Cairo', sans-serif;
   font-size: 14px;
   overflow-x: auto;
-  opacity: 0;
-  transform: translateY(30px);
 }
 
 .section h3 {
@@ -129,40 +122,7 @@ button:hover {
 .info { background: #007bff; }
 .finance { background: #28a745; }
 .notes { background: #dc3545; }
-
-/* قسم الدرجات */
-.grades {
-  background: #ffc107;
-  color: #000;
-  font-size: 13px;
-}
-.grades h3 {
-  font-size: 14px;
-  padding: 5px 0;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  color: #000;
-  background: #ffc107;
-}
-.grades table th, .grades table td {
-  font-size: 11px;
-  padding: 3px 2px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-th, td {
-  padding: 6px 4px;
-  text-align: right;
-  border: 1px solid #ddd;
-  word-wrap: break-word;
-}
-
-tr:hover { background-color: rgba(0,123,255,0.1); }
+.grades { background: #ffc107; color: #000; }
 
 .governance {
   margin-top: 20px;
@@ -179,6 +139,19 @@ tr:hover { background-color: rgba(0,123,255,0.1); }
   font-size: 12px;
   color: #555;
 }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 6px 4px;
+  text-align: right;
+  border: 1px solid #ddd;
+}
+
+tr:hover { background-color: rgba(0,123,255,0.1); }
 
 @media (max-width: 768px) {
   .input-group input { flex: 0 0 140px; }
@@ -199,10 +172,7 @@ tr:hover { background-color: rgba(0,123,255,0.1); }
   <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
   <input id="studentCode" placeholder="أدخل كود الطالب">
   <button onclick="searchStudent()">بحث</button>
-</div>
-
-<div class="forgot">
-  <a href="forgot.html">🔑 نسيت الكود؟</a>
+  <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
 </div>
 
 <div class="year-label">العام الدراسي 2025-2026</div>
@@ -212,10 +182,11 @@ tr:hover { background-color: rgba(0,123,255,0.1); }
   قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
 </div>
 
-<!-- GSAP animation library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
 <script>
+function goToForgot(){
+  window.location.href = "forgot.html";
+}
+
 async function searchStudent(saveToStorage=true){
   let code = document.getElementById("studentCode").value.trim();
   let parent = document.getElementById("parentNumber").value.trim();
@@ -224,7 +195,7 @@ async function searchStudent(saveToStorage=true){
 
   const output = document.getElementById("output");
   if(!parent || !code){
-    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب لعرض النتائج.</p>";
+    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.</p>";
     return;
   }
 
@@ -255,61 +226,38 @@ async function searchStudent(saveToStorage=true){
 
     let html="";
 
-    // المعلومات العامة
     html+=`<div class="section info"><h3>المعلومات العامة</h3><table>`;
-    const studentFields=["id","رقم الطالب","اسم الطالب","الجنس","الصف","القاعة","رقم ولي الامر","رقم الخط","الملاحظات"];
-    for(let f of studentFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; }
+    const infoFields=["id","رقم الطالب","اسم الطالب","الجنس","الصف","القاعة","رقم ولي الامر","رقم الخط"];
+    for(let f of infoFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; }
     html+="</table></div>";
 
-    // المعلومات المالية
     html+=`<div class="section finance"><h3>المعلومات المالية</h3><table>`;
-    const financeFields=["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
+    const financeFields=["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","الباقي الكلي","المبلغ الكلي","الواصل الكلي"];
     for(let f of financeFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]||""}</td></tr>`; }
     html+="</table></div>";
 
-    // الدرجات التفصيلية لكل مادة
-    const subjectsColumns = {
-      "الاسلامية": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "عربي": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الانكليزي": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الرياضيات": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الكيمياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الفيزياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الاحياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"]
-    };
-
-    for(let subject in subjectsColumns){
-      html+=`<div class="section grades"><h3>الدرجات - ${subject}</h3><table><tr>`;
-      subjectsColumns[subject].forEach(colName=>{ html+=`<th>${colName}</th>`; });
-      html+="</tr><tr>";
-      subjectsColumns[subject].forEach(colName=>{ html+=`<td>${student[colName]||""}</td>`; });
-      html+="</tr></table></div>";
+    const subjects = ["اسلامية","عربي","انكليزي","رياضيات","كيمياء","فيزياء","احياء","حاسوب"];
+    for(let subj of subjects){
+      const cols = header.filter(h=>h.startsWith(subj));
+      if(cols.length){
+        html+=`<div class="section grades"><h3>الدرجات - ${subj}</h3><table><tr>`;
+        cols.forEach(c=>html+=`<th>${c}</th>`); html+="</tr><tr>";
+        cols.forEach(c=>html+=`<td>${student[c]||""}</td>`); html+="</tr></table></div>";
+      }
     }
 
-    // الملاحظات
     html+=`<div class="section notes"><h3>ملاحظات وغياب</h3><table>`;
-    const noteFields=["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"];
+    const noteFields=["الملاحظات","الغياب","اختلاق مشاكل داخل المدرسة"];
     for(let f of noteFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]||""}</td></tr>`; }
     html+="</table></div>";
 
     output.innerHTML = html;
-
-    // تطبيق تأثيرات GSAP
-    gsap.from(".section", {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: "power2.out"
-    });
-
   }catch(err){
     console.error(err);
     output.innerHTML = "<p style='color:#dc3545; text-align:center;'>❌ حدث خطأ أثناء جلب البيانات.</p>";
   }
 }
 
-// الاحتفاظ بالبيانات عند إعادة فتح الموقع
 window.addEventListener("DOMContentLoaded", ()=>{
   const savedCode = localStorage.getItem("studentCode");
   const savedParent = localStorage.getItem("parentNumber");
