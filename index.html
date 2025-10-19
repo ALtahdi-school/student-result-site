@@ -1,72 +1,329 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>تسجيل الدخول - نظام استعلام عن الطالب</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+:root{
+  --blue:#007bff;
+  --green:#28a745;
+  --danger:#dc3545;
+  --bg1:#e0f0ff;
+  --card-bg:#ffffff;
+}
+*{box-sizing:border-box}
+body{
+  font-family:'Cairo',sans-serif;
+  direction:rtl;
+  margin:0;
+  min-height:100vh;
+  background: linear-gradient(180deg,var(--bg1),#ffffff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.container{
+  width:100%;
+  max-width:920px;
+  background:var(--card-bg);
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.12);
+  overflow:hidden;
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  gap:0;
+}
+
+/* left: info / logo */
+.left{
+  padding:30px;
+  background: linear-gradient(180deg,var(--blue), #0a73d9);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:12px;
+}
+.left h1{margin:0;font-size:26px}
+.left p{margin:0;opacity:.95}
+
+/* right: form */
+.right{
+  padding:28px;
+  background:var(--card-bg);
+}
+.header{
+  text-align:center;
+  margin-bottom:12px;
+}
+.header h2{margin:0;font-size:20px}
+.form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:10px;
+}
+.input{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  border:1px solid #e6e6e6;
+  padding:10px;
+  border-radius:8px;
+  background:#fbfbfb;
+}
+.input input{
+  border:0;
+  outline:0;
+  font-size:15px;
+  flex:1;
+  background:transparent;
+  direction:rtl;
+}
+.btn{
+  display:inline-block;
+  padding:11px 18px;
+  border-radius:8px;
+  border:0;
+  cursor:pointer;
+  font-weight:700;
+}
+.btn-primary{background:var(--green); color:#fff}
+.btn-link{
+  background:transparent;
+  color:var(--blue);
+  font-weight:700;
+  border:0;
+}
+
+/* small helper under form */
+.actions{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:6px;
+}
+.note{font-size:13px;color:#666}
+
+/* toast + messages */
+.toast{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:28px;
+  background:#222;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:10px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  opacity:0;
+  pointer-events:none;
+}
+.toast.show{opacity:1;pointer-events:auto; animation:toastIn .35s ease-out}
+@keyframes toastIn{from{transform:translateX(-50%) translateY(10px) scale(.98);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
+
+/* error shake */
+.shake{
+  animation:shake .5s;
+}
+@keyframes shake{
+  0%{transform:translateX(0)}
+  20%{transform:translateX(-6px)}
+  40%{transform:translateX(6px)}
+  60%{transform:translateX(-4px)}
+  80%{transform:translateX(4px)}
+  100%{transform:translateX(0)}
+}
+
+/* responsive */
+@media (max-width:880px){
+  .container{grid-template-columns:1fr; padding:0}
+  .left{display:none}
+}
+.footer{
+  text-align:center;
+  margin-top:14px;
+  font-size:13px;
+  color:#666;
+}
+
+/* small link style */
+.small-link{font-size:14px;color:var(--blue);text-decoration:underline;cursor:pointer;background:none;border:0;padding:0}
+</style>
 </head>
 <body>
 
-<header>🎓 ثانوية التحدي الأهلية</header>
+<div class="container" role="main">
+  <div class="left" aria-hidden="true">
+    <h1>🎓 ثانوية التحدي الأهلية</h1>
+    <p>نظام إلكتروني لاستعلام أولياء الأمور عن بيانات الطلاب والدرجات والحسابات المالية.</p>
+    <p style="opacity:.9">العام الدراسي 2025-2026 — قسم الحوكمة</p>
+  </div>
 
-<div class="login-box">
-  <h2>تسجيل الدخول</h2>
-  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
-  <input type="text" id="studentCode" placeholder="كود الطالب">
-  <button onclick="login()">تسجيل الدخول</button>
-  <p id="status" style="text-align:center; margin-top:10px;"></p>
+  <div class="right">
+    <div class="header">
+      <h2>تسجيل الدخول</h2>
+      <div class="note">أدخل رقم ولي الأمر وكود الطالب للمتابعة</div>
+    </div>
+
+    <div class="form" id="loginForm">
+      <div class="input">
+        <input id="parentInput" inputmode="numeric" placeholder="رقم ولي الأمر" aria-label="رقم ولي الأمر" />
+      </div>
+
+      <div class="input" id="codeWrapper">
+        <input id="codeInput" placeholder="كود الطالب" aria-label="كود الطالب" />
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-primary" id="loginBtn">دخول</button>
+        <button class="btn" id="clearBtn" style="background:#f0f0f0">مسح</button>
+      </div>
+
+      <div class="actions">
+        <div><button class="small-link" id="goForgot">نسيت الكود؟</button></div>
+        <div class="note">أو توجه إلى <a href="dashboard.html">عرض الأقسام (تجريبي)</a></div>
+      </div>
+
+      <div class="footer">
+        <small>الإصدار V0.1.2 — حقوق © ثانوية التحدي الأهلية</small>
+      </div>
+    </div>
+  </div>
 </div>
 
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
 <script>
-async function login(){
-  const code = document.getElementById("studentCode").value.trim();
-  const parent = document.getElementById("parentNumber").value.trim();
-  const status = document.getElementById("status");
-  if(!code || !parent){
-    status.textContent = "⚠️ يرجى إدخال كود الطالب ورقم ولي الأمر";
+/* ========== إعدادات ================= */
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+
+/* CSV parser بسيط لكن Robust للتعامل مع الحقول المقتبسة */
+function parseCSV(text){
+  const rows = [];
+  let cur = '', row = [], inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const ch = text[i];
+    const next = text[i+1];
+    if(ch === '"'){
+      if(inQuotes && next === '"'){ cur += '"'; i++; continue; } // escaped quote
+      inQuotes = !inQuotes;
+      continue;
+    }
+    if(ch === '\r') continue;
+    if(ch === ',' && !inQuotes){
+      row.push(cur);
+      cur = '';
+      continue;
+    }
+    if(ch === '\n' && !inQuotes){
+      row.push(cur);
+      rows.push(row);
+      row = [];
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  // leftover
+  if(cur !== '' || row.length > 0){
+    row.push(cur);
+    rows.push(row);
+  }
+  return rows;
+}
+
+function normalizeKey(k){ return (k||'').toString().trim(); }
+
+/* fetch sheet and build array of objects */
+async function fetchSheetObjects(){
+  const resp = await fetch(sheetURL);
+  if(!resp.ok) throw new Error("فشل جلب البيانات");
+  const text = await resp.text();
+  const rows = parseCSV(text).filter(r=>r.some(c=>c.trim() !== ''));
+  if(rows.length === 0) return {header:[], rows:[]};
+  const header = rows[0].map(h=>normalizeKey(h));
+  const dataRows = rows.slice(1);
+  const objects = dataRows.map(r=>{
+    const obj={};
+    for(let i=0;i<header.length;i++){
+      obj[header[i]] = (r[i]||'').toString().trim();
+    }
+    return obj;
+  });
+  return {header, rows:objects};
+}
+
+/* الواجهة */
+const toastEl = document.getElementById('toast');
+function showToast(msg, timeout=2200){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(()=>toastEl.classList.remove('show'), timeout);
+}
+
+/* helpers */
+function cleanNumber(n){ if(!n) return ''; n = n.toString().trim(); if(n.startsWith('0')) n = n.replace(/^0+/, ''); return n; }
+
+document.getElementById('goForgot').addEventListener('click', ()=> {
+  // رابط لصفحة forgot
+  window.location.href = 'forgot.html';
+});
+
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  document.getElementById('parentInput').value = '';
+  document.getElementById('codeInput').value = '';
+  showToast('تم مسح الحقول');
+});
+
+/* عملية تسجيل الدخول */
+document.getElementById('loginBtn').addEventListener('click', async ()=>{
+  const parentRaw = document.getElementById('parentInput').value;
+  const codeRaw = document.getElementById('codeInput').value;
+  const parent = cleanNumber(parentRaw);
+  const code = (codeRaw||'').toString().trim().replace(/^0+/,'');
+  if(!parent || !code){
+    // هز الحقل
+    const wrapper = document.getElementById('codeWrapper');
+    wrapper.classList.add('shake');
+    setTimeout(()=>wrapper.classList.remove('shake'),500);
+    showToast('الرجاء إدخال رقم ولي الأمر وكود الطالب',2000);
     return;
   }
 
-  status.textContent = "⏳ جاري التحقق من البيانات...";
-
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
-  
-  try {
-    const resp = await fetch(sheetURL);
-    const text = await resp.text();
-    const rows = text.split("\n").map(r=>r.split(","));
-    const header = rows[0].map(h=>h.trim());
-    const dataRows = rows.slice(1);
-    const objects = dataRows.map(r=>{
-      const obj={};
-      for(let i=0;i<header.length;i++) obj[header[i]]=(r[i]||"").trim();
-      return obj;
+  try{
+    showToast('⏳ جاري التحقق...');
+    const {header, rows} = await fetchSheetObjects();
+    // نحاول إيجاد سجل يطابق الكود ورقم ولي الأمر
+    const found = rows.find(r=>{
+      const p = cleanNumber(r['رقم ولي الامر'] || r['رقم ولي الأمر'] || r['ولي الامر'] || r['parent'] || r['Parent']);
+      const c = (r['كود الطالب']||r['كود']||r['id']||'').toString().trim().replace(/^0+/,'');
+      return p === parent && c === code;
     });
 
-    const student = objects.find(o=>o["كود الطالب"]===code && o["رقم ولي الامر"]===parent);
-    if(!student){
-      status.textContent = "❌ لم يتم العثور على الطالب. تحقق من البيانات.";
+    if(!found){
+      showToast('❌ بيانات غير مطابقة — تحقق أو استخدم "نسيت الكود؟"', 3000);
       return;
     }
 
-    // حفظ البيانات في localStorage
-    localStorage.setItem("loggedIn", "true");
-    localStorage.setItem("studentCode", code);
-    localStorage.setItem("parentNumber", parent);
-    localStorage.setItem("studentClass", student["الصف"]);
-    localStorage.setItem("studentName", student["اسم الطالب"]);
-    localStorage.setItem("studentData", JSON.stringify(student));
+    // تسجيل بيانات الجلسة في sessionStorage
+    sessionStorage.setItem('studentData', JSON.stringify(found));
+    showToast('✔ تم تسجيل الدخول — جارٍ التحويل...', 900);
+    setTimeout(()=> window.location.href = 'dashboard.html', 800);
 
-    status.textContent = "✅ تم تسجيل الدخول بنجاح!";
-    setTimeout(()=> window.location.href="dashboard.html", 800);
-
-  } catch(err){
+  }catch(err){
     console.error(err);
-    status.textContent = "⚠️ حدث خطأ أثناء الاتصال بقاعدة البيانات.";
+    showToast('❌ حدث خطأ أثناء الوصول للملف. تأكد من اتصال الإنترنت.', 3200);
   }
-}
-</script>
+});
 
+/* Enter يدعم التسجيل */
+document.getElementById('loginForm').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') { e.preventDefault(); document.getElementById('loginBtn').click(); }
+});
+</script>
 </body>
 </html>
