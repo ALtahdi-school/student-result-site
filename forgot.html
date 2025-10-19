@@ -51,8 +51,7 @@ body{
 .chars.visible{opacity:1;animation:fadeUp .6s ease forwards}
 @keyframes fadeUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 .err{color:var(--danger);font-weight:700;animation:shake .5s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}
-}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
 .copyBtn{margin-top:12px;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
 .copyBtn.success{background:var(--success);color:#fff}
 .copyBtn.fail{background:#f0f0f0;color:#333}
@@ -94,10 +93,31 @@ window.addEventListener('DOMContentLoaded',()=>{
 /* رابط البيانات */
 const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
 
-/* بقية كود البحث */
-function parseCSV(text){const rows=[];let cur='',row=[],inQuotes=false;for(let i=0;i<text.length;i++){const ch=text[i],next=text[i+1];if(ch=='"'){if(inQuotes&&next=='"'){cur+='"';i++;continue;}inQuotes=!inQuotes;continue;}if(ch=='\r')continue;if(ch==','&&!inQuotes){row.push(cur);cur='';continue;}if(ch=='\n'&&!inQuotes){row.push(cur);rows.push(row);row=[];cur='';continue;}cur+=ch;}if(cur!=''||row.length>0){row.push(cur);rows.push(row);}return rows;}
+function parseCSV(text){
+  const rows=[]; let cur='',row=[],inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i],next=text[i+1];
+    if(ch=='"'){if(inQuotes&&next=='"'){cur+='"';i++;continue;} inQuotes=!inQuotes; continue;}
+    if(ch=='\r')continue;
+    if(ch==','&&!inQuotes){row.push(cur);cur='';continue;}
+    if(ch=='\n'&&!inQuotes){row.push(cur);rows.push(row);row=[];cur='';continue;}
+    cur+=ch;
+  }
+  if(cur!=''||row.length>0){row.push(cur);rows.push(row);}
+  return rows;
+}
 function normalizeKey(k){return (k||'').toString().trim();}
-async function fetchSheetObjects(){const resp=await fetch(sheetURL);if(!resp.ok)throw new Error("فشل جلب البيانات");const text=await resp.text();const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!=''));if(rows.length===0)return{header:[],rows:[]};const header=rows[0].map(h=>normalizeKey(h));const dataRows=rows.slice(1);const objects=dataRows.map(r=>{const obj={};for(let i=0;i<header.length;i++){obj[header[i]]=(r[i]||'').toString().trim();}return obj;});return{header,rows:objects};}
+async function fetchSheetObjects(){
+  const resp=await fetch(sheetURL);
+  if(!resp.ok)throw new Error("فشل جلب البيانات");
+  const text=await resp.text();
+  const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!=''));
+  if(rows.length===0)return{header:[],rows:[]};
+  const header=rows[0].map(h=>normalizeKey(h));
+  const dataRows=rows.slice(1);
+  const objects=dataRows.map(r=>{const obj={};for(let i=0;i<header.length;i++){obj[header[i]]=(r[i]||'').toString().trim();} return obj;});
+  return{header,rows:objects};
+}
 const resultArea=document.getElementById('resultArea');
 const parentInput=document.getElementById('parent');
 const nameInput=document.getElementById('studentName');
@@ -121,7 +141,17 @@ function revealCodeAnim(codeStr){
     box.appendChild(span);
     setTimeout(()=>span.classList.add('visible'),120*idx);
   });
+  // نسخة تلقائية
+  const copyBtn=document.getElementById('copyBtn');
+  copyBtn.addEventListener('click',()=>{
+    navigator.clipboard.writeText(codeStr).then(()=>{
+      copyBtn.textContent='تم النسخ';
+      copyBtn.classList.add('success');
+      setTimeout(()=>{copyBtn.textContent='نسخ الكود';copyBtn.classList.remove('success');},2000);
+    }).catch(()=>{copyBtn.classList.add('fail');});
+  });
 }
+
 document.getElementById('searchBtn').addEventListener('click',async()=>{
   const parent=cleanNumber(parentInput.value);
   const name=(nameInput.value||'').toString().trim().toLowerCase();
@@ -138,12 +168,13 @@ document.getElementById('searchBtn').addEventListener('click',async()=>{
     const code=found['كود الطالب']||found['كود']||found['id']||found['ID']||'';
     if(!code){showError('لم يتم العثور على كود في السجل — تواصل مع قسم الحوكمة');return;}
     revealCodeAnim(code);
-  }catch(err){
-    console.error(err);
-    showError('حدث خطأ أثناء الوصول إلى الملف. تأكد من اتصال الإنترنت وحاول مرة أخرى.');
-  }
+  }catch(err){console.error(err); showError('حدث خطأ أثناء الوصول إلى الملف. تأكد من اتصال الإنترنت وحاول مرة أخرى.');}
 });
-document.getElementById('clearBtn').addEventListener('click',()=>{parentInput.value='';nameInput.value='';resultArea.innerHTML='<div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>';});
+
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  parentInput.value=''; nameInput.value=''; 
+  resultArea.innerHTML='<div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>';
+});
 </script>
 </body>
 </html>
