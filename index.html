@@ -1,328 +1,220 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>تسجيل الدخول - نظام استعلام عن الطالب</title>
+<title>نسيت الكود - استرجاع كود الطالب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 :root{
   --blue:#007bff;
-  --green:#28a745;
+  --success:#28a745;
   --danger:#dc3545;
-  --bg1:#e0f0ff;
-  --card-bg:#ffffff;
+  --card:#fff;
 }
-*{box-sizing:border-box}
 body{
   font-family:'Cairo',sans-serif;
   direction:rtl;
   margin:0;
   min-height:100vh;
-  background: linear-gradient(180deg,var(--bg1),#ffffff);
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:20px;
+  background:linear-gradient(180deg,#f6fbff,#ffffff);
+  padding:18px;
+  overflow-x:hidden;
 }
-.container{
+.box{
+  max-width:760px;
   width:100%;
-  max-width:920px;
-  background:var(--card-bg);
+  background:var(--card);
   border-radius:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.12);
-  overflow:hidden;
-  display:grid;
-  grid-template-columns: 1fr 420px;
-  gap:0;
+  box-shadow:0 12px 30px rgba(0,0,0,0.09);
+  padding:24px;
+  opacity:0;
+  transform:translateY(30px);
 }
-
-/* left: info / logo */
-.left{
-  padding:30px;
-  background: linear-gradient(180deg,var(--blue), #0a73d9);
-  color:#fff;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  gap:12px;
-}
-.left h1{margin:0;font-size:26px}
-.left p{margin:0;opacity:.95}
-
-/* right: form */
-.right{
-  padding:28px;
-  background:var(--card-bg);
-}
-.header{
-  text-align:center;
-  margin-bottom:12px;
-}
-.header h2{margin:0;font-size:20px}
-.form{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  margin-top:10px;
-}
-.input{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  border:1px solid #e6e6e6;
-  padding:10px;
-  border-radius:8px;
-  background:#fbfbfb;
-}
-.input input{
-  border:0;
-  outline:0;
-  font-size:15px;
-  flex:1;
-  background:transparent;
-  direction:rtl;
-}
+.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.header h2{margin:0}
+.form{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.input{display:flex;align-items:center;border:1px solid #eee;padding:10px;border-radius:8px;background:#fafafa}
+.input input{border:0;outline:0;flex:1;background:transparent;font-size:15px}
 .btn{
-  display:inline-block;
-  padding:11px 18px;
+  padding:10px 14px;
   border-radius:8px;
   border:0;
   cursor:pointer;
   font-weight:700;
+  transition:all 0.3s ease;
 }
-.btn-primary{background:var(--green); color:#fff}
-.btn-link{
-  background:transparent;
-  color:var(--blue);
-  font-weight:700;
-  border:0;
-}
-
-/* small helper under form */
-.actions{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:6px;
-}
-.note{font-size:13px;color:#666}
-
-/* toast + messages */
-.toast{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:28px;
-  background:#222;
-  color:#fff;
-  padding:12px 18px;
-  border-radius:10px;
-  box-shadow:0 8px 24px rgba(0,0,0,0.2);
-  opacity:0;
-  pointer-events:none;
-}
-.toast.show{opacity:1;pointer-events:auto; animation:toastIn .35s ease-out}
-@keyframes toastIn{from{transform:translateX(-50%) translateY(10px) scale(.98);opacity:0}to{transform:translateX(-50%) translateY(0) scale(1);opacity:1}}
-
-/* error shake */
-.shake{
-  animation:shake .5s;
-}
-@keyframes shake{
-  0%{transform:translateX(0)}
-  20%{transform:translateX(-6px)}
-  40%{transform:translateX(6px)}
-  60%{transform:translateX(-4px)}
-  80%{transform:translateX(4px)}
-  100%{transform:translateX(0)}
-}
-
-/* responsive */
-@media (max-width:880px){
-  .container{grid-template-columns:1fr; padding:0}
-  .left{display:none}
-}
-.footer{
-  text-align:center;
-  margin-top:14px;
-  font-size:13px;
-  color:#666;
-}
-
-/* small link style */
-.small-link{font-size:14px;color:var(--blue);text-decoration:underline;cursor:pointer;background:none;border:0;padding:0}
+.btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-secondary{background:#f0f0f0;color:#333}
+.hint{font-size:13px;color:#666}
+.result{margin-top:16px;min-height:120px;display:flex;align-items:center;justify-content:center;}
+.card{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#f7fbff);box-shadow:0 12px 26px rgba(0,0,0,0.06);text-align:center;width:100%;max-width:520px;}
+.card h3{margin:0 0 8px 0;font-size:18px}
+.codeBox{margin-top:12px;font-size:26px;font-weight:800;letter-spacing:6px;padding:12px 18px;border-radius:10px;display:inline-block;background:linear-gradient(90deg,#fff,#f8fffb);box-shadow:0 6px 18px rgba(0,0,0,0.06);}
+.chars{display:inline-block;opacity:0}
+.chars.visible{opacity:1;animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.err{color:var(--danger);font-weight:700;animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.copyBtn{margin-top:12px;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+.copyBtn.success{background:var(--success);color:#fff}
+.copyBtn.fail{background:#f0f0f0;color:#333}
+.back{margin-top:14px;text-align:center}
+.back a{color:var(--blue);text-decoration:underline}
 </style>
 </head>
 <body>
-
-<div class="container" role="main">
-  <div class="left" aria-hidden="true">
-    <h1>🎓 ثانوية التحدي الأهلية</h1>
-    <p>نظام إلكتروني لاستعلام أولياء الأمور عن بيانات الطلاب والدرجات والحسابات المالية.</p>
-    <p style="opacity:.9">العام الدراسي 2025-2026 — قسم الحوكمة</p>
+<div class="box" role="main">
+  <div class="header">
+    <h2>نسيت الكود الخاص بي</h2>
+    <div class="hint">أدخل اسم الطالب ورقم ولي الأمر لاسترجاع الكود</div>
   </div>
 
-  <div class="right">
-    <div class="header">
-      <h2>تسجيل الدخول</h2>
-      <div class="note">أدخل رقم ولي الأمر وكود الطالب للمتابعة</div>
+  <div class="form" id="forgotForm">
+    <div class="input"><input id="parent" placeholder="رقم ولي الأمر" inputmode="numeric" /></div>
+    <div class="input"><input id="studentName" placeholder="اسم الطالب (باللغة العربية كما في السجل)" /></div>
+
+    <!-- زر تسجيل الدخول أسفل الحقول -->
+    <button class="btn btn-secondary" id="loginBtn">تسجيل الدخول</button>
+
+    <div style="display:flex;gap:8px;justify-content:center">
+      <button class="btn btn-primary" id="searchBtn">استرجاع الكود</button>
+      <button class="btn" id="clearBtn">مسح الحقول</button>
     </div>
 
-    <div class="form" id="loginForm">
-      <div class="input">
-        <input id="parentInput" inputmode="numeric" placeholder="رقم ولي الأمر" aria-label="رقم ولي الأمر" />
-      </div>
+    <div class="result" id="resultArea">
+      <div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>
+    </div>
 
-      <div class="input" id="codeWrapper">
-        <input id="codeInput" placeholder="كود الطالب" aria-label="كود الطالب" />
-      </div>
-
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-primary" id="loginBtn">دخول</button>
-        <button class="btn" id="clearBtn" style="background:#f0f0f0">مسح</button>
-      </div>
-
-      <div class="actions">
-        <div><button class="small-link" id="goForgot">نسيت الكود؟</button></div>
-        <div class="note">أو توجه إلى <a href="dashboard.html">عرض الأقسام (تجريبي)</a></div>
-      </div>
-
-      <div class="footer">
-        <small>الإصدار V0.1.2 — حقوق © ثانوية التحدي الأهلية</small>
-      </div>
+    <div class="back">
+      <a href="index.html">◀ العودة إلى صفحة تسجيل الدخول</a>
     </div>
   </div>
 </div>
 
-<div id="toast" class="toast" role="status" aria-live="polite"></div>
-
 <script>
-/* ========== إعدادات ================= */
-const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+/* GSAP Animation */
+window.addEventListener('DOMContentLoaded',()=>{
+  gsap.to('.box',{duration:0.8,opacity:1,y:0,ease:"power3.out"});
+  gsap.from('.input',{duration:0.8,opacity:0,x:40,stagger:0.1,delay:0.2});
+  gsap.from('#loginBtn',{duration:0.8,opacity:0,y:20,delay:0.5});
+  gsap.from('#searchBtn',{duration:0.8,opacity:0,scale:0.8,delay:0.7});
+  gsap.from('#clearBtn',{duration:0.8,opacity:0,scale:0.8,delay:0.8});
+});
 
-/* CSV parser بسيط لكن Robust للتعامل مع الحقول المقتبسة */
+/* نفس رابط الجدول */
+const sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+
 function parseCSV(text){
-  const rows = [];
-  let cur = '', row = [], inQuotes=false;
+  const rows=[];let cur='',row=[],inQuotes=false;
   for(let i=0;i<text.length;i++){
-    const ch = text[i];
-    const next = text[i+1];
-    if(ch === '"'){
-      if(inQuotes && next === '"'){ cur += '"'; i++; continue; } // escaped quote
-      inQuotes = !inQuotes;
-      continue;
-    }
-    if(ch === '\r') continue;
-    if(ch === ',' && !inQuotes){
-      row.push(cur);
-      cur = '';
-      continue;
-    }
-    if(ch === '\n' && !inQuotes){
-      row.push(cur);
-      rows.push(row);
-      row = [];
-      cur = '';
-      continue;
-    }
-    cur += ch;
+    const ch=text[i],next=text[i+1];
+    if(ch=='"'){if(inQuotes&&next=='"'){cur+='"';i++;continue;}inQuotes=!inQuotes;continue;}
+    if(ch=='\r')continue;
+    if(ch==','&&!inQuotes){row.push(cur);cur='';continue;}
+    if(ch=='\n'&&!inQuotes){row.push(cur);rows.push(row);row=[];cur='';continue;}
+    cur+=ch;
   }
-  // leftover
-  if(cur !== '' || row.length > 0){
-    row.push(cur);
-    rows.push(row);
-  }
+  if(cur!=''||row.length>0){row.push(cur);rows.push(row);}
   return rows;
 }
-
-function normalizeKey(k){ return (k||'').toString().trim(); }
-
-/* fetch sheet and build array of objects */
+function normalizeKey(k){return (k||'').toString().trim();}
 async function fetchSheetObjects(){
-  const resp = await fetch(sheetURL);
-  if(!resp.ok) throw new Error("فشل جلب البيانات");
-  const text = await resp.text();
-  const rows = parseCSV(text).filter(r=>r.some(c=>c.trim() !== ''));
-  if(rows.length === 0) return {header:[], rows:[]};
-  const header = rows[0].map(h=>normalizeKey(h));
-  const dataRows = rows.slice(1);
-  const objects = dataRows.map(r=>{
+  const resp=await fetch(sheetURL);
+  if(!resp.ok)throw new Error("فشل جلب البيانات");
+  const text=await resp.text();
+  const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!=''));
+  if(rows.length===0)return{header:[],rows:[]};
+  const header=rows[0].map(h=>normalizeKey(h));
+  const dataRows=rows.slice(1);
+  const objects=dataRows.map(r=>{
     const obj={};
-    for(let i=0;i<header.length;i++){
-      obj[header[i]] = (r[i]||'').toString().trim();
-    }
+    for(let i=0;i<header.length;i++){obj[header[i]]=(r[i]||'').toString().trim();}
     return obj;
   });
-  return {header, rows:objects};
+  return{header,rows:objects};
 }
 
-/* الواجهة */
-const toastEl = document.getElementById('toast');
-function showToast(msg, timeout=2200){
-  toastEl.textContent = msg;
-  toastEl.classList.add('show');
-  setTimeout(()=>toastEl.classList.remove('show'), timeout);
-}
-
-/* helpers */
-function cleanNumber(n){ if(!n) return ''; n = n.toString().trim(); if(n.startsWith('0')) n = n.replace(/^0+/, ''); return n; }
-
-document.getElementById('goForgot').addEventListener('click', ()=> {
-  // رابط لصفحة forgot
-  window.location.href = 'forgot.html';
-});
-
-document.getElementById('clearBtn').addEventListener('click', ()=>{
-  document.getElementById('parentInput').value = '';
-  document.getElementById('codeInput').value = '';
-  showToast('تم مسح الحقول');
-});
-
-/* عملية تسجيل الدخول */
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  const parentRaw = document.getElementById('parentInput').value;
-  const codeRaw = document.getElementById('codeInput').value;
-  const parent = cleanNumber(parentRaw);
-  const code = (codeRaw||'').toString().trim().replace(/^0+/,'');
-  if(!parent || !code){
-    // هز الحقل
-    const wrapper = document.getElementById('codeWrapper');
-    wrapper.classList.add('shake');
-    setTimeout(()=>wrapper.classList.remove('shake'),500);
-    showToast('الرجاء إدخال رقم ولي الأمر وكود الطالب',2000);
-    return;
-  }
-
-  try{
-    showToast('⏳ جاري التحقق...');
-    const {header, rows} = await fetchSheetObjects();
-    // نحاول إيجاد سجل يطابق الكود ورقم ولي الأمر
-    const found = rows.find(r=>{
-      const p = cleanNumber(r['رقم ولي الامر'] || r['رقم ولي الأمر'] || r['ولي الامر'] || r['parent'] || r['Parent']);
-      const c = (r['كود الطالب']||r['كود']||r['id']||'').toString().trim().replace(/^0+/,'');
-      return p === parent && c === code;
+const resultArea=document.getElementById('resultArea');
+const parentInput=document.getElementById('parent');
+const nameInput=document.getElementById('studentName');
+function cleanNumber(n){if(!n)return'';n=n.toString().trim();if(n.startsWith('0'))n=n.replace(/^0+/,'');return n;}
+function showError(msg){resultArea.innerHTML=`<div class="card err">${msg}</div>`;}
+function showMessageHTML(html){resultArea.innerHTML=html;}
+function revealCodeAnim(codeStr){
+  const html=`<div class="card">
+  <h3>الكود الخاص بالطالب هو:</h3>
+  <div class="codeBox" id="codeBox"></div>
+  <div><button class="copyBtn" id="copyBtn">نسخ الكود</button></div>
+  </div>`;
+  showMessageHTML(html);
+  const box=document.getElementById('codeBox');
+  box.innerHTML='';
+  const chars=Array.from(codeStr);
+  chars.forEach((ch,idx)=>{
+    const span=document.createElement('span');
+    span.textContent=ch;
+    span.className='chars';
+    box.appendChild(span);
+    setTimeout(()=>span.classList.add('visible'),120*idx);
+  });
+  setTimeout(()=>{
+    const btn=document.getElementById('copyBtn');
+    btn.addEventListener('click',async()=>{
+      try{
+        await navigator.clipboard.writeText(codeStr);
+        btn.textContent='تم النسخ ✓';
+        btn.classList.add('success');
+        setTimeout(()=>{btn.textContent='نسخ الكود';btn.classList.remove('success');},2000);
+      }catch(e){
+        btn.textContent='نسخ (غير مدعوم)';
+        btn.classList.add('fail');
+      }
     });
+  },120*chars.length+80);
+}
 
-    if(!found){
-      showToast('❌ بيانات غير مطابقة — تحقق أو استخدم "نسيت الكود؟"', 3000);
-      return;
-    }
-
-    // تسجيل بيانات الجلسة في sessionStorage
-    sessionStorage.setItem('studentData', JSON.stringify(found));
-    showToast('✔ تم تسجيل الدخول — جارٍ التحويل...', 900);
-    setTimeout(()=> window.location.href = 'dashboard.html', 800);
-
+/* البحث */
+document.getElementById('searchBtn').addEventListener('click',async()=>{
+  const parent=cleanNumber(parentInput.value);
+  const name=(nameInput.value||'').toString().trim().toLowerCase();
+  if(!parent||!name){showError('الرجاء إدخال اسم الطالب ورقم ولي الأمر');return;}
+  showMessageHTML(`<div style="color:#666">⏳ جاري البحث...</div>`);
+  try{
+    const{header,rows}=await fetchSheetObjects();
+    const found=rows.find(r=>{
+      const p=cleanNumber(r['رقم ولي الامر']||r['رقم ولي الأمر']||r['ولي الامر']||r['parent']||'');
+      const studentName=(r['اسم الطالب']||r['اسم']||r['Name']||'').toString().trim().toLowerCase();
+      return p===parent&&studentName===name;
+    });
+    if(!found){showError('❌ البيانات خاطئة — حاول أن تتذكر أو تراجع قسم الحوكمة');return;}
+    const code=found['كود الطالب']||found['كود']||found['id']||found['ID']||'';
+    if(!code){showError('لم يتم العثور على كود في السجل — تواصل مع قسم الحوكمة');return;}
+    revealCodeAnim(code);
   }catch(err){
     console.error(err);
-    showToast('❌ حدث خطأ أثناء الوصول للملف. تأكد من اتصال الإنترنت.', 3200);
+    showError('حدث خطأ أثناء الوصول إلى الملف. تأكد من اتصال الإنترنت وحاول مرة أخرى.');
   }
 });
 
-/* Enter يدعم التسجيل */
-document.getElementById('loginForm').addEventListener('keydown', (e)=>{
-  if(e.key === 'Enter') { e.preventDefault(); document.getElementById('loginBtn').click(); }
+document.getElementById('clearBtn').addEventListener('click',()=>{
+  parentInput.value='';nameInput.value='';
+  resultArea.innerHTML='<div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>';
+});
+
+/* تسجيل الدخول */
+document.getElementById('loginBtn').addEventListener('click',()=>{
+  window.location.href="index.html";
+});
+
+/* دعم Enter */
+document.getElementById('forgotForm').addEventListener('keydown',(e)=>{
+  if(e.key==='Enter'){e.preventDefault();document.getElementById('searchBtn').click();}
 });
 </script>
 </body>
