@@ -1,45 +1,0 @@
-﻿<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>التبليغات</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<header>🎓 ثانوية التحدي الأهلية</header>
-
-<div class="navbar">
-  <a href="dashboard.html">🏠 الرئيسية</a>
-  <a href="chat.html">💬 الدردشة</a>
-  <a href="notifications.html">📢 التبليغات</a>
-  <a href="#" onclick="logout()">🚪 تسجيل الخروج</a>
-</div>
-
-<div class="notif-box" id="notifBox"></div>
-
-<script>
-if(localStorage.getItem("loggedIn") !== "true") window.location.href="index.html";
-
-const notifBox = document.getElementById("notifBox");
-
-// مثال للتبليغات
-const notifications = [
-  "📢 إعلان: امتحانات نصف السنة ستبدأ يوم 25-11-2025",
-  "📢 إعلان: لا توجد محاضرات يوم الثلاثاء القادم",
-  "📢 إعلان: يرجى تسليم القسط الأخير قبل نهاية الشهر"
-];
-
-notifications.forEach(n => {
-  const div = document.createElement("div");
-  div.className="notif";
-  div.innerText = n;
-  notifBox.appendChild(div);
-});
-
-function logout(){ localStorage.clear(); window.location.href="index.html"; }
-</script>
-
-</body>
-</html>
