@@ -2,104 +2,254 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>تسجيل الدخول - منصة التحدي</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام استعلام عن الطالب</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-:root{
-  --blue:#007bff;
-  --card:#fff;
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #e0f0ff, #ffffff);
+  overflow-x: hidden;
 }
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  background:linear-gradient(180deg,#f3f8ff,#ffffff);
-  margin:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-  padding:20px;
+
+header {
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  padding: 25px 10px;
+  font-size: 24px;
+  font-weight: bold;
 }
-.box{
-  width:100%;
-  max-width:420px;
-  background:var(--card);
-  border-radius:14px;
-  box-shadow:0 12px 28px rgba(0,0,0,0.08);
-  padding:30px;
-  text-align:center;
-  opacity:0;
-  transform:translateY(40px);
+
+header span {
+  display: block;
+  font-size: 16px;
+  font-weight: normal;
+  margin-top: 5px;
+  opacity: 0.8;
 }
-h2{margin-bottom:10px}
-.input{
-  margin:16px 0;
-  display:flex;
-  border:1px solid #eee;
-  border-radius:8px;
-  background:#fafafa;
-  padding:10px;
+
+.input-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
 }
-.input input{
-  border:none;
-  outline:none;
-  flex:1;
-  background:transparent;
-  font-size:16px;
-  text-align:center;
+
+.input-group input {
+  flex: 0 0 160px;
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
-.btn{
-  background:var(--blue);
-  color:#fff;
-  border:none;
-  padding:10px 16px;
-  border-radius:8px;
-  font-weight:700;
-  cursor:pointer;
-  transition:0.3s;
-  width:100%;
+
+.input-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
 }
-.btn:hover{transform:translateY(-2px);box-shadow:0 6px 12px rgba(0,0,0,0.1)}
-.forgot{
-  margin-top:14px;
-  font-size:14px;
+
+button {
+  padding: 10px 25px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #28a745;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
 }
-.forgot a{
-  color:var(--blue);
-  text-decoration:underline;
-  cursor:pointer;
+
+button:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+
+.forgot-btn {
+  background: transparent;
+  color: #007bff;
+  text-decoration: underline;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  margin-top: 10px;
+  transition: color 0.3s;
+}
+
+.forgot-btn:hover {
+  color: #0056b3;
+}
+
+.year-label {
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+  opacity: 0.8;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto 30px auto;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  justify-items: center;
+}
+
+.section {
+  width: 100%;
+  min-height: 350px;
+  background: #fff;
+  border-radius: 15px;
+  padding: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  font-size: 14px;
+  overflow-x: auto;
+}
+
+.section h3 {
+  text-align: center;
+  color: #fff;
+  font-size: 18px;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin-bottom: 15px;
+}
+
+.info { background: #007bff; }
+.finance { background: #28a745; }
+.notes { background: #dc3545; }
+
+.governance {
+  margin-top: 20px;
+  background: #343a40;
+  color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.version {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 12px;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .input-group input { flex: 0 0 140px; }
+  .container { grid-template-columns: 1fr; }
+  .section { min-height: auto; }
 }
 </style>
 </head>
 <body>
-<div class="box">
-  <h2>تسجيل الدخول</h2>
-  <p>أدخل كود الطالب للمتابعة</p>
-  <div class="input">
-    <input type="text" id="studentCode" placeholder="أدخل الكود هنا">
-  </div>
-  <button class="btn" id="loginBtn">تسجيل الدخول</button>
-  <div class="forgot">
-    <a href="forgot.html">نسيت الكود؟</a>
-  </div>
+
+<header>
+  🎓 ثانوية التحدي الأهلية
+  <span>العام الدراسي 2025-2026</span>
+</header>
+
+<div class="input-group">
+  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
+  <input id="studentCode" placeholder="أدخل كود الطالب">
+  <button onclick="searchStudent()">بحث</button>
+</div>
+
+<div style="text-align:center;">
+  <button class="forgot-btn" onclick="goToForgot()">نسيت الكود؟</button>
+</div>
+
+<div class="year-label">العام الدراسي 2025-2026</div>
+<div class="container" id="output"></div>
+<div class="version">الإصدار V0.1.3</div>
+<div class="governance">
+  قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
 </div>
 
 <script>
-window.addEventListener('DOMContentLoaded',()=>{
-  gsap.to('.box',{duration:0.8,opacity:1,y:0,ease:"power3.out"});
-  gsap.from('h2',{duration:0.8,y:-30,opacity:0,delay:0.2});
-  gsap.from('.input',{duration:0.8,x:40,opacity:0,delay:0.3});
-  gsap.from('.btn',{duration:0.8,scale:0.8,opacity:0,delay:0.4});
-  gsap.from('.forgot',{duration:0.8,opacity:0,delay:0.6});
+function goToForgot(){
+  gsap.to("body", {
+    opacity: 0,
+    duration: 0.5,
+    onComplete: ()=>window.location.href = "forgot.html"
+  });
+}
+
+// تأثيرات دخول الصفحة
+window.addEventListener("DOMContentLoaded", ()=>{
+  gsap.from("header", {y:-100, opacity:0, duration:1});
+  gsap.from(".input-group", {y:50, opacity:0, duration:1, delay:0.5});
+  gsap.from(".forgot-btn", {scale:0, opacity:0, duration:1, delay:1});
+  gsap.from(".governance", {y:100, opacity:0, duration:1, delay:1.3});
 });
 
-document.getElementById('loginBtn').addEventListener('click',()=>{
-  const code=document.getElementById('studentCode').value.trim();
-  if(!code){alert('يرجى إدخال الكود');return;}
-  alert('تم تسجيل الدخول بنجاح ✅');
-});
+async function searchStudent(saveToStorage=true){
+  let code = document.getElementById("studentCode").value.trim();
+  let parent = document.getElementById("parentNumber").value.trim();
+  if(parent.startsWith("0")) parent = parent.substring(1);
+  if(code.startsWith("0")) code = code.substring(1);
+
+  const output = document.getElementById("output");
+  if(!parent || !code){
+    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب لعرض النتائج.</p>";
+    return;
+  }
+
+  if(saveToStorage){
+    localStorage.setItem("studentCode", code);
+    localStorage.setItem("parentNumber", parent);
+  }
+
+  output.innerHTML = "<p style='text-align:center;'>⏳ جاري البحث...</p>";
+
+  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+
+  try{
+    const resp = await fetch(sheetURL);
+    if(!resp.ok) throw new Error("فشل في جلب البيانات");
+    const text = await resp.text();
+    const rows = text.split("\n").map(r=>r.split(","));
+    const header = rows[0].map(h=>h.trim());
+    const dataRows = rows.slice(1);
+    const objects = dataRows.map(r=>{
+      const obj={};
+      for(let i=0;i<header.length;i++) obj[header[i]]=(r[i]||"").trim();
+      return obj;
+    });
+
+    const student = objects.find(o=>o["كود الطالب"]===code && o["رقم ولي الامر"]===parent);
+    if(!student){ output.innerHTML="<p style='color:#dc3545; text-align:center;'>❌ لم أجد بيانات تطابق البحث.</p>"; return; }
+
+    let html="";
+    html+=`<div class="section info"><h3>المعلومات العامة</h3><table>`;
+    const studentFields=["id","رقم الطالب","اسم الطالب","الجنس","الصف","القاعة","رقم ولي الامر","رقم الخط","الملاحظات"];
+    for(let f of studentFields){ html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; }
+    html+="</table></div>";
+
+    html+=`<div class="section finance"><h3>المعلومات المالية</h3><table>`;
+    const financeFields=["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
+    for(let f of financeFields){ html+=`<tr><th>${f}</th><td>${student[f]||""}</td></tr>`; }
+    html+="</table></div>";
+
+    output.innerHTML = html;
+
+    // أنيميشن عرض النتائج
+    gsap.from(".section", {opacity:0, y:30, duration:0.6, stagger:0.2});
+  }catch(err){
+    console.error(err);
+    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>❌ حدث خطأ أثناء جلب البيانات.</p>";
+  }
+}
 </script>
+
 </body>
 </html>
