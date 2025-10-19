@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>نسيت الكود - استرجاع كود الطالب</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+:root{
+  --blue:#007bff;
+  --success:#28a745;
+  --danger:#dc3545;
+  --card:#fff;
+}
+body{
+  font-family:'Cairo',sans-serif;
+  direction:rtl;
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#f6fbff,#ffffff);
+  padding:18px;
+}
+.box{
+  max-width:760px;
+  width:100%;
+  background:var(--card);
+  border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.09);
+  padding:22px;
+}
+.header{display:flex;justify-content:space-between;align-items:center}
+.header h2{margin:0}
+.form{margin-top:14px;display:flex;flex-direction:column;gap:12px}
+.input{display:flex;align-items:center;border:1px solid #eee;padding:10px;border-radius:8px;background:#fafafa}
+.input input{border:0;outline:0;flex:1;background:transparent;font-size:15px}
+.row{display:flex;gap:10px}
+.btn{padding:10px 14px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+.btn-primary{background:var(--blue);color:#fff}
+.hint{font-size:13px;color:#666}
+
+/* area result */
+.result{
+  margin-top:16px;
+  min-height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card{
+  padding:18px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#fff,#f7fbff);
+  box-shadow:0 12px 26px rgba(0,0,0,0.06);
+  text-align:center;
+  width:100%;
+  max-width:520px;
+}
+.card h3{margin:0 0 8px 0;font-size:18px}
+.codeBox{
+  margin-top:12px;
+  font-size:26px;
+  font-weight:800;
+  letter-spacing:6px;
+  padding:12px 18px;
+  border-radius:10px;
+  display:inline-block;
+  background:linear-gradient(90deg,#fff,#f8fffb);
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* reveal (typewriter effect per character) */
+.chars{display:inline-block;opacity:0}
+.chars.visible{opacity:1; animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* error */
+.err{color:var(--danger);font-weight:700;animation:shake .5s}
+@keyframes shake{
+  0%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-6px)}
+  80%{transform:translateX(6px)}
+  100%{transform:translateX(0)}
+}
+
+/* copy button */
+.copyBtn{margin-top:12px;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700}
+.copyBtn.success{background:var(--success);color:#fff}
+.copyBtn.fail{background:#f0f0f0;color:#333}
+
+/* back link */
+.back{margin-top:14px;text-align:center}
+.back a{color:var(--blue);text-decoration:underline}
+</style>
+</head>
+<body>
+<div class="box" role="main">
+  <div class="header">
+    <h2>نسيت الكود الخاص بي</h2>
+    <div class="hint">أدخل اسم الطالب ورقم ولي الأمر لاسترجاع الكود</div>
+  </div>
+
+  <div class="form" id="forgotForm">
+    <div class="input">
+      <input id="parent" placeholder="رقم ولي الأمر" inputmode="numeric" />
+    </div>
+    <div class="input">
+      <input id="studentName" placeholder="اسم الطالب (باللغة العربية كما في السجل)" />
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" id="searchBtn">استرجاع الكود</button>
+      <button class="btn" id="clearBtn">مسح الحقول</button>
+    </div>
+
+    <div class="result" id="resultArea">
+      <div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>
+    </div>
+
+    <div class="back">
+      <a href="index.html">◀ العودة إلى صفحة تسجيل الدخول</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* نفس رابط الجدول */
+const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+
+/* CSV parser (مكرر لكن مستقل للملف) */
+function parseCSV(text){
+  const rows = [];
+  let cur = '', row = [], inQuotes=false;
+  for(let i=0;i<text.length;i++){
+    const ch = text[i];
+    const next = text[i+1];
+    if(ch === '"'){
+      if(inQuotes && next === '"'){ cur += '"'; i++; continue; }
+      inQuotes = !inQuotes; continue;
+    }
+    if(ch === '\r') continue;
+    if(ch === ',' && !inQuotes){ row.push(cur); cur=''; continue; }
+    if(ch === '\n' && !inQuotes){ row.push(cur); rows.push(row); row=[]; cur=''; continue; }
+    cur += ch;
+  }
+  if(cur !== '' || row.length>0){ row.push(cur); rows.push(row); }
+  return rows;
+}
+function normalizeKey(k){ return (k||'').toString().trim(); }
+async function fetchSheetObjects(){
+  const resp = await fetch(sheetURL);
+  if(!resp.ok) throw new Error("فشل جلب البيانات");
+  const text = await resp.text();
+  const rows = parseCSV(text).filter(r=>r.some(c=>c.trim() !== ''));
+  if(rows.length === 0) return {header:[], rows:[]};
+  const header = rows[0].map(h=>normalizeKey(h));
+  const dataRows = rows.slice(1);
+  const objects = dataRows.map(r=>{
+    const obj={};
+    for(let i=0;i<header.length;i++){
+      obj[header[i]] = (r[i]||'').toString().trim();
+    }
+    return obj;
+  });
+  return {header, rows:objects};
+}
+
+/* UI helpers */
+const resultArea = document.getElementById('resultArea');
+const parentInput = document.getElementById('parent');
+const nameInput = document.getElementById('studentName');
+
+function cleanNumber(n){ if(!n) return ''; n = n.toString().trim(); if(n.startsWith('0')) n = n.replace(/^0+/, ''); return n; }
+
+function showError(msg){
+  resultArea.innerHTML = `<div class="card err">${msg}</div>`;
+}
+function showMessageHTML(html){
+  resultArea.innerHTML = html;
+}
+
+/* reveal animation for code: يظهر كل حرف بتأخير */
+function revealCodeAnim(codeStr){
+  const html = `<div class="card">
+    <h3>الكود الخاص بالطالب هو:</h3>
+    <div class="codeBox" id="codeBox"></div>
+    <div><button class="copyBtn" id="copyBtn">نسخ الكود</button></div>
+  </div>`;
+  showMessageHTML(html);
+  const box = document.getElementById('codeBox');
+  box.innerHTML = '';
+  // تبنّي كل حرف في span
+  const chars = Array.from(codeStr);
+  chars.forEach((ch, idx)=>{
+    const span = document.createElement('span');
+    span.textContent = ch;
+    span.className = 'chars';
+    box.appendChild(span);
+    setTimeout(()=> span.classList.add('visible'), 120 * idx);
+  });
+  // تفعيل زر النسخ
+  setTimeout(()=>{
+    const btn = document.getElementById('copyBtn');
+    btn.addEventListener('click', async ()=>{
+      try{
+        await navigator.clipboard.writeText(codeStr);
+        btn.textContent = 'تم النسخ ✓';
+        btn.classList.add('success');
+        setTimeout(()=>{ btn.textContent='نسخ الكود'; btn.classList.remove('success'); }, 2000);
+      }catch(e){
+        btn.textContent = 'نسخ (غير مدعوم)';
+        btn.classList.add('fail');
+      }
+    });
+  }, 120 * chars.length + 80);
+}
+
+/* البحث */
+document.getElementById('searchBtn').addEventListener('click', async ()=>{
+  const parent = cleanNumber(parentInput.value);
+  const name = (nameInput.value||'').toString().trim().toLowerCase();
+  if(!parent || !name){ showError('الرجاء إدخال اسم الطالب ورقم ولي الأمر'); return; }
+  showMessageHTML(`<div style="color:#666">⏳ جاري البحث...</div>`);
+  try{
+    const {header, rows} = await fetchSheetObjects();
+    // البحث: اسم الطالب في الحقول الممكنة
+    const found = rows.find(r=>{
+      const p = cleanNumber(r['رقم ولي الامر'] || r['رقم ولي الأمر'] || r['ولي الامر'] || r['parent'] || '');
+      const studentName = (r['اسم الطالب'] || r['اسم'] || r['Name'] || '').toString().trim().toLowerCase();
+      return p === parent && studentName === name;
+    });
+    if(!found){ showError('❌ البيانات خاطئة — حاول أن تتذكر أو تراجع قسم الحوكمة'); return; }
+    // إن وجد: نعرض الكود (قد يكون الحقل 'كود الطالب' أو 'كود' أو 'id')
+    const code = found['كود الطالب'] || found['كود'] || found['id'] || found['ID'] || '';
+    if(!code){
+      showError('لم يتم العثور على كود في السجل — تواصل مع قسم الحوكمة');
+      return;
+    }
+    revealCodeAnim(code);
+  }catch(err){
+    console.error(err);
+    showError('حدث خطأ أثناء الوصول إلى الملف. تأكد من اتصال الإنترنت وحاول مرة أخرى.');
+  }
+});
+
+document.getElementById('clearBtn').addEventListener('click', ()=>{
+  parentInput.value=''; nameInput.value=''; resultArea.innerHTML = '<div style="text-align:center;color:#666">النتيجة ستظهر هنا بعد البحث</div>';
+});
+
+/* دعم Enter */
+document.getElementById('forgotForm').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('searchBtn').click(); }
+});
+</script>
+</body>
+</html>
