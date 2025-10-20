@@ -1,11 +1,9 @@
-﻿/* main.js — مركزي للتعامل مع Google Sheet API (Apps Script Web App)
-   After you deploy Apps Script as Web App, replace SHEET_API_URL with the deployed URL.
-*/
-const SHEET_API_URL = "REPLACE_WITH_YOUR_APPS_SCRIPT_WEBAPP_URL"; // <<<< استبدل هنا
+/* main.js — مركزي للتعامل مع Google Sheet API (Apps Script Web App) */
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwTaXKjEHVXJslqNgSBZtejNg0kcQ7fS-YrfloVj14_4RP_ZTPSzsp3uIypo2qcP-rG/exec";
 
-/* robust CSV parser (if needed) - but our Apps Script returns JSON */
+/* robust CSV parser (if needed) - لكن Apps Script يعيد JSON */
 function parseCSV(text){
-  const rows=[]; let cur='',rowArr=[],inQuotes=false;
+  const rows=[]; let cur='', rowArr=[], inQuotes=false;
   for(let i=0;i<text.length;i++){
     const ch = text[i], nxt = text[i+1];
     if(ch === '"'){
@@ -23,7 +21,9 @@ function parseCSV(text){
 
 /* fetch JSON from Apps Script web app */
 async function fetchSheetData(){
-  if(!SHEET_API_URL || SHEET_API_URL.includes("REPLACE_WITH")) throw new Error("https://script.google.com/macros/s/AKfycbwTaXKjEHVXJslqNgSBZtejNg0kcQ7fS-YrfloVj14_4RP_ZTPSzsp3uIypo2qcP-rG/exec");
+  if(!SHEET_API_URL || SHEET_API_URL.includes("REPLACE_WITH")) 
+    throw new Error("ضع رابط Apps Script في main.js في المتغير SHEET_API_URL");
+    
   const resp = await fetch(SHEET_API_URL, {cache: "no-store"});
   if(!resp.ok) throw new Error("فشل في جلب البيانات من Google Sheets");
   const json = await resp.json();
@@ -44,6 +44,7 @@ async function findByParentAndCode(parent, code){
   return j.data.find(r => normalizeNumber(r['رقم ولي الامر']||r['رقم ولي الأمر']||r['رقم ولي الامر']||'') === parent
                         && ((r['كود الطالب']||r['كود']||r['id']||'') === code));
 }
+
 async function findByParentAndName(parent, fullname){
   const j = await fetchSheetData();
   parent = normalizeNumber(parent); fullname = (fullname||'').toString().trim().toLowerCase();
@@ -60,4 +61,3 @@ window.PortalAPI = {
   getSession,
   requireLogin
 };
-
