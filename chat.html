@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="utf-8" />
@@ -17,11 +17,7 @@
 </head>
 <body>
   <div class="app">
-    <div class="app-header">
-      <h1>الدردشة</h1>
-      <p>مراسلات سريعة (محلي)</p>
-    </div>
-
+    <div class="app-header"><h1>الدردشة</h1><p>مراسلات سريعة (محلي)</p></div>
     <div class="card revealed">
       <div class="chat-area">
         <div id="chatWindow" class="chat-window"></div>
@@ -31,7 +27,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <nav class="bottom-nav">
@@ -42,26 +37,26 @@
   </nav>
 
 <script>
-document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
   if(!window.StudentPortal.requireLogin('index.html')) return;
-  gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 
   const chatWindow = document.getElementById('chatWindow');
   const chatInput = document.getElementById('chatInput');
   const sendBtn = document.getElementById('sendBtn');
 
-  const s = window.StudentPortal.getStudentSession();
+  const s = window.StudentPortal.getSession();
   const key = 'chat_'+ (s ? (s['كود الطالب']||s['id']||'guest') : 'guest');
   const saved = JSON.parse(localStorage.getItem(key) || '[]');
-  saved.forEach(m => { const d = document.createElement('div'); d.className='msg'; d.textContent = m; chatWindow.appendChild(d); });
+  saved.forEach(m => { const d = document.createElement('div'); d.className='msg'; d.textContent=m; chatWindow.appendChild(d); });
 
   sendBtn.addEventListener('click', ()=> {
     const val = chatInput.value.trim(); if(!val) return;
-    const d = document.createElement('div'); d.className='msg'; d.textContent = val;
-    chatWindow.appendChild(d);
+    const d = document.createElement('div'); d.className='msg'; d.textContent=val; chatWindow.appendChild(d);
     saved.push(val); localStorage.setItem(key, JSON.stringify(saved));
     chatInput.value=''; chatWindow.scrollTop = chatWindow.scrollHeight;
   });
+
+  gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 });
 </script>
 </body>
