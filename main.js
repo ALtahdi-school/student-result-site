@@ -23,7 +23,7 @@ function parseCSV(text){
 
 /* fetch JSON from Apps Script web app */
 async function fetchSheetData(){
-  if(!SHEET_API_URL || SHEET_API_URL.includes("REPLACE_WITH")) throw new Error("ضع رابط Apps Script في main.js في المتغير SHEET_API_URL");
+  if(!SHEET_API_URL || SHEET_API_URL.includes("REPLACE_WITH")) throw new Error("https://script.google.com/macros/s/AKfycbwTaXKjEHVXJslqNgSBZtejNg0kcQ7fS-YrfloVj14_4RP_ZTPSzsp3uIypo2qcP-rG/exec");
   const resp = await fetch(SHEET_API_URL, {cache: "no-store"});
   if(!resp.ok) throw new Error("فشل في جلب البيانات من Google Sheets");
   const json = await resp.json();
@@ -60,3 +60,4 @@ window.PortalAPI = {
   getSession,
   requireLogin
 };
+
