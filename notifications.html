@@ -1,8 +1,8 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>التبليغات - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -10,13 +10,8 @@
 </head>
 <body>
   <div class="app">
-    <div class="app-header">
-      <h1>التبليغات</h1>
-      <p>الإشعارات والتنبيهات</p>
-    </div>
-
+    <div class="app-header"><h1>التبليغات</h1><p>الإشعارات والتنبيهات</p></div>
     <div id="notifArea"></div>
-
   </div>
 
   <nav class="bottom-nav">
@@ -31,9 +26,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   if(!window.StudentPortal.requireLogin('index.html')) return;
   const area = document.getElementById('notifArea');
 
-  // Simple placeholder — يمكنك ربط عمود تبليغات في الـsheet لاحقاً
+  // مثال placeholder للتبليغات
   area.innerHTML = `<div class="card revealed"><h3>لا توجد تبليغات جديدة</h3><p class="note">ستظهر التبليغات هنا عند توفرها.</p></div>`;
-
   gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 });
 </script>
