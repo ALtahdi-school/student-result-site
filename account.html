@@ -1,7 +1,7 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>الحساب - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
@@ -10,13 +10,9 @@
 </head>
 <body>
   <div class="app">
-    <div class="app-header">
-      <h1>الحساب</h1>
-      <p>بيانات الطالب — ثانوية التحدي</p>
-    </div>
+    <div class="app-header"><h1>الحساب</h1><p>بيانات المستخدم</p></div>
 
-    <div id="contentArea"></div>
-
+    <div class="card revealed" id="accountCard"></div>
   </div>
 
   <nav class="bottom-nav">
@@ -29,32 +25,16 @@
 <script>
 document.addEventListener('DOMContentLoaded', async ()=>{
   if(!window.StudentPortal.requireLogin('index.html')) return;
-  const s = window.StudentPortal.getStudentSession();
-  const content = document.getElementById('contentArea');
+  const card = document.getElementById('accountCard');
+  const s = window.StudentPortal.getSession();
+  if(!s){ card.innerHTML='<p class="note">لا توجد بيانات محفوظة</p>'; return; }
 
-  // General info fields (based on your sheet columns)
-  const general = ["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","رقم الطالب"];
-  let html = `<div class="card revealed"><h3>المعلومات العامة</h3><table class="table">`;
-  general.forEach(f => html += `<tr><th>${f}</th><td>${s[f]||''}</td></tr>`);
-  html += `</table></div>`;
+  let html="<table>";
+  Object.keys(s).forEach(k=>{ html+=`<tr><th>${k}</th><td>${s[k]}</td></tr>`; });
+  html+="</table>";
+  card.innerHTML=html;
 
-  // Finance fields
-  const finance = ["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
-  html += `<div class="card revealed"><h3>المعلومات المالية</h3><table class="table">`;
-  finance.forEach(k => html += `<tr><th>${k}</th><td>${s[k]||''}</td></tr>`);
-  html += `</table></div>`;
-
-  // Attendance & notes
-  const notes = ["الغياب","اختلاق مشاكل داخل المدرسة","ملاحظات كرت","ملاحظات النتيجة","الملاحظات","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل"];
-  html += `<div class="card revealed"><h3>الملاحظات والغياب</h3><table class="table">`;
-  notes.forEach(k => html += `<tr><th>${k}</th><td>${s[k]||''}</td></tr>`);
-  html += `</table></div>`;
-
-  // Quick link to grades
-  html += `<div class="card revealed"><h3>الدرجات</h3><p class="note">للاطلاع على الدرجات التفصيلية لكل مادة اضغط على زر الدرجات في الشريط السفلي.</p></div>`;
-
-  content.innerHTML = html;
-  gsap.to('.card', {duration:0.7, opacity:1, y:0, stagger:0.12, ease:'power3.out'});
+  gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 });
 </script>
 </body>
