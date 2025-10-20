@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الدرجات - ثانوية التحدي</title>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css"> <!-- رابط الستايل الموحد -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 body { font-family:'Cairo',sans-serif; direction:rtl; margin:0; background: linear-gradient(180deg,#f7fbff,#ffffff);}
@@ -13,9 +13,32 @@ body { font-family:'Cairo',sans-serif; direction:rtl; margin:0; background: line
 .app-header h1{margin:0; background:linear-gradient(90deg,#4f46e5,#0ea5e9); -webkit-background-clip:text; color:transparent; font-weight:800;}
 .app-header p { margin:8px 0 0 0; color:#6b7280; font-size:13px;}
 .card{background:#fff; border-radius:14px; padding:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:14px; transform: translateY(18px); opacity:0; transition: transform .6s, opacity .6s;}
+.card h3 { margin-bottom:10px; background: linear-gradient(90deg,#4f46e5,#0ea5e9); color:#fff; padding:8px 12px; border-radius:10px;}
 table { width:100%; border-collapse:collapse; margin-top:10px; font-size:14px;}
 th, td { padding:6px 8px; border:1px solid #f1f3f5; text-align:right;}
 th { background: linear-gradient(90deg,#4f46e5,#0ea5e9); color:#fff; font-weight:800;}
+.bottom-nav {
+  position: fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:60px;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 -4px 15px rgba(0,0,0,0.08);
+}
+.bottom-nav a {
+  text-decoration:none;
+  color:#6b7280;
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.bottom-nav a.active { color:#4f46e5; }
+.bottom-nav a span { margin-top:2px; }
 </style>
 </head>
 <body>
@@ -23,10 +46,12 @@ th { background: linear-gradient(90deg,#4f46e5,#0ea5e9); color:#fff; font-weight
 <div class="app">
   <div class="app-header">
     <h1>الدرجات التفصيلية</h1>
-    <p>الدرجات لكل مادة</p>
+    <p>عرض جميع درجات الطالب لكل المواد</p>
   </div>
 
-  <div id="gradesData"></div>
+  <div id="gradesData">
+    <p style="text-align:center;">⏳ جاري تحميل البيانات...</p>
+  </div>
 </div>
 
 <nav class="bottom-nav">
@@ -37,78 +62,49 @@ th { background: linear-gradient(90deg,#4f46e5,#0ea5e9); color:#fff; font-weight
 </nav>
 
 <script>
-const SHEET_API_URL = "YOUR_GOOGLE_SHEET_API_URL"; // ضع رابط Google Apps Script هنا
-
-function normalizeNumber(n){ if(!n) return ''; return n.toString().trim().replace(/^0+/,''); }
 function getSession(){ return JSON.parse(sessionStorage.getItem('studentData')||'null'); }
 function requireLogin(){ if(!getSession()){ window.location.href='index.html'; return false;} return true; }
 
-async function fetchSheetData(){
-  if(!SHEET_API_URL || SHEET_API_URL.includes("REPLACE_WITH")) throw new Error("ضع رابط Apps Script في main.js");
-  const resp = await fetch(SHEET_API_URL, {cache: "no-store"});
-  if(!resp.ok) throw new Error("فشل في جلب البيانات من Google Sheets");
-  const json = await resp.json();
-  return json;
-}
-
-async function displayGrades(){
+document.addEventListener('DOMContentLoaded', ()=>{
   if(!requireLogin()) return;
   const student = getSession();
   const container = document.getElementById('gradesData');
-  container.innerHTML = "<p style='text-align:center;'>⏳ جاري جلب البيانات...</p>";
 
-  try{
-    const sheetData = await fetchSheetData();
-    const dataRows = sheetData.data;
-    const code = student['كود الطالب'] || student['كود'] || student['id'];
-    const parent = normalizeNumber(student['رقم ولي الامر']);
+  const subjects = {
+    "الاسلامية":["اسلامية شهر 1","اسلامية شهر 2","اسلامية فصل 1","ناسلامية صف سنة","اسلامية شهر 3","اسلامية شهر 4","اسلامية فصل 2","اسلامية الامتحان النهائي","اسلامية السعي","اسلامية التقدير"],
+    "العربي":["العربي شهر 1","العربي شهر 2","العربي فصل 1","العربي نصف سنة","العربي شهر 3","العربي شهر 4","العربي فصل 2","العربي الامتحان النهائي","العربي السعي","العربي التقدير"],
+    "الانكليزي":["الانكليزي شهر 1","الانكليزي شهر 2","الانكليزي فصل 1","الانكليزي نصف سنة","الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي","الانكليزي السعي","الانكليزي التقدير"],
+    "الرياضيات":["الرياضيات شهر 1","الرياضيات شهر 2","الرياضيات فصل 1","الرياضيات نصف سنة","الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي","الرياضيات السعي","الرياضيات التقدير"],
+    "الكيمياء":["الكيمياء شهر 1","الكيمياء شهر 2","الكيمياء فصل 1","الكيمياء نصف سنة","الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي","الكيمياء السعي","الكيمياء التقدير"],
+    "الفيزياء":["الفيزياء شهر 1","الفيزياء شهر 2","الفيزياء فصل 1","الفيزياء نصف سنة","الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي","الفيزياء السعي","الفيزياء التقدير"],
+    "الاحياء":["الاحياء شهر 1","الاحياء شهر 2","الاحياء فصل 1","الاحياء نصف سنة","الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي","الاحياء السعي","الاحياء التقدير"],
+    "الاجتماعيات":["الاجتماعيات شهر 1","الاجتماعيات شهر 2","الاجتماعيات فصل 1","الاجتماعيات نصف سنة","الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي","الاجتماعيات السعي","الاجتماعيات التقدير"],
+    "الحاسوب":["الحاسوب شهر 1","الحاسوب شهر 2","الحاسوب فصل 1","الحاسوب نصف سنة","الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي","الحاسوب السعي","الحاسوب التقدير"],
+    "رياضة":["رياضة شهر 1","رياضة شهر 2","رياضة فصل 1","رياضة نصف سنة","رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي","رياضة السعي","رياضة التقدير"],
+    "الفنية":["الفنية شهر 1","الفنية شهر 2","الفنية فصل 1","الفنية نصف سنة","الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي","الفنية السعي","الفنية التقدير"],
+    "السلوك":["السلوك شهر 1","السلوك شهر 2","السلوك فصل 1","السلوك نصف سنة","السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي","السلوك السعي","السلوك التقدير"]
+  };
 
-    const record = dataRows.find(r=>normalizeNumber(r['رقم ولي الامر'])===parent && (r['كود الطالب']===code || r['كود']===code || r['id']===code));
-    if(!record){ container.innerHTML="<p style='color:#ef4444; text-align:center;'>❌ لم أجد بيانات مطابقة.</p>"; return; }
-
-    // قائمة المواد والأقسام التفصيلية
-    const subjects = {
-      "الاسلامية":["اسلامية شهر 1","اسلامية شهر 2","اسلامية فصل 1","ناسلامية صف سنة","اسلامية شهر 3","اسلامية شهر 4","اسلامية فصل 2","اسلامية الامتحان النهائي","اسلامية السعي","اسلامية التقدير"],
-      "العربي":["العربي شهر 1","العربي شهر 2","العربي فصل 1","العربي نصف سنة","العربي شهر 3","العربي شهر 4","العربي فصل 2","العربي الامتحان النهائي","العربي السعي","العربي التقدير"],
-      "الانكليزي":["الانكليزي شهر 1","الانكليزي شهر 2","الانكليزي فصل 1","الانكليزي نصف سنة","الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي","الانكليزي السعي","الانكليزي التقدير"],
-      "الرياضيات":["الرياضيات شهر 1","الرياضيات شهر 2","الرياضيات فصل 1","الرياضيات نصف سنة","الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي","الرياضيات السعي","الرياضيات التقدير"],
-      "الكيمياء":["الكيمياء شهر 1","الكيمياء شهر 2","الكيمياء فصل 1","الكيمياء نصف سنة","الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي","الكيمياء السعي","الكيمياء التقدير"],
-      "الفيزياء":["الفيزياء شهر 1","الفيزياء شهر 2","الفيزياء فصل 1","الفيزياء نصف سنة","الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي","الفيزياء السعي","الفيزياء التقدير"],
-      "الاحياء":["الاحياء شهر 1","الاحياء شهر 2","الاحياء فصل 1","الاحياء نصف سنة","الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي","الاحياء السعي","الاحياء التقدير"],
-      "الاجتماعيات":["الاجتماعيات شهر 1","الاجتماعيات شهر 2","الاجتماعيات فصل 1","الاجتماعيات نصف سنة","الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي","الاجتماعيات السعي","الاجتماعيات التقدير"],
-      "الحاسوب":["الحاسوب شهر 1","الحاسوب شهر 2","الحاسوب فصل 1","الحاسوب نصف سنة","الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي","الحاسوب السعي","الحاسوب التقدير"],
-      "رياضة":["رياضة شهر 1","رياضة شهر 2","رياضة فصل 1","رياضة نصف سنة","رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي","رياضة السعي","رياضة التقدير"],
-      "الفنية":["الفنية شهر 1","الفنية شهر 2","الفنية فصل 1","الفنية نصف سنة","الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي","الفنية السعي","الفنية التقدير"],
-      "السلوك":["السلوك شهر 1","السلوك شهر 2","السلوك فصل 1","السلوك نصف سنة","السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي","السلوك السعي","السلوك التقدير"]
-    };
-
-    let html='';
-    for(let sub in subjects){
-      html+=`<div class="card revealed"><h3>${sub}</h3><table><tr>`;
-      subjects[sub].forEach(col=> html+=`<th>${col}</th>`);
-      html+="</tr><tr>";
-      subjects[sub].forEach(col=> html+=`<td>${record[col]||""}</td>`);
-      html+="</tr></table></div>";
-    }
-
-    // قسم الملاحظات والغياب
-    const notesFields=["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"];
-    html+=`<div class="card revealed"><h3>الملاحظات والغياب</h3><table><tr>`;
-    notesFields.forEach(col=> html+=`<th>${col}</th>`);
+  let html='';
+  for(let sub in subjects){
+    html+=`<div class="card revealed"><h3>${sub}</h3><table><tr>`;
+    subjects[sub].forEach(col=> html+=`<th>${col}</th>`);
     html+="</tr><tr>";
-    notesFields.forEach(col=> html+=`<td>${record[col]||""}</td>`);
+    subjects[sub].forEach(col=> html+=`<td>${student[col]||""}</td>`);
     html+="</tr></table></div>";
-
-    container.innerHTML = html;
-    gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7,stagger:0.1});
-
-  }catch(err){
-    console.error(err);
-    container.innerHTML = "<p style='color:#ef4444; text-align:center;'>❌ حدث خطأ أثناء جلب البيانات.</p>";
   }
-}
 
-document.addEventListener('DOMContentLoaded', displayGrades);
+  // الملاحظات والغياب
+  const notes=["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"];
+  html+=`<div class="card revealed"><h3>الملاحظات والغياب</h3><table><tr>`;
+  notes.forEach(col=> html+=`<th>${col}</th>`);
+  html+="</tr><tr>";
+  notes.forEach(col=> html+=`<td>${student[col]||""}</td>`);
+  html+="</tr></table></div>";
+
+  container.innerHTML = html;
+  gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7,stagger:0.1});
+});
 </script>
 
 </body>
