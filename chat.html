@@ -1,62 +1,41 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الدردشة - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="main.js" defer></script>
-<style>
-.chat-area{ display:flex; flex-direction:column; gap:8px; }
-.chat-window{ max-height:420px; overflow:auto; padding:12px; border-radius:12px; background:#fafafa; }
-.msg { padding:10px; border-radius:10px; background:#fff; margin-bottom:6px; box-shadow:0 4px 12px rgba(2,6,23,0.04); }
-.input-send{ display:flex; gap:8px; margin-top:8px; }
-.input-send input{ flex:1; padding:10px; border-radius:10px; border:1px solid #e6e9ef; }
-</style>
 </head>
 <body>
-  <div class="app">
-    <div class="app-header"><h1>الدردشة</h1><p>مراسلات سريعة (محلي)</p></div>
-    <div class="card revealed">
-      <div class="chat-area">
-        <div id="chatWindow" class="chat-window"></div>
-        <div class="input-send">
-          <input id="chatInput" placeholder="اكتب رسالتك..." />
-          <button id="sendBtn" class="btn primary">إرسال</button>
-        </div>
-      </div>
-    </div>
+<div class="app">
+  <div class="app-header">
+    <h1>الدردشة</h1>
+    <p>تواصل مع إدارة المدرسة وزملائك</p>
   </div>
 
-  <nav class="bottom-nav">
-    <a href="account.html">👤<span>الحساب</span></a>
-    <a href="grades.html">📚<span>الدرجات</span></a>
-    <a href="notifications.html">🔔<span>التبليغات</span></a>
-    <a href="chat.html" class="active">💬<span>الدردشة</span></a>
-  </nav>
+  <div id="chatArea" class="container">
+    <div class="card revealed">
+      <h3>⚠️ الدردشة متوقفة حالياً للصيانة</h3>
+      <p class="note">نعتذر عن الإزعاج، وسيتم تفعيل الدردشة قريباً.</p>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="account.html" class="nav-item"><span>الحساب</span></a>
+  <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
+  <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
+  <a href="chat.html" class="nav-item active"><span>الدردشة</span></a>
+</nav>
 
 <script>
 document.addEventListener('DOMContentLoaded', async ()=>{
-  if(!window.StudentPortal.requireLogin('index.html')) return;
+  if(!PortalAPI.requireLogin()) return;
 
-  const chatWindow = document.getElementById('chatWindow');
-  const chatInput = document.getElementById('chatInput');
-  const sendBtn = document.getElementById('sendBtn');
-
-  const s = window.StudentPortal.getSession();
-  const key = 'chat_'+ (s ? (s['كود الطالب']||s['id']||'guest') : 'guest');
-  const saved = JSON.parse(localStorage.getItem(key) || '[]');
-  saved.forEach(m => { const d = document.createElement('div'); d.className='msg'; d.textContent=m; chatWindow.appendChild(d); });
-
-  sendBtn.addEventListener('click', ()=> {
-    const val = chatInput.value.trim(); if(!val) return;
-    const d = document.createElement('div'); d.className='msg'; d.textContent=val; chatWindow.appendChild(d);
-    saved.push(val); localStorage.setItem(key, JSON.stringify(saved));
-    chatInput.value=''; chatWindow.scrollTop = chatWindow.scrollHeight;
-  });
-
-  gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
+  const chatArea = document.getElementById('chatArea');
+  gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7});
 });
 </script>
 </body>
