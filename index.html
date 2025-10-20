@@ -23,9 +23,12 @@
   </div>
 
   <div class="container" id="output"></div>
+
+  <!-- زر تسجيل الخروج مخفي افتراضياً -->
+  <button id="logoutBtn" class="btn warn" style="display:none; margin-top:12px;">🚪 تسجيل الخروج</button>
 </div>
 
-<nav class="bottom-nav">
+<nav class="bottom-nav" id="bottomNav">
   <a href="account.html" class="nav-item"><span>الحساب</span></a>
   <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
   <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
@@ -34,8 +37,11 @@
 
 <script>
 async function searchStudent(){
-  const code = document.getElementById("studentCode").value.trim();
-  let parent = document.getElementById("parentNumber").value.trim();
+  const codeInput = document.getElementById("studentCode");
+  const parentInput = document.getElementById("parentNumber");
+  let code = codeInput.value.trim();
+  let parent = parentInput.value.trim();
+
   if(!code || !parent){ 
     document.getElementById("output").innerHTML="<p class='error'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.</p>";
     return;
@@ -54,21 +60,34 @@ async function searchStudent(){
 
     PortalAPI.saveSession(student);
 
-    let html="<div class='card revealed'><h3>تم تسجيل الدخول بنجاح!</h3></div>";
+    // عرض رسالة نجاح + إظهار زر تسجيل الخروج
+    let html="<div class='card revealed'><h3>✅ تم تسجيل الدخول بنجاح!</h3></div>";
     document.getElementById("output").innerHTML=html;
     gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
+
+    document.getElementById("logoutBtn").style.display = 'block';
+    document.getElementById("bottomNav").style.display = 'flex';
   }catch(err){
     console.error(err);
     document.getElementById("output").innerHTML="<p class='error'>❌ حدث خطأ أثناء جلب البيانات.</p>";
   }
 }
 
+// عرض بيانات الجلسة عند التحميل وإظهار زر تسجيل الخروج
 window.addEventListener("DOMContentLoaded", ()=>{
   const student = PortalAPI.getSession();
   if(student){
-    document.getElementById("studentCode").value=student["كود الطالب"]||'';
-    document.getElementById("parentNumber").value=student["رقم ولي الامر"]||'';
+    document.getElementById("studentCode").value = student["كود الطالب"] || '';
+    document.getElementById("parentNumber").value = student["رقم ولي الامر"] || '';
+    document.getElementById("logoutBtn").style.display = 'block';
+    document.getElementById("bottomNav").style.display = 'flex';
   }
+});
+
+// وظيفة تسجيل الخروج
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  sessionStorage.clear();
+  window.location.reload(); // إعادة تحميل الصفحة بعد تسجيل الخروج
 });
 </script>
 </body>
