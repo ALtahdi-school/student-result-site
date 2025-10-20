@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>الحساب - ثانوية التحدي</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="main.js" defer></script>
+</head>
+<body>
+  <div class="app">
+    <div class="app-header">
+      <h1>الحساب</h1>
+      <p>بيانات الطالب — ثانوية التحدي</p>
+    </div>
+
+    <div id="contentArea"></div>
+
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="account.html" class="active">👤<span>الحساب</span></a>
+    <a href="grades.html">📚<span>الدرجات</span></a>
+    <a href="notifications.html">🔔<span>التبليغات</span></a>
+    <a href="chat.html">💬<span>الدردشة</span></a>
+  </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', async ()=>{
+  if(!window.StudentPortal.requireLogin('index.html')) return;
+  const s = window.StudentPortal.getStudentSession();
+  const content = document.getElementById('contentArea');
+
+  // General info fields (based on your sheet columns)
+  const general = ["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","رقم الطالب"];
+  let html = `<div class="card revealed"><h3>المعلومات العامة</h3><table class="table">`;
+  general.forEach(f => html += `<tr><th>${f}</th><td>${s[f]||''}</td></tr>`);
+  html += `</table></div>`;
+
+  // Finance fields
+  const finance = ["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
+  html += `<div class="card revealed"><h3>المعلومات المالية</h3><table class="table">`;
+  finance.forEach(k => html += `<tr><th>${k}</th><td>${s[k]||''}</td></tr>`);
+  html += `</table></div>`;
+
+  // Attendance & notes
+  const notes = ["الغياب","اختلاق مشاكل داخل المدرسة","ملاحظات كرت","ملاحظات النتيجة","الملاحظات","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل"];
+  html += `<div class="card revealed"><h3>الملاحظات والغياب</h3><table class="table">`;
+  notes.forEach(k => html += `<tr><th>${k}</th><td>${s[k]||''}</td></tr>`);
+  html += `</table></div>`;
+
+  // Quick link to grades
+  html += `<div class="card revealed"><h3>الدرجات</h3><p class="note">للاطلاع على الدرجات التفصيلية لكل مادة اضغط على زر الدرجات في الشريط السفلي.</p></div>`;
+
+  content.innerHTML = html;
+  gsap.to('.card', {duration:0.7, opacity:1, y:0, stagger:0.12, ease:'power3.out'});
+});
+</script>
+</body>
+</html>
