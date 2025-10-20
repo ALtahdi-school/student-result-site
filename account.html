@@ -1,40 +1,47 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الحساب - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="main.js" defer></script>
 </head>
 <body>
-  <div class="app">
-    <div class="app-header"><h1>الحساب</h1><p>بيانات المستخدم</p></div>
-
-    <div class="card revealed" id="accountCard"></div>
+<div class="app">
+  <div class="app-header">
+    <h1>الحساب الشخصي</h1>
+    <p>بيانات الطالب الأساسية</p>
   </div>
 
-  <nav class="bottom-nav">
-    <a href="account.html" class="active">👤<span>الحساب</span></a>
-    <a href="grades.html">📚<span>الدرجات</span></a>
-    <a href="notifications.html">🔔<span>التبليغات</span></a>
-    <a href="chat.html">💬<span>الدردشة</span></a>
-  </nav>
+  <div id="accountData"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="account.html" class="nav-item active"><span>الحساب</span></a>
+  <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
+  <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
+</nav>
 
 <script>
 document.addEventListener('DOMContentLoaded', async ()=>{
-  if(!window.StudentPortal.requireLogin('index.html')) return;
-  const card = document.getElementById('accountCard');
-  const s = window.StudentPortal.getSession();
-  if(!s){ card.innerHTML='<p class="note">لا توجد بيانات محفوظة</p>'; return; }
+  const student = PortalAPI.getSession();
+  const container = document.getElementById('accountData');
+  if(!student){ window.location.href='index.html'; return; }
 
-  let html="<table>";
-  Object.keys(s).forEach(k=>{ html+=`<tr><th>${k}</th><td>${s[k]}</td></tr>`; });
-  html+="</table>";
-  card.innerHTML=html;
+  let html=`<div class="card revealed">
+    <table>
+      <tr><th>الاسم</th><td>${student['اسم الطالب']}</td></tr>
+      <tr><th>الصف</th><td>${student['الصف']}</td></tr>
+      <tr><th>القاعة</th><td>${student['القاعة']}</td></tr>
+      <tr><th>رقم ولي الأمر</th><td>${student['رقم ولي الامر']}</td></tr>
+      <tr><th>رقم الخط</th><td>${student['رقم الخط']}</td></tr>
+    </table>
+  </div>`;
+  container.innerHTML = html;
 
-  gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
+  gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7});
 });
 </script>
 </body>
