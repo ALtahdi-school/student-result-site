@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الدرجات - ثانوية التحدي</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="main.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <div class="app-header">
+    <h1>الدرجات التفصيلية</h1>
+    <p>الدرجات لكل مادة</p>
+  </div>
+
+  <div id="gradesData"></div>
+</div>
+
+<nav class="bottom-nav">
+  <a href="account.html" class="nav-item"><span>الحساب</span></a>
+  <a href="grades.html" class="nav-item active"><span>الدرجات</span></a>
+  <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', async ()=>{
+  const student = PortalAPI.getSession();
+  const container = document.getElementById('gradesData');
+  if(!student){ window.location.href='index.html'; return; }
+
+  const subjects = Object.keys(student).filter(k=>["الاسلامية","عربي","انكليزي","رياضيات","كيمياء","فيزياء","احياء","اجتماعيات","حاسوب","رياضة","فنية","السلوك"].includes(k));
+  let html='';
+  subjects.forEach(sub=>{
+    html+=`<div class="card revealed">
+      <h3>${sub}</h3>
+      <table><tr>`;
+    Object.keys(student[sub]||{}).forEach(col=> html+=`<th>${col}</th>`);
+    html+="</tr><tr>";
+    Object.values(student[sub]||{}).forEach(val=> html+=`<td>${val}</td>`);
+    html+="</tr></table></div>";
+  });
+
+  container.innerHTML = html;
+  gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7,stagger:0.1});
+});
+</script>
+</body>
+</html>
