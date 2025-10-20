@@ -3,94 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول - ثانوية التحدي</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+<title>نظام استعلام عن الطالب</title>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<style>
-:root{
-  --primary-start: #4f46e5;
-  --primary-end: #0ea5e9;
-  --accent-red: #ef4444;
-  --accent-red-light: #ffe5e5;
-  --accent-yellow: #facc15;
-  --accent-yellow-light: #fff9e0;
-  --muted: #6b7280;
-  --bg: linear-gradient(180deg,#f7fbff,#ffffff);
-  --card: #ffffff;
-  --radius: 14px;
-  --shadow: 0 12px 30px rgba(15,23,42,0.08);
-}
-
-*{box-sizing:border-box;}
-html,body{height:100%; margin:0; padding:0; font-family:'Cairo',sans-serif; direction:rtl; background:var(--bg); -webkit-font-smoothing:antialiased;}
-
-.app { max-width:980px; margin:24px auto 120px; padding:18px; }
-.app-header{text-align:center; margin-bottom:14px;}
-.app-header h1{
-  margin:0;
-  font-size:24px;
-  font-weight:800;
-  background:linear-gradient(90deg,var(--primary-start),var(--primary-end));
-  -webkit-background-clip:text;
-  color:transparent;
-}
-.app-header p{margin:6px 0 0 0; color:var(--muted); font-size:14px;}
-
-.input-row{display:flex;gap:12px;flex-wrap:wrap;}
-.field{flex:1;min-width:140px;}
-input[type="text"], input[type="number"]{
-  width:100%;
-  padding:12px 14px;
-  border-radius:10px;
-  border:1px solid #e6e9ef;
-  font-size:14px;
-  transition:box-shadow .18s, border-color .18s;
-}
-input:focus{outline:none;border-color: rgba(79,70,229,0.9);box-shadow:0 8px 30px rgba(79,70,229,0.06);}
-button{padding:10px 18px; border-radius:10px; border:none; cursor:pointer; font-weight:800; transition: all .18s ease;}
-button.primary{ background: linear-gradient(90deg,var(--primary-start),var(--primary-end)); color:#fff; }
-button.ghost{ background:transparent; color:var(--primary-start); border:1px solid rgba(79,70,229,0.08);}
-button.warn{ background:var(--accent-red); color:#fff; }
-button.yellow{ background: var(--accent-yellow); color: #000; }
-
-.note{ color:var(--muted); text-align:center; margin-top:8px; }
-.error{ color:var(--accent-red); font-weight:700; text-align:center; margin-top:8px;}
-.success{ color:#16a34a; font-weight:700; text-align:center; margin-top:8px;}
-
-.table{width:100%; border-collapse:collapse; margin-top:10px;}
-.table th, .table td{padding:8px 10px; border:1px solid #f1f3f5; text-align:right;}
-.table th{background: linear-gradient(90deg,var(--primary-start),var(--primary-end)); color:#fff; font-weight:800;}
-
-.bottom-nav{
-  display:none;
-  position:fixed;
-  bottom:14px;
-  left:50%;
-  transform:translateX(-50%);
-  background: linear-gradient(180deg,#ffffff,#f7fbff);
-  border-radius:24px;
-  box-shadow:0 12px 36px rgba(2,6,23,0.12);
-  display:flex;
-  gap:6px;
-  padding:8px;
-  z-index:999;
-}
-.nav-item{
-  display:flex; flex-direction:column; gap:4px; align-items:center; justify-content:center;
-  padding:8px 14px; border-radius:12px; text-decoration:none; color:var(--muted); font-weight:700; font-size:13px;
-  transition:all .18s ease;
-}
-.nav-item svg{width:20px;height:20px;}
-.nav-item.active{ background: linear-gradient(90deg,var(--primary-start),var(--primary-end)); color:#fff; transform:translateY(-6px); box-shadow:0 18px 40px rgba(79,70,229,0.16);}
-
-@media (max-width:760px){
-  .app{ margin:12px 12px 140px; padding:12px; }
-  .nav-item span{ font-size:12px; }
-}
-</style>
+<script src="main.js" defer></script>
 </head>
 <body>
-
 <div class="app">
   <div class="app-header">
     <h1>🎓 ثانوية التحدي الأهلية</h1>
@@ -100,104 +18,58 @@ button.yellow{ background: var(--accent-yellow); color: #000; }
   <div class="input-row">
     <input id="parentNumber" type="text" placeholder="أدخل رقم ولي الأمر">
     <input id="studentCode" type="text" placeholder="أدخل كود الطالب">
-    <button class="primary" id="loginBtn">دخول</button>
-    <button class="yellow" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
+    <button class="btn primary" onclick="searchStudent()">بحث</button>
+    <button class="btn yellow" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
   </div>
 
-  <div id="message" class="note"></div>
+  <div class="container" id="output"></div>
 </div>
 
-<nav class="bottom-nav" id="bottomNav">
+<nav class="bottom-nav">
   <a href="account.html" class="nav-item"><span>الحساب</span></a>
   <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
   <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
+  <a href="chat.html" class="nav-item"><span>الدردشة</span></a>
 </nav>
 
 <script>
-// رابط Google Sheet (CSV)
-const SHEET_API_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
-
-// تحليل CSV
-function parseCSV(text){
-  const rows=[], rowArr=[];
-  let cur='', inQuotes=false;
-  for(let i=0;i<text.length;i++){
-    const ch = text[i], nxt = text[i+1];
-    if(ch === '"'){ if(inQuotes && nxt === '"'){ cur+='"'; i++; continue;} inQuotes=!inQuotes; continue;}
-    if(ch === '\r') continue;
-    if(ch === ',' && !inQuotes){ rowArr.push(cur); cur=''; continue;}
-    if(ch === '\n' && !inQuotes){ rowArr.push(cur); rows.push(rowArr); rowArr.length=0; cur=''; continue;}
-    cur+=ch;
-  }
-  if(cur!=='' || rowArr.length){ rowArr.push(cur); rows.push(rowArr); }
-  return rows;
-}
-
-// جلب البيانات من Google Sheet
-async function fetchSheetData(){
-  const resp = await fetch(SHEET_API_URL,{cache:"no-store"});
-  if(!resp.ok) throw new Error("فشل في جلب البيانات");
-  const text = await resp.text();
-  const rows = parseCSV(text);
-  const header = rows[0].map(h=>h.trim());
-  const dataRows = rows.slice(1);
-  return dataRows.map(r=>{
-    const obj={};
-    for(let i=0;i<header.length;i++) obj[header[i]]=r[i]?.trim()||"";
-    return obj;
-  });
-}
-
-// دوال الجلسة
-function normalizeNumber(n){ return n?.toString().trim().replace(/^0+/,''); }
-function saveSession(obj){ sessionStorage.setItem('studentData',JSON.stringify(obj)); }
-function getSession(){ try{return JSON.parse(sessionStorage.getItem('studentData')||'null');}catch(e){return null;} }
-
-// البحث حسب رقم ولي الأمر وكود الطالب
-async function findByParentAndCode(parent, code){
-  const data = await fetchSheetData();
-  parent = normalizeNumber(parent);
-  code = code.toString().trim();
-  return data.find(r => normalizeNumber(r['رقم ولي الامر']||'') === parent
-                     && ((r['كود الطالب']||r['كود']||r['id']||'') === code));
-}
-
-// معالجة تسجيل الدخول
-document.addEventListener('DOMContentLoaded', ()=>{
-  const bottomNav = document.getElementById('bottomNav');
-  const loginBtn = document.getElementById('loginBtn');
-  const msg = document.getElementById('message');
-
-  // إذا كان هناك جلسة سابقة، توجيه مباشر للصفحة الرئيسية
-  const sessionStudent = getSession();
-  if(sessionStudent){
-    bottomNav.style.display = 'flex';
-    window.location.replace('account.html');
+async function searchStudent(){
+  const code = document.getElementById("studentCode").value.trim();
+  let parent = document.getElementById("parentNumber").value.trim();
+  if(!code || !parent){ 
+    document.getElementById("output").innerHTML="<p class='error'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.</p>";
     return;
   }
+  if(parent.startsWith("0")) parent=parent.substring(1);
+  if(code.startsWith("0")) code=code.substring(1);
 
-  loginBtn.addEventListener('click', async ()=>{
-    msg.textContent = "";
-    const parent = document.getElementById('parentNumber').value.trim();
-    const code = document.getElementById('studentCode').value.trim();
-    if(!parent || !code){ msg.textContent="⚠️ الرجاء إدخال جميع الحقول"; return; }
+  document.getElementById("output").innerHTML="<p class='note'>⏳ جاري البحث...</p>";
 
-    msg.textContent="⏳ جاري التحقق...";
-    try{
-      const student = await findByParentAndCode(parent, code);
-      if(!student){ msg.textContent="❌ بيانات غير موجودة"; return; }
-
-      saveSession(student);
-      msg.textContent="✅ تسجيل الدخول بنجاح!";
-      bottomNav.style.display = 'flex';
-      setTimeout(()=>window.location.replace('account.html'),500);
-    }catch(e){
-      msg.textContent="❌ حدث خطأ أثناء الاتصال بالبيانات";
-      console.error(e);
+  try{
+    const student = await PortalAPI.findByParentAndCode(parent, code);
+    if(!student){ 
+      document.getElementById("output").innerHTML="<p class='error'>❌ لم أجد بيانات تطابق البحث.</p>";
+      return;
     }
-  });
+
+    PortalAPI.saveSession(student);
+
+    let html="<div class='card revealed'><h3>تم تسجيل الدخول بنجاح!</h3></div>";
+    document.getElementById("output").innerHTML=html;
+    gsap.to('.card', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
+  }catch(err){
+    console.error(err);
+    document.getElementById("output").innerHTML="<p class='error'>❌ حدث خطأ أثناء جلب البيانات.</p>";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  const student = PortalAPI.getSession();
+  if(student){
+    document.getElementById("studentCode").value=student["كود الطالب"]||'';
+    document.getElementById("parentNumber").value=student["رقم ولي الامر"]||'';
+  }
 });
 </script>
-
 </body>
 </html>
