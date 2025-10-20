@@ -6,124 +6,161 @@
 <title>الحساب - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin:0;
+  background: linear-gradient(180deg,#f7fbff,#ffffff);
+}
+.app {
+  max-width: 980px;
+  margin:24px auto 110px;
+  padding:18px;
+}
+.app-header {
+  text-align:center;
+  margin-bottom:14px;
+}
+.app-header h1{
+  margin:0;
+  background:linear-gradient(90deg,#4f46e5,#0ea5e9);
+  -webkit-background-clip:text;
+  color:transparent;
+  font-weight:800;
+}
+.app-header p {
+  margin:8px 0 0 0;
+  color:#6b7280;
+  font-size:13px;
+}
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 12px 30px rgba(15,23,42,0.08);
+  margin-bottom:14px;
+  transform: translateY(18px);
+  opacity:0;
+  transition: transform .6s, opacity .6s;
+}
+.section {
+  margin-bottom:20px;
+}
+.section h3 {
+  text-align:center;
+  background:#4f46e5;
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:10px;
+}
+.field {
+  margin-bottom:8px;
+  font-size:14px;
+}
+.field strong {
+  color:#1e3a8a;
+}
+.btn-logout {
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  border:none;
+  border-radius:12px;
+  background: linear-gradient(90deg,#ef4444,#f87171);
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition: all 0.3s ease;
+}
+.btn-logout:hover {
+  transform: translateY(-2px);
+  box-shadow:0 6px 15px rgba(239,68,68,0.4);
+}
+.bottom-nav {
+  position: fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:60px;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 -4px 15px rgba(0,0,0,0.08);
+}
+.bottom-nav a {
+  text-decoration:none;
+  color:#6b7280;
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.bottom-nav a.active { color:#4f46e5; }
+.bottom-nav a span { margin-top:2px; }
+</style>
 </head>
 <body>
 <div class="app">
-  <!-- البار العلوي -->
-  <header class="app-header">
+  <div class="app-header">
     <h1>حساب الطالب</h1>
-    <p>عرض وتعديل البيانات الشخصية والمالية</p>
-  </header>
+    <p>عرض البيانات الشخصية والمالية</p>
+  </div>
 
   <div class="card" id="accountCard">
-    <!-- قسم معلومات الطالب -->
-    <div class="section" id="infoSection">
+    <div id="infoSection" class="section">
       <h3>معلومات الطالب</h3>
       <div id="infoFields"></div>
     </div>
 
-    <!-- قسم المعلومات المالية -->
-    <div class="section" id="financeSection">
+    <div id="financeSection" class="section">
       <h3>المعلومات المالية</h3>
       <div id="financeFields"></div>
     </div>
 
-    <button class="btn btn-primary" id="saveBtn">💾 حفظ البيانات المعدلة</button>
-    <button class="btn btn-logout" id="logoutBtn">🚪 تسجيل الخروج</button>
-    <p id="statusMsg" style="text-align:center;margin-top:10px;"></p>
+    <button class="btn-logout" id="logoutBtn">🚪 تسجيل الخروج</button>
   </div>
 </div>
 
-<!-- البار السفلي -->
 <nav class="bottom-nav">
-  <a href="account.html" class="nav-item active">👤<span>الحساب</span></a>
-  <a href="grades.html" class="nav-item">📚<span>الدرجات</span></a>
-  <a href="notifications.html" class="nav-item">🔔<span>التبليغات</span></a>
-  <a href="chat.html" class="nav-item">💬<span>الدردشة</span></a>
+  <a href="account.html" class="active">👤<span>الحساب</span></a>
+  <a href="grades.html">📚<span>الدرجات</span></a>
+  <a href="notifications.html">🔔<span>التبليغات</span></a>
+  <a href="chat.html">💬<span>الدردشة</span></a>
 </nav>
 
 <script>
-const SHEET_API_URL = "YOUR_GOOGLE_SHEET_API_URL"; // ضع رابط Google Apps Script هنا
-
-// جلسة المستخدم
 function getSession(){ return JSON.parse(sessionStorage.getItem('studentData')||'null'); }
-function saveSession(obj){ sessionStorage.setItem('studentData', JSON.stringify(obj)); }
 function requireLogin(){ if(!getSession()){ window.location.href='index.html'; return false;} return true; }
 
-// جلب البيانات من Google Sheet
-async function fetchSheetData(){
-  const resp = await fetch(SHEET_API_URL, {cache:"no-store"});
-  if(!resp.ok) throw new Error("فشل في جلب البيانات من Google Sheets");
-  return await resp.json();
-}
-
-// البحث حسب ولي الأمر وكود الطالب
-async function findByParentAndCode(parent, code){
-  const data = await fetchSheetData();
-  return data.find(r => r['رقم ولي الامر'] == parent && r['كود الطالب'] == code);
-}
-
-// عرض البيانات في الصفحة
-async function renderAccount(){
+document.addEventListener('DOMContentLoaded', ()=> {
   if(!requireLogin()) return;
-  gsap.to('#accountCard', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
-
   const student = getSession();
   const infoFieldsContainer = document.getElementById('infoFields');
   const financeFieldsContainer = document.getElementById('financeFields');
 
-  const editableFields = ['رقم الطالب','رقم ولي الامر','رقم الخط','المدرسة القادم منها','العنوان'];
-
-  // معلومات الطالب
   const infoFields = ["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","الملاحظات","كود الطالب","رقم الطالب","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل"];
   infoFields.forEach(f=>{
     const val = student[f]||'';
-    if(editableFields.includes(f)){
-      infoFieldsContainer.innerHTML += `<label>${f}:<input type="text" id="${f}" value="${val}"/></label>`;
-    } else {
-      infoFieldsContainer.innerHTML += `<p><strong>${f}:</strong> ${val}</p>`;
-    }
+    infoFieldsContainer.innerHTML += `<div class="field"><strong>${f}:</strong> ${val}</div>`;
   });
 
-  // المعلومات المالية
   const financeFields = ["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
   financeFields.forEach(f=>{
     const val = student[f]||'';
-    financeFieldsContainer.innerHTML += `<p><strong>${f}:</strong> ${val}</p>`;
+    financeFieldsContainer.innerHTML += `<div class="field"><strong>${f}:</strong> ${val}</div>`;
   });
 
-  // حفظ البيانات المعدلة
-  document.getElementById('saveBtn').addEventListener('click', async ()=>{
-    const updatedData = {...student};
-    editableFields.forEach(f=> updatedData[f] = document.getElementById(f).value.trim());
-    try{
-      const resp = await fetch(SHEET_API_URL+"?action=update",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(updatedData)
-      });
-      const result = await resp.json();
-      if(result.success){
-        saveSession(updatedData);
-        document.getElementById('statusMsg').textContent = '✅ تم حفظ البيانات بنجاح';
-      } else {
-        document.getElementById('statusMsg').textContent = '❌ حدث خطأ أثناء حفظ البيانات';
-      }
-    }catch(e){
-      console.error(e);
-      document.getElementById('statusMsg').textContent = '❌ حدث خطأ أثناء الحفظ';
-    }
-  });
+  gsap.to('#accountCard', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 
-  // تسجيل الخروج
   document.getElementById('logoutBtn').addEventListener('click', ()=>{
     sessionStorage.clear();
     window.location.href='index.html';
   });
-}
-
-// تهيئة الصفحة
-document.addEventListener('DOMContentLoaded', renderAccount);
+});
 </script>
 </body>
 </html>
