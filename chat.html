@@ -6,36 +6,46 @@
 <title>الدردشة - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="main.js" defer></script>
+<style>
+body { font-family:'Cairo',sans-serif; direction:rtl; margin:0; background: linear-gradient(180deg,#f7fbff,#ffffff);}
+.app { max-width: 980px; margin:24px auto 110px; padding:18px;}
+.app-header { text-align:center; margin-bottom:14px;}
+.app-header h1{margin:0; background:linear-gradient(90deg,#4f46e5,#0ea5e9); -webkit-background-clip:text; color:transparent; font-weight:800;}
+.app-header p { margin:8px 0 0 0; color:#6b7280; font-size:13px;}
+.card{background:#fff; border-radius:14px; padding:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:14px; transform: translateY(18px); opacity:0; transition: transform .6s, opacity .6s;}
+.message-area { min-height:300px; display:flex; align-items:center; justify-content:center; color:#ef4444; font-weight:700; font-size:18px;}
+</style>
 </head>
 <body>
 <div class="app">
   <div class="app-header">
     <h1>الدردشة</h1>
-    <p>تواصل مع إدارة المدرسة وزملائك</p>
+    <p>تواصل مع الإدارة</p>
   </div>
 
-  <div id="chatArea" class="container">
-    <div class="card revealed">
-      <h3>⚠️ الدردشة متوقفة حالياً للصيانة</h3>
-      <p class="note">نعتذر عن الإزعاج، وسيتم تفعيل الدردشة قريباً.</p>
+  <div class="card" id="chatCard">
+    <div class="message-area" id="chatMessage">
+      ⚠️ الدردشة متوقفة حالياً للصيانة والتطوير
     </div>
   </div>
 </div>
 
 <nav class="bottom-nav">
-  <a href="account.html" class="nav-item"><span>الحساب</span></a>
-  <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
-  <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
-  <a href="chat.html" class="nav-item active"><span>الدردشة</span></a>
+  <a href="account.html">👤<span>الحساب</span></a>
+  <a href="grades.html">📚<span>الدرجات</span></a>
+  <a href="notifications.html">🔔<span>التبليغات</span></a>
+  <a href="chat.html" class="active">💬<span>الدردشة</span></a>
 </nav>
 
 <script>
-document.addEventListener('DOMContentLoaded', async ()=>{
-  if(!PortalAPI.requireLogin()) return;
+const SHEET_API_URL = "YOUR_GOOGLE_SHEET_API_URL"; // ضع هنا رابط Google Apps Script
 
-  const chatArea = document.getElementById('chatArea');
-  gsap.fromTo('.card',{opacity:0,y:20},{opacity:1,y:0,duration:0.7});
+function getSession(){ return JSON.parse(sessionStorage.getItem('studentData')||'null'); }
+function requireLogin(){ if(!getSession()){ window.location.href='index.html'; return false;} return true; }
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(!requireLogin()) return;
+  gsap.to('#chatCard', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
 });
 </script>
 </body>
