@@ -3,85 +3,53 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام استعلام عن الطالب - ثانوية التحدي</title>
+<title>تسجيل الدخول - ثانوية التحدي</title>
 <link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="main.js" defer></script>
 </head>
 <body>
+<div class="app">
+  <div class="app-header">
+    <h1>🎓 ثانوية التحدي الأهلية</h1>
+    <p>العام الدراسي 2025-2026</p>
+  </div>
 
-<header>
-  🎓 ثانوية التحدي الأهلية
-  <span>العام الدراسي 2025-2026</span>
-</header>
+  <div class="input-row">
+    <div class="field"><input id="parentNumber" type="text" placeholder="أدخل رقم ولي الأمر"></div>
+    <div class="field"><input id="studentCode" type="text" placeholder="أدخل كود الطالب"></div>
+    <button class="primary" onclick="login()">دخول</button>
+    <button class="yellow" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
+  </div>
 
-<div class="input-group">
-  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
-  <input id="studentCode" placeholder="أدخل كود الطالب">
-  <button onclick="searchStudent()">بحث</button>
-  <button id="forgotBtn">نسيت الكود؟</button>
+  <div id="message" class="note"></div>
 </div>
 
-<div class="year-label">العام الدراسي 2025-2026</div>
-<div class="container" id="output"></div>
-<div class="version">الإصدار V0.2.4</div>
-<div class="governance">
-  قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
-</div>
+<nav class="bottom-nav">
+  <a href="account.html" class="nav-item"><span>الحساب</span></a>
+  <a href="grades.html" class="nav-item"><span>الدرجات</span></a>
+  <a href="notifications.html" class="nav-item"><span>التبليغات</span></a>
+</nav>
 
 <script>
-document.getElementById('forgotBtn').addEventListener('click', ()=> window.location.href='forgot.html');
+async function login(){
+  const parent = document.getElementById('parentNumber').value.trim();
+  const code = document.getElementById('studentCode').value.trim();
+  const msg = document.getElementById('message');
+  if(!parent || !code){ msg.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب"; return; }
 
-async function searchStudent(){
-  const codeEl = document.getElementById('studentCode');
-  const parentEl = document.getElementById('parentNumber');
-  let code = codeEl.value.trim();
-  let parent = parentEl.value.trim();
-  if(parent.startsWith('0')) parent = parent.substring(1);
-  if(code.startsWith('0')) code = code.substring(1);
-
-  const output = document.getElementById('output');
-  if(!code || !parent){ output.innerHTML="<p style='color:#dc3545;text-align:center;'>⚠️ الرجاء إدخال جميع الحقول</p>"; return; }
-
-  output.innerHTML="<p style='text-align:center;'>⏳ جاري البحث...</p>";
-
+  msg.textContent = "⏳ جاري التحقق...";
   try{
-    const student = await window.StudentPortal.findByParentAndCode(parent, code);
-    if(!student){ output.innerHTML="<p style='color:#dc3545;text-align:center;'>❌ لم أجد بيانات مطابقة</p>"; return; }
-
-    window.StudentPortal.saveSession(student);
-
-    let html="";
-    // مثال معلومات عامة
-    html+=`<div class="section info"><h3>المعلومات العامة</h3><table>`;
-    const infoFields=["id","رقم الطالب","اسم الطالب","الجنس","الصف","القاعة","رقم ولي الامر","رقم الخط"];
-    infoFields.forEach(f=>{ if(student[f]) html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; });
-    html+="</table></div>";
-
-    // مثال ملاحظات
-    html+=`<div class="section notes"><h3>ملاحظات</h3><table>`;
-    const noteFields=["ملاحظات كرت","ملاحظات النتيجة","الغياب"];
-    noteFields.forEach(f=>{ if(student[f]) html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; });
-    html+="</table></div>";
-
-    output.innerHTML = html;
-
-  }catch(err){
-    console.error(err);
-    output.innerHTML="<p style='color:#dc3545;text-align:center;'>❌ حدث خطأ أثناء جلب البيانات</p>";
+    const student = await PortalAPI.findByParentAndCode(parent, code);
+    if(!student){ msg.textContent = "❌ بيانات غير موجودة"; return; }
+    PortalAPI.saveSession(student);
+    msg.textContent = "✅ تسجيل الدخول بنجاح!";
+    setTimeout(()=>window.location.href='account.html',500);
+  }catch(e){
+    msg.textContent = "❌ حدث خطأ أثناء الاتصال بالبيانات";
+    console.error(e);
   }
 }
-
-// استرجاع البيانات عند وجود جلسة محفوظة
-document.addEventListener('DOMContentLoaded', ()=>{
-  const s = window.StudentPortal.getSession();
-  if(s){
-    document.getElementById('studentCode').value = s['كود الطالب']||s['id']||'';
-    document.getElementById('parentNumber').value = s['رقم ولي الامر']||s['رقم ولي الأمر']||'';
-    searchStudent();
-  }
-});
 </script>
-
 </body>
 </html>
