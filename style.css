@@ -1,140 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Cairo', sans-serif;
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom right, #e0e7ff, #c7d2fe, #a5b4fc);
+  color:#111;
 }
 
-body {
-  background: linear-gradient(135deg, #3b82f6, #9333ea, #f97316, #ef4444);
-  background-size: 400% 400%;
-  animation: gradientBG 10s ease infinite;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+.page{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
 }
 
-@keyframes gradientBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
+.hidden{ display:none; }
 
-.container {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(15px);
-  border-radius: 25px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  width: 380px;
-  padding: 35px 30px;
-  text-align: center;
-  transform: translateY(60px);
-  opacity: 0;
-}
+h1{ font-size:2rem; margin-bottom:1rem; }
 
-.container h2 {
-  color: #fff;
-  margin-bottom: 25px;
-  font-size: 28px;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+.loginForm{
+  display:flex; flex-direction:column; gap:0.5rem;
 }
+.loginForm input{
+  padding:0.5rem; font-size:1rem; border-radius:6px; border:none; box-shadow:0 0 6px rgba(0,0,0,0.1);
+}
+.loginForm button{
+  padding:0.5rem; font-size:1rem; border:none; border-radius:6px; background:linear-gradient(90deg,#6366f1,#8b5cf6); color:white; cursor:pointer;
+}
+.loginForm button:hover{ opacity:0.9; }
 
-.input-field {
-  position: relative;
-  margin-bottom: 20px;
-  opacity: 0;
-  transform: translateY(30px);
+#mainPage header{
+  display:flex; justify-content:flex-end; gap:10px; padding:10px; background:#6366f1; color:white;
 }
+#mainPage header button{
+  border:none; border-radius:6px; padding:6px 12px; cursor:pointer; background:white; color:#6366f1; font-weight:bold;
+}
+#bottomBar{
+  display:flex; flex-direction:column; gap:20px; padding:10px;
+  max-height:80vh; overflow-y:auto; background:white; box-shadow:0 -2px 10px rgba(0,0,0,0.2);
+}
+table{ width:100%; border-collapse:collapse; font-size:0.75rem; }
+th, td{ border:1px solid #ddd; padding:4px; text-align:center; }
+th{ background:linear-gradient(to right,#6366f1,#8b5cf6); color:white; font-size:0.7rem; }
 
-.input-field input {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  outline: none;
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  font-size: 16px;
-  transition: 0.3s ease;
-}
+#notificationsArea, #chatArea{ max-height:150px; overflow-y:auto; border:1px solid #ddd; padding:4px; margin-top:4px; }
+#chatInput{ width:80%; padding:4px; }
+#sendChat{ padding:4px; background:#6366f1; color:white; border:none; cursor:pointer; border-radius:4px; }
 
-.input-field input::placeholder {
-  color: #ddd;
-}
-
-.input-field input:focus {
-  background: rgba(255,255,255,0.3);
-  box-shadow: 0 0 10px rgba(255,255,255,0.3);
-}
-
-button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(90deg, #3b82f6, #9333ea, #f97316, #ef4444);
-  background-size: 300% 300%;
-  border: none;
-  border-radius: 12px;
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.4s ease;
-  animation: buttonBG 6s ease infinite;
-  opacity: 0;
-  transform: translateY(40px);
-}
-
-@keyframes buttonBG {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-}
-
-.forgot-link {
-  display: block;
-  margin-top: 15px;
-  color: #fff;
-  font-size: 14px;
-  text-decoration: none;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: 0.3s ease;
-}
-
-.forgot-link:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-
-.message {
-  color: #fff;
-  margin-bottom: 20px;
-  font-size: 16px;
-  opacity: 0;
-}
-
-.back-btn {
-  margin-top: 15px;
-  display: inline-block;
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: 0.3s;
-  opacity: 0;
-}
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.35);
-  transform: scale(1.05);
-}
+footer{ padding:10px; text-align:center; background:#8b5cf6; color:white; }
+footer a{ color:white; text-decoration:none; font-weight:bold; }
