@@ -103,19 +103,22 @@ th,td{
 tr:hover{
   background-color:rgba(78,84,200,0.1);
 }
+
+/* البار السفلي */
 .bottom-bar{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  display:flex;
-  justify-content:space-around;
-  background:linear-gradient(90deg,#4e54c8,#8f94fb);
-  padding:10px 0;
-  border-top-left-radius:20px;
-  border-top-right-radius:20px;
-  box-shadow:0 -4px 12px rgba(0,0,0,0.15);
-  z-index:1000;
+  display: none; /* مخفي افتراضياً */
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background: linear-gradient(90deg,#4e54c8,#8f94fb);
+  padding: 10px 0;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
 }
 .bottom-bar button{
   flex:1;
@@ -229,17 +232,24 @@ loginBtn.addEventListener('click', async ()=>{
   if(!parent||!code){alert("ادخل جميع البيانات"); return;}
   const student=await fetchStudentData(parent,code);
   if(!student){alert("لم يتم العثور على البيانات"); return;}
+  
   loginForm.style.display='none';
   sections.forEach(s=>s.style.display='none');
   accountSection.style.display='block';
+  
+  // إظهار البار السفلي بعد تسجيل الدخول
+  document.querySelector('.bottom-bar').style.display = 'flex';
+
   populateAccount(student);
   populateGrades(student);
   populateNotifications(student);
 });
 
+// تسجيل الخروج
 logoutBtn.addEventListener('click', ()=>{
   loginForm.style.display='flex';
   sections.forEach(s=>s.style.display='none');
+  document.querySelector('.bottom-bar').style.display = 'none';
 });
 
 // تنقل بين الأقسام
@@ -252,7 +262,7 @@ document.querySelectorAll('.bottom-bar button').forEach(btn=>{
   });
 });
 
-// الدوال لتعبئة الجداول
+// دوال لتعبئة الحساب والدرجات والتبليغات
 function populateAccount(student){
   const genTable=document.getElementById('generalInfoTable');
   genTable.innerHTML='';
@@ -279,7 +289,7 @@ function populateAccount(student){
 function populateGrades(student){
   const gradesTable=document.getElementById('gradesTable');
   gradesTable.innerHTML='';
-  const subjects=["الاسلامية","العربي","الانكليزي","الرياضيات","الكيمياء","الفيزياء","الاحياء","الاجتماعيات","حاسوب","رياضة","فنية","السلوك"];
+  const subjects=["الاسلامية","العربي","الانكليزي","الرياضيات","الكيمياء","الفيزياء","الاحياء","الاجتماعيات","الحاسوب","رياضة","فنية","السلوك"];
   subjects.forEach(sub=>{
     const cols=Object.keys(student).filter(k=>k.includes(sub));
     if(cols.length){
@@ -302,10 +312,8 @@ function populateGrades(student){
   });
 }
 
-// التبليغات
 function populateNotifications(student){
   const notif=document.getElementById('notificationsArea');
-  // إذا كان الصف إدارة يمكنه النشر
   if(student["الصف"]==="الادارة"){
     notif.innerHTML=`<textarea id="notifInput" placeholder="اكتب تبليغك هنا" style="width:100%;height:60px;margin-bottom:8px;"></textarea>
     <button id="postNotif">نشر التبليغ</button>
@@ -337,6 +345,7 @@ function renderAllNotifs(){
 
 // قاعدة بيانات وهمية مؤقتاً حتى يتم ربط Google Sheets
 let allNotifications=[];
+
 async function fetchStudentData(parent,code){
   if(typeof STUDENTS_DATA==='undefined') return null;
   return STUDENTS_DATA.find(s=>{
