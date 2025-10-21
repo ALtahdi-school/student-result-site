@@ -47,3 +47,13 @@ async function fetchStudentsData() {
 
 // تنفيذ التحميل فور الاستدعاء
 fetchStudentsData();
+
+// دالة البحث عن طالب
+async function fetchStudentData(parent, code) {
+  if(STUDENTS_DATA.length === 0){
+    await fetchStudentsData(); // تحميل البيانات أولاً إذا لم تكن موجودة
+  }
+  return STUDENTS_DATA.find(s=>{
+    return (s["رقم ولي الامر"]==parent||s["parent"]==parent) && (s["كود الطالب"]==code||s["id"]==code);
+  });
+}
