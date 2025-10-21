@@ -3,429 +3,346 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام الطلاب - ثانوية التحدي</title>
+<title>نظام استعلام عن الطالب</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-:root{
-  --primary-blue:#4e54c8;
-  --secondary-purple:#8f94fb;
-  --accent-orange:#ff7e5f;
-  --accent-red:#ff4e50;
-  --bg-gradient: linear-gradient(135deg,var(--primary-blue),var(--secondary-purple));
-  --card-bg:#fff;
-  --text-main:#333;
-  --bar-bg:#1f1f2e;
-  --bar-active:var(--accent-orange);
-}
-
 body{
   font-family:'Cairo',sans-serif;
-  margin:0; padding:0;
   direction:rtl;
-  background: var(--bg-gradient);
+  margin:0;
+  padding:0;
+  background:linear-gradient(to bottom,#e0f0ff,#ffffff);
   overflow-x:hidden;
 }
-
 header{
-  background: var(--primary-blue);
+  background:#4e54c8;
   color:#fff;
   text-align:center;
-  padding:20px;
-  font-size:22px;
+  padding:25px 10px;
+  font-size:24px;
   font-weight:bold;
-  position:relative;
-  z-index:10;
 }
-
-/* Login Form */
-#loginForm{
-  max-width:400px;
-  margin:40px auto;
-  background:var(--card-bg);
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
-  display:grid;
-  gap:12px;
-}
-
-#loginForm input{
-  padding:10px;
-  font-size:15px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  width:100%;
-}
-
-#loginForm button{
-  padding:12px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
-  font-weight:700;
-  background: var(--accent-orange);
-  color:#fff;
-  font-size:16px;
-  transition:0.3s;
-}
-
-#loginForm button:hover{
-  background: var(--accent-red);
-  transform: scale(1.05);
-}
-
-#loginForm a{
-  text-align:center;
+header span{
   display:block;
-  color:var(--primary-blue);
-  text-decoration:underline;
-  margin-top:10px;
+  font-size:16px;
+  font-weight:normal;
+  margin-top:5px;
+  opacity:0.8;
 }
-
-/* Container */
 .container{
   max-width:1200px;
-  margin:20px auto 80px auto;
-  padding:0 15px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:20px;
-  position:relative;
-}
-
-/* Sections */
-.section{
-  background: var(--card-bg);
-  border-radius:15px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
+  margin:0 auto;
   padding:15px;
-  opacity:0;
-  transform:translateY(30px);
-  display:none;
 }
-
-.section.active{
-  display:block;
-}
-
-.section h3{
-  text-align:center;
-  color: var(--primary-blue);
-  margin-bottom:10px;
-}
-
-table{
-  width:100%;
-  border-collapse: collapse;
-  font-size:13px;
-}
-
-th,td{
-  border:1px solid #ddd;
-  padding:6px 8px;
-  text-align:right;
-  word-break:break-word;
-}
-
-tr:hover{ background-color: rgba(78,84,200,0.1); }
-
-/* Bottom Bar */
-.bottom-bar{
-  position:fixed;
-  bottom:0; left:0; right:0;
-  height:60px;
-  background: var(--bar-bg);
+.input-group{
   display:flex;
-  justify-content:space-around;
-  align-items:center;
-  z-index:20;
-  box-shadow:0 -4px 15px rgba(0,0,0,0.3);
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:20px 0;
 }
-
-.bottom-bar button{
-  background:transparent;
-  border:none;
-  color:#fff;
-  font-size:16px;
-  cursor:pointer;
-  transition:all 0.3s ease;
-  position:relative;
+.input-group input{
+  flex:0 0 160px;
+  padding:10px;
+  font-size:14px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
-
-.bottom-bar button.active::after{
-  content:'';
-  position:absolute;
-  bottom:5px;
-  left:50%;
-  transform:translateX(-50%);
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background: var(--bar-active);
+.input-group input:focus{
+  outline:none;
+  border-color:#4e54c8;
+  box-shadow:0 0 8px rgba(78,84,200,0.3);
 }
-
-.bottom-bar button:hover{
-  color: var(--accent-orange);
-  transform: scale(1.1);
-}
-
-/* Logout Button */
-#logoutBtn{
-  background: var(--accent-red);
-  color:#fff;
-  padding:8px 12px;
+button{
+  padding:10px 25px;
+  font-size:14px;
   border:none;
   border-radius:8px;
   cursor:pointer;
   font-weight:700;
-  float:left;
+  transition:all 0.3s ease;
+}
+button:hover{
+  transform:scale(1.05);
+}
+#loginBtn{
+  background:linear-gradient(90deg,#4e54c8,#8f94fb);
+  color:#fff;
+}
+#logoutBtn{
+  background:#ff4e50;
+  color:#fff;
+}
+#forgotBtn{
+  background:#ffc107;
+  color:#000;
+}
+.section{
+  background:#fff;
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.1);
+  display:none;
+}
+.section h3{
+  text-align:center;
   margin-bottom:10px;
 }
-
-#logoutBtn:hover{
-  background: var(--accent-orange);
-  transform: scale(1.05);
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:6px 4px;
+  border:1px solid #ddd;
+  word-wrap:break-word;
+  text-align:right;
+}
+tr:hover{
+  background-color:rgba(78,84,200,0.1);
+}
+.bottom-bar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:linear-gradient(90deg,#4e54c8,#8f94fb);
+  padding:10px 0;
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  box-shadow:0 -4px 12px rgba(0,0,0,0.15);
+  z-index:1000;
+}
+.bottom-bar button{
+  flex:1;
+  margin:0 5px;
+  padding:10px 0;
+  border:none;
+  border-radius:15px;
+  background:rgba(255,255,255,0.2);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.bottom-bar button.active,
+.bottom-bar button:hover{
+  background:rgba(255,255,255,0.35);
+  transform:translateY(-3px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.bottom-bar button::after{
+  content:'';
+  position:absolute;
+  width:100%;
+  height:3px;
+  bottom:0;
+  left:0;
+  background:#ff7e5f;
+  transform:scaleX(0);
+  transform-origin:right;
+  transition:transform 0.3s ease;
+}
+.bottom-bar button.active::after,
+.bottom-bar button:hover::after{
+  transform:scaleX(1);
+  transform-origin:left;
 }
 </style>
 </head>
 <body>
 
-<header>🎓 ثانوية التحدي - نظام الطلاب</header>
+<header>
+🎓 ثانوية التحدي الأهلية
+<span>العام الدراسي 2025-2026</span>
+</header>
 
-<!-- Login Form -->
-<div id="loginForm">
+<div class="input-group" id="loginForm">
   <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
   <input id="studentCode" placeholder="أدخل كود الطالب">
   <button id="loginBtn">تسجيل الدخول</button>
-  <a href="forgot.html">نسيت الكود؟</a>
+  <button id="forgotBtn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
 </div>
 
-<!-- Container بعد تسجيل الدخول -->
-<div class="container" id="appContainer" style="display:none">
-
-  <button id="logoutBtn">تسجيل الخروج</button>
-
+<div class="container">
   <!-- الحساب -->
-  <div class="section active" id="accountSection">
-    <h3>الحساب</h3>
-    <div id="accountInfo">جاري تحميل البيانات...</div>
+  <div class="section" id="accountSection">
+    <button id="logoutBtn">تسجيل الخروج</button>
+    <h3>المعلومات العامة</h3>
+    <table id="generalInfoTable"></table>
+    <h3>المعلومات المالية</h3>
+    <table id="financialTable"></table>
   </div>
 
   <!-- الدرجات -->
   <div class="section" id="gradesSection">
-    <h3>الدرجات</h3>
-    <div id="gradesInfo">جاري تحميل الدرجات...</div>
+    <h3>الدرجات التفصيلية</h3>
+    <table id="gradesTable"></table>
+    <h3>الملاحظات والغياب</h3>
+    <table id="notesTable"></table>
   </div>
 
   <!-- التبليغات -->
-  <div class="section" id="alertsSection">
+  <div class="section" id="notificationsSection">
     <h3>التبليغات</h3>
-    <div id="alertsInfo">جاري تحميل التبليغات...</div>
-    <div id="newAlertSection" style="margin-top:15px;"></div>
+    <div id="notificationsArea">لا توجد تبليغات حتى الآن.</div>
   </div>
 
   <!-- الدردشة -->
   <div class="section" id="chatSection">
-    <h3>الدردشة</h3>
-    <p>الدردشة مع طلاب صفك. في حالة الصيانة يرجى الانتظار.</p>
+    <h3>الدردشة مع طلاب صفك</h3>
+    <div id="chatArea">في حالة الصيانة، يرجى الانتظار لحين اكتمالها.</div>
   </div>
-
 </div>
 
-<!-- Bottom Bar -->
-<div class="bottom-bar" style="display:none">
+<!-- البار السفلي -->
+<div class="bottom-bar">
   <button class="active" data-target="accountSection">الحساب</button>
   <button data-target="gradesSection">الدرجات</button>
-  <button data-target="alertsSection">التبليغات</button>
+  <button data-target="notificationsSection">التبليغات</button>
   <button data-target="chatSection">الدردشة</button>
 </div>
 
+<script src="data.js"></script>
 <script>
-// رابط Google Sheet CSV
-const SHEET_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?output=csv";
-
-// CSV Parser
-function parseCSV(text){
-  const rows=[];
-  let cur='',row=[],inQuotes=false;
-  for(let i=0;i<text.length;i++){
-    const ch=text[i],next=text[i+1];
-    if(ch=='"'){
-      if(inQuotes&&next=='"'){cur+='"';i++; continue;}
-      inQuotes=!inQuotes; continue;
-    }
-    if(ch=='\r') continue;
-    if(ch==','&&!inQuotes){row.push(cur); cur=''; continue;}
-    if(ch=='\n'&&!inQuotes){row.push(cur); rows.push(row); row=[]; cur=''; continue;}
-    cur+=ch;
-  }
-  if(cur!=''||row.length>0){row.push(cur); rows.push(row);}
-  return rows;
-}
-
-function normalizeKey(k){return (k||'').toString().trim();}
-
-// جلب بيانات Google Sheet
-async function fetchSheetObjects(){
-  const resp=await fetch(SHEET_URL);
-  if(!resp.ok) throw new Error("فشل جلب البيانات");
-  const text=await resp.text();
-  const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!=''));
-  if(rows.length===0) return{header:[],rows:[]};
-  const header=rows[0].map(h=>normalizeKey(h));
-  const dataRows=rows.slice(1);
-  const objects=dataRows.map(r=>{
-    const obj={};
-    for(let i=0;i<header.length;i++){
-      obj[header[i]]=(r[i]||'').toString().trim();
-    }
-    return obj;
-  });
-  return{header,rows:objects};
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-
-  const loginForm=document.getElementById('loginForm');
-  const loginBtn=document.getElementById('loginBtn');
-  const appContainer=document.getElementById('appContainer');
-  const bottomBar=document.querySelector('.bottom-bar');
-  const sections=document.querySelectorAll('.section');
-  const barButtons=document.querySelectorAll('.bottom-bar button');
-  const logoutBtn=document.getElementById('logoutBtn');
-
-  let userData=null;
-
-  // تسجيل الدخول
-  loginBtn.addEventListener('click',async()=>{
-    const parent=document.getElementById('parentNumber').value.trim();
-    const code=document.getElementById('studentCode').value.trim();
-    if(!parent||!code){
-      alert('الرجاء إدخال رقم ولي الأمر وكود الطالب');
-      return;
-    }
-
-    try{
-      const {rows}=await fetchSheetObjects();
-      // البحث عن الطالب
-      const found=rows.find(r=>{
-        const p=r['رقم ولي الامر']||r['رقم ولي الأمر']||'';
-        const c=r['كود الطالب']||r['id']||'';
-        return p===parent && c===code;
-      });
-      if(!found){alert('بيانات خاطئة'); return;}
-      userData=found;
-
-      loginForm.style.display='none';
-      appContainer.style.display='block';
-      bottomBar.style.display='flex';
-
-      loadAccountData();
-      loadGradesData();
-      loadAlertsData(rows);
-
-      gsap.to(document.querySelector('.section.active'),{opacity:1,y:0,duration:0.6,ease:"power3.out"});
-    }catch(err){
-      console.error(err);
-      alert('خطأ في جلب البيانات');
-    }
-  });
-
-  // تسجيل الخروج
-  logoutBtn.addEventListener('click',()=>{
-    appContainer.style.display='none';
-    bottomBar.style.display='none';
-    loginForm.style.display='grid';
-    document.getElementById('parentNumber').value='';
-    document.getElementById('studentCode').value='';
-  });
-
-  // التنقل بين الأقسام
-  barButtons.forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      const targetId=btn.getAttribute('data-target');
-      barButtons.forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-
-      sections.forEach(sec=>{
-        if(sec.id===targetId){
-          sec.classList.add('active');
-          gsap.fromTo(sec,{opacity:0,y:30},{opacity:1,y:0,duration:0.5,ease:"power3.out"});
-        } else{
-          sec.classList.remove('active');
-          gsap.to(sec,{opacity:0,y:30,duration:0.3,ease:"power3.out"});
-        }
-      });
-    });
-  });
-
-  // تحميل الحساب
-  function loadAccountData(){
-    const infoDiv=document.getElementById('accountInfo');
-    let html='<table>';
-    const generalFields=['id','اسم الطالب','الصف','القاعة','الجنس','رقم ولي الامر','رقم الخط','الملاحظات','كود الطالب','رقم الطالب','ملاحظات كرت','ملاحظات النتيجة','الكتب','العنوان','اسم الام','المدرسة القادم منها','المعدل في الصف السابق'];
-    html+='<tr><th colspan="2">المعلومات العامة</th></tr>';
-    generalFields.forEach(f=>{
-      html+=`<tr><td>${f}</td><td>${userData[f]||''}</td></tr>`;
-    });
-
-    const financeFields=['القسط 1','تاريخ 1','القسط 2','تاريخ 2','القسط 3','تاريخ 3','القسط 4','تاريخ 4','القسط 5','تاريخ 5','القسط 6','تاريخ 6','القسط 7','تاريخ 7','القسط 8','تاريخ 8','الباقي الكلي','المبلغ الكلي','الواصل الكلي','الكفالة','مبلغ الكفالة'];
-    html+='<tr><th colspan="2">المعلومات المالية</th></tr>';
-    financeFields.forEach(f=>{
-      html+=`<tr><td>${f}</td><td>${userData[f]||''}</td></tr>`;
-    });
-
-    html+='</table>';
-    infoDiv.innerHTML=html;
-  }
-
-  // تحميل الدرجات
-  function loadGradesData(){
-    const gradesDiv=document.getElementById('gradesInfo');
-    const gradeFields=['اسلامية شهر 1','اسلامية شهر 2','اسلامية فصل 1','ناسلامية صف سنة','اسلامية شهر 3','اسلامية شهر 4','اسلامية فصل 2','اسلامية الامتحان النهائي','اسلامية السعي','اسلامية التقدير','العربي شهر 1','العربي شهر 2','العربي فصل 1','العربي نصف سنة','العربي شهر 3','العربي شهر 4','العربي فصل 2','العربي الامتحان النهائي','العربي السعي','العربي التقدير','الانكليزي شهر 1','الانكليزي شهر 2','الانكليزي فصل 1','الانكليزي نصف سنة','الانكليزي شهر 3','الانكليزي شهر 4','الانكليزي فصل 2','الانكليزي الامتحان النهائي','الانكليزي السعي','الانكليزي التقدير','الرياضيات شهر 1','الرياضيات شهر 2','الرياضيات فصل 1','الرياضيات نصف سنة','الرياضيات شهر 3','الرياضيات شهر 4','الرياضيات فصل 2','الرياضيات الامتحان النهائي','الرياضيات السعي','الرياضيات التقدير','الكيمياء شهر 1','الكيمياء شهر 2','الكيمياء فصل 1','الكيمياء نصف سنة','الكيمياء شهر 3','الكيمياء شهر 4','الكيمياء فصل 2','الكيمياء الامتحان النهائي','الكيمياء السعي','الكيمياء التقدير','الفيزياء شهر 1','الفيزياء شهر 2','الفيزياء فصل 1','الفيزياء نصف سنة','الفيزياء شهر 3','الفيزياء شهر 4','الفيزياء فصل 2','الفيزياء الامتحان النهائي','الفيزياء السعي','الفيزياء التقدير','الاحياء شهر 1','الاحياء شهر 2','الاحياء فصل 1','الاحياء نصف سنة','الاحياء شهر 3','الاحياء شهر 4','الاحياء فصل 2','الاحياء الامتحان النهائي','الاحياء السعي','الاحياء التقدير','الاجتماعيات شهر 1','الاجتماعيات شهر 2','الاجتماعيات فصل 1','الاجتماعيات نصف سنة','الاجتماعيات شهر 3','الاجتماعيات شهر 4','الاجتماعيات فصل 2','الاجتماعيات الامتحان النهائي','الاجتماعيات السعي','الاجتماعيات التقدير','الحاسوب شهر 1','الحاسوب شهر 2','الحاسوب فصل 1','الحاسوب نصف سنة','الحاسوب شهر 3','الحاسوب شهر 4','الحاسوب فصل 2','الحاسوب الامتحان النهائي','الحاسوب السعي','الحاسوب التقدير','رياضة شهر 1','رياضة شهر 2','رياضة فصل 1','رياضة نصف سنة','رياضة شهر 3','رياضة شهر 4','رياضة فصل 2','رياضة الامتحان النهائي','رياضة السعي','رياضة التقدير','الفنية شهر 1','الفنية شهر 2','الفنية فصل 1','الفنية نصف سنة','الفنية شهر 3','الفنية شهر 4','الفنية فصل 2','الفنية الامتحان النهائي','الفنية السعي','الفنية التقدير','السلوك شهر 1','السلوك شهر 2','السلوك فصل 1','السلوك نصف سنة','السلوك شهر 3','السلوك شهر 4','السلوك فصل 2','السلوك الامتحان النهائي','السلوك السعي','السلوك التقدير','ملاحظات كرت'];
-
-    let html='<table><tr><th>المادة/التقييم</th><th>الدرجة</th></tr>';
-    gradeFields.forEach(f=>{
-      html+=`<tr><td>${f}</td><td>${userData[f]||''}</td></tr>`;
-    });
-    html+='</table>';
-    gradesDiv.innerHTML=html;
-  }
-
-  // التبليغات
-  function loadAlertsData(allRows){
-    const alertsDiv=document.getElementById('alertsInfo');
-    const newAlertDiv=document.getElementById('newAlertSection');
-    let html='';
-
-    // عرض التبليغات للطلاب
-    const alertsFields=['تبليغ 1','تبليغ 2','تبليغ 3','تبليغ 4','تبليغ 5'];
-    alertsFields.forEach(f=>{
-      if(userData[f] && userData[f].trim()!==''){
-        html+=`<p>🔔 ${userData[f]}</p>`;
-      }
-    });
-    alertsDiv.innerHTML=html || '<p>لا توجد تبليغات</p>';
-
-    // إذا الصف إدارة يمكنه إضافة تبليغ
-    if(userData['الصف'] && userData['الصف'].toLowerCase()==='الادارة'){
-      newAlertDiv.innerHTML=`<input type="text" id="newAlertInput" placeholder="اكتب تبليغ جديد" style="width:70%;padding:6px;border-radius:6px;border:1px solid #ccc">
-      <button id="sendAlertBtn" style="padding:6px 12px;margin-left:8px;border:none;border-radius:6px;background:var(--accent-orange);color:#fff;cursor:pointer;font-weight:700;">نشر</button>`;
-
-      document.getElementById('sendAlertBtn').addEventListener('click',()=>{
-        const val=document.getElementById('newAlertInput').value.trim();
-        if(!val){alert('أدخل التبليغ'); return;}
-        // هنا يمكنك إضافة كود لإرسال التبليغ لكل الطلاب عبر Google Sheet API أو Apps Script
-        alert('تم نشر التبليغ: '+val);
-        document.getElementById('newAlertInput').value='';
-      });
-    }else{
-      newAlertDiv.innerHTML='';
-    }
-  }
-
+// GSAP Animation
+window.addEventListener('DOMContentLoaded', ()=>{
+  gsap.from('.input-group input, #loginBtn, #forgotBtn',{duration:0.8,opacity:0,y:30,stagger:0.1});
+  gsap.from('.bottom-bar',{duration:0.8,opacity:0,y:80,ease:"power3.out"});
 });
+
+// تسجيل الدخول والخروج
+const loginBtn=document.getElementById('loginBtn');
+const logoutBtn=document.getElementById('logoutBtn');
+const loginForm=document.getElementById('loginForm');
+const accountSection=document.getElementById('accountSection');
+const sections=[accountSection,document.getElementById('gradesSection'),document.getElementById('notificationsSection'),document.getElementById('chatSection')];
+
+loginBtn.addEventListener('click', async ()=>{
+  const parent=document.getElementById('parentNumber').value.trim();
+  const code=document.getElementById('studentCode').value.trim();
+  if(!parent||!code){alert("ادخل جميع البيانات"); return;}
+  const student=await fetchStudentData(parent,code);
+  if(!student){alert("لم يتم العثور على البيانات"); return;}
+  loginForm.style.display='none';
+  sections.forEach(s=>s.style.display='none');
+  accountSection.style.display='block';
+  populateAccount(student);
+  populateGrades(student);
+  populateNotifications(student);
+});
+
+logoutBtn.addEventListener('click', ()=>{
+  loginForm.style.display='flex';
+  sections.forEach(s=>s.style.display='none');
+});
+
+// تنقل بين الأقسام
+document.querySelectorAll('.bottom-bar button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.bottom-bar button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const target=btn.getAttribute('data-target');
+    sections.forEach(s=>s.style.display=(s.id===target)?'block':'none');
+  });
+});
+
+// الدوال لتعبئة الجداول
+function populateAccount(student){
+  const genTable=document.getElementById('generalInfoTable');
+  genTable.innerHTML='';
+  const generalFields=["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","الملاحظات","كود الطالب","رقم الطالب","ملاحظات كرت","ملاحظات النتيجة","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"];
+  generalFields.forEach(f=>{
+    if(student[f]!==undefined){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
+      genTable.appendChild(tr);
+    }
+  });
+  const finTable=document.getElementById('financialTable');
+  finTable.innerHTML='';
+  const financeFields=["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
+  financeFields.forEach(f=>{
+    if(student[f]!==undefined){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
+      finTable.appendChild(tr);
+    }
+  });
+}
+
+function populateGrades(student){
+  const gradesTable=document.getElementById('gradesTable');
+  gradesTable.innerHTML='';
+  const subjects=["الاسلامية","العربي","الانكليزي","الرياضيات","الكيمياء","الفيزياء","الاحياء","الاجتماعيات","حاسوب","رياضة","فنية","السلوك"];
+  subjects.forEach(sub=>{
+    const cols=Object.keys(student).filter(k=>k.includes(sub));
+    if(cols.length){
+      const trHead=document.createElement('tr');
+      cols.forEach(c=>trHead.innerHTML+=`<th>${c}</th>`);
+      gradesTable.appendChild(trHead);
+      const trData=document.createElement('tr');
+      cols.forEach(c=>trData.innerHTML+=`<td>${student[c]}</td>`);
+      gradesTable.appendChild(trData);
+    }
+  });
+  const notesTable=document.getElementById('notesTable');
+  notesTable.innerHTML='';
+  ["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"].forEach(f=>{
+    if(student[f]!==undefined){
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
+      notesTable.appendChild(tr);
+    }
+  });
+}
+
+// التبليغات
+function populateNotifications(student){
+  const notif=document.getElementById('notificationsArea');
+  // إذا كان الصف إدارة يمكنه النشر
+  if(student["الصف"]==="الادارة"){
+    notif.innerHTML=`<textarea id="notifInput" placeholder="اكتب تبليغك هنا" style="width:100%;height:60px;margin-bottom:8px;"></textarea>
+    <button id="postNotif">نشر التبليغ</button>
+    <div id="allNotifs"></div>`;
+    document.getElementById('postNotif').addEventListener('click', ()=>{
+      const val=document.getElementById('notifInput').value.trim();
+      if(val==='') return;
+      allNotifications.push(val);
+      document.getElementById('notifInput').value='';
+      renderAllNotifs();
+    });
+  } else {
+    renderAllNotifs();
+  }
+}
+function renderAllNotifs(){
+  const container=document.getElementById('allNotifs')||document.getElementById('notificationsArea');
+  container.innerHTML='';
+  allNotifications.forEach(n=>{
+    const div=document.createElement('div');
+    div.style.padding='8px';
+    div.style.background='rgba(78,84,200,0.1)';
+    div.style.margin='4px 0';
+    div.style.borderRadius='8px';
+    div.textContent=n;
+    container.appendChild(div);
+  });
+}
+
+// قاعدة بيانات وهمية مؤقتاً حتى يتم ربط Google Sheets
+let allNotifications=[];
+async function fetchStudentData(parent,code){
+  if(typeof STUDENTS_DATA==='undefined') return null;
+  return STUDENTS_DATA.find(s=>{
+    return (s["رقم ولي الامر"]==parent||s["parent"]==parent) && (s["كود الطالب"]==code||s["id"]==code);
+  });
+}
 </script>
 
 </body>
