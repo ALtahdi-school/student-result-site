@@ -3,356 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام استعلام عن الطالب</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<title>ثانوية التحدي</title>
+<link rel="stylesheet" href="style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<style>
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  margin:0;
-  padding:0;
-  background:linear-gradient(to bottom,#e0f0ff,#ffffff);
-  overflow-x:hidden;
-}
-header{
-  background:#4e54c8;
-  color:#fff;
-  text-align:center;
-  padding:25px 10px;
-  font-size:24px;
-  font-weight:bold;
-}
-header span{
-  display:block;
-  font-size:16px;
-  font-weight:normal;
-  margin-top:5px;
-  opacity:0.8;
-}
-.container{
-  max-width:1200px;
-  margin:0 auto;
-  padding:15px;
-}
-.input-group{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:20px 0;
-}
-.input-group input{
-  flex:0 0 160px;
-  padding:10px;
-  font-size:14px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-.input-group input:focus{
-  outline:none;
-  border-color:#4e54c8;
-  box-shadow:0 0 8px rgba(78,84,200,0.3);
-}
-button{
-  padding:10px 25px;
-  font-size:14px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:700;
-  transition:all 0.3s ease;
-}
-button:hover{
-  transform:scale(1.05);
-}
-#loginBtn{
-  background:linear-gradient(90deg,#4e54c8,#8f94fb);
-  color:#fff;
-}
-#logoutBtn{
-  background:#ff4e50;
-  color:#fff;
-}
-#forgotBtn{
-  background:#ffc107;
-  color:#000;
-}
-.section{
-  background:#fff;
-  border-radius:12px;
-  padding:15px;
-  margin-bottom:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  display:none;
-}
-.section h3{
-  text-align:center;
-  margin-bottom:10px;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:6px 4px;
-  border:1px solid #ddd;
-  word-wrap:break-word;
-  text-align:right;
-}
-tr:hover{
-  background-color:rgba(78,84,200,0.1);
-}
-
-/* البار السفلي */
-.bottom-bar{
-  display: none; /* مخفي افتراضياً */
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  background: linear-gradient(90deg,#4e54c8,#8f94fb);
-  padding: 10px 0;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
-  z-index: 1000;
-}
-.bottom-bar button{
-  flex:1;
-  margin:0 5px;
-  padding:10px 0;
-  border:none;
-  border-radius:15px;
-  background:rgba(255,255,255,0.2);
-  color:#fff;
-  font-weight:700;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-}
-.bottom-bar button.active,
-.bottom-bar button:hover{
-  background:rgba(255,255,255,0.35);
-  transform:translateY(-3px);
-  box-shadow:0 4px 12px rgba(0,0,0,0.2);
-}
-.bottom-bar button::after{
-  content:'';
-  position:absolute;
-  width:100%;
-  height:3px;
-  bottom:0;
-  left:0;
-  background:#ff7e5f;
-  transform:scaleX(0);
-  transform-origin:right;
-  transition:transform 0.3s ease;
-}
-.bottom-bar button.active::after,
-.bottom-bar button:hover::after{
-  transform:scaleX(1);
-  transform-origin:left;
-}
-</style>
+<script defer src="main.js"></script>
 </head>
 <body>
-
-<header>
-🎓 ثانوية التحدي الأهلية
-<span>العام الدراسي 2025-2026</span>
-</header>
-
-<div class="input-group" id="loginForm">
-  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
-  <input id="studentCode" placeholder="أدخل كود الطالب">
-  <button id="loginBtn">تسجيل الدخول</button>
-  <button id="forgotBtn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
-</div>
-
-<div class="container">
-  <!-- الحساب -->
-  <div class="section" id="accountSection">
-    <button id="logoutBtn">تسجيل الخروج</button>
-    <h3>المعلومات العامة</h3>
-    <table id="generalInfoTable"></table>
-    <h3>المعلومات المالية</h3>
-    <table id="financialTable"></table>
+  <!-- الصفحة الرئيسية -->
+  <div id="loginPage" class="page">
+    <h1>ثانوية التحدي</h1>
+    <div class="loginForm">
+      <input type="text" id="parentNumber" placeholder="رقم ولي الامر">
+      <input type="text" id="studentCode" placeholder="كود الطالب">
+      <button id="loginBtn">تسجيل الدخول</button>
+      <button id="forgotBtn">نسيت الكود</button>
+    </div>
   </div>
 
-  <!-- الدرجات -->
-  <div class="section" id="gradesSection">
-    <h3>الدرجات التفصيلية</h3>
-    <table id="gradesTable"></table>
-    <h3>الملاحظات والغياب</h3>
-    <table id="notesTable"></table>
+  <!-- الصفحة بعد تسجيل الدخول -->
+  <div id="mainPage" class="page hidden">
+    <header>
+      <button id="logoutBtn">تسجيل الخروج</button>
+      <button id="saveBtn">حفظ التعديلات</button>
+    </header>
+
+    <!-- البار السفلي -->
+    <div id="bottomBar">
+      <section id="accountSection">
+        <h2>معلومات الطالب</h2>
+        <table id="generalInfoTable"></table>
+      </section>
+      <section id="financialSection">
+        <h2>المعلومات المالية</h2>
+        <table id="financialTable"></table>
+      </section>
+      <section id="gradesSection">
+        <h2>الدرجات</h2>
+        <table id="gradesTable"></table>
+      </section>
+      <section id="notificationsSection">
+        <h2>التبليغات</h2>
+        <div id="notificationsArea"></div>
+      </section>
+      <section id="chatSection">
+        <h2>الدردشة</h2>
+        <div id="chatArea"></div>
+        <input type="text" id="chatInput" placeholder="اكتب رسالتك هنا">
+        <button id="sendChat">ارسال</button>
+      </section>
+    </div>
   </div>
 
-  <!-- التبليغات -->
-  <div class="section" id="notificationsSection">
-    <h3>التبليغات</h3>
-    <div id="notificationsArea">لا توجد تبليغات حتى الآن.</div>
-  </div>
-
-  <!-- الدردشة -->
-  <div class="section" id="chatSection">
-    <h3>الدردشة مع طلاب صفك</h3>
-    <div id="chatArea">في حالة الصيانة، يرجى الانتظار لحين اكتمالها.</div>
-  </div>
-</div>
-
-<!-- البار السفلي -->
-<div class="bottom-bar">
-  <button class="active" data-target="accountSection">الحساب</button>
-  <button data-target="gradesSection">الدرجات</button>
-  <button data-target="notificationsSection">التبليغات</button>
-  <button data-target="chatSection">الدردشة</button>
-</div>
-
-<script src="data.js"></script>
-<script>
-// GSAP Animation
-window.addEventListener('DOMContentLoaded', ()=>{
-  gsap.from('.input-group input, #loginBtn, #forgotBtn',{duration:0.8,opacity:0,y:30,stagger:0.1});
-  gsap.from('.bottom-bar',{duration:0.8,opacity:0,y:80,ease:"power3.out"});
-});
-
-// تسجيل الدخول والخروج
-const loginBtn=document.getElementById('loginBtn');
-const logoutBtn=document.getElementById('logoutBtn');
-const loginForm=document.getElementById('loginForm');
-const accountSection=document.getElementById('accountSection');
-const sections=[accountSection,document.getElementById('gradesSection'),document.getElementById('notificationsSection'),document.getElementById('chatSection')];
-
-loginBtn.addEventListener('click', async ()=>{
-  const parent=document.getElementById('parentNumber').value.trim();
-  const code=document.getElementById('studentCode').value.trim();
-  if(!parent||!code){alert("ادخل جميع البيانات"); return;}
-  const student=await fetchStudentData(parent,code);
-  if(!student){alert("لم يتم العثور على البيانات"); return;}
-  
-  loginForm.style.display='none';
-  sections.forEach(s=>s.style.display='none');
-  accountSection.style.display='block';
-  
-  // إظهار البار السفلي بعد تسجيل الدخول
-  document.querySelector('.bottom-bar').style.display = 'flex';
-
-  populateAccount(student);
-  populateGrades(student);
-  populateNotifications(student);
-});
-
-// تسجيل الخروج
-logoutBtn.addEventListener('click', ()=>{
-  loginForm.style.display='flex';
-  sections.forEach(s=>s.style.display='none');
-  document.querySelector('.bottom-bar').style.display = 'none';
-});
-
-// تنقل بين الأقسام
-document.querySelectorAll('.bottom-bar button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.bottom-bar button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const target=btn.getAttribute('data-target');
-    sections.forEach(s=>s.style.display=(s.id===target)?'block':'none');
-  });
-});
-
-// دوال لتعبئة الحساب والدرجات والتبليغات
-function populateAccount(student){
-  const genTable=document.getElementById('generalInfoTable');
-  genTable.innerHTML='';
-  const generalFields=["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","الملاحظات","كود الطالب","رقم الطالب","ملاحظات كرت","ملاحظات النتيجة","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"];
-  generalFields.forEach(f=>{
-    if(student[f]!==undefined){
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
-      genTable.appendChild(tr);
-    }
-  });
-  const finTable=document.getElementById('financialTable');
-  finTable.innerHTML='';
-  const financeFields=["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
-  financeFields.forEach(f=>{
-    if(student[f]!==undefined){
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
-      finTable.appendChild(tr);
-    }
-  });
-}
-
-function populateGrades(student){
-  const gradesTable=document.getElementById('gradesTable');
-  gradesTable.innerHTML='';
-  const subjects=["الاسلامية","العربي","الانكليزي","الرياضيات","الكيمياء","الفيزياء","الاحياء","الاجتماعيات","الحاسوب","رياضة","فنية","السلوك"];
-  subjects.forEach(sub=>{
-    const cols=Object.keys(student).filter(k=>k.includes(sub));
-    if(cols.length){
-      const trHead=document.createElement('tr');
-      cols.forEach(c=>trHead.innerHTML+=`<th>${c}</th>`);
-      gradesTable.appendChild(trHead);
-      const trData=document.createElement('tr');
-      cols.forEach(c=>trData.innerHTML+=`<td>${student[c]}</td>`);
-      gradesTable.appendChild(trData);
-    }
-  });
-  const notesTable=document.getElementById('notesTable');
-  notesTable.innerHTML='';
-  ["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"].forEach(f=>{
-    if(student[f]!==undefined){
-      const tr=document.createElement('tr');
-      tr.innerHTML=`<th>${f}</th><td>${student[f]}</td>`;
-      notesTable.appendChild(tr);
-    }
-  });
-}
-
-function populateNotifications(student){
-  const notif=document.getElementById('notificationsArea');
-  if(student["الصف"]==="الادارة"){
-    notif.innerHTML=`<textarea id="notifInput" placeholder="اكتب تبليغك هنا" style="width:100%;height:60px;margin-bottom:8px;"></textarea>
-    <button id="postNotif">نشر التبليغ</button>
-    <div id="allNotifs"></div>`;
-    document.getElementById('postNotif').addEventListener('click', ()=>{
-      const val=document.getElementById('notifInput').value.trim();
-      if(val==='') return;
-      allNotifications.push(val);
-      document.getElementById('notifInput').value='';
-      renderAllNotifs();
-    });
-  } else {
-    renderAllNotifs();
-  }
-}
-function renderAllNotifs(){
-  const container=document.getElementById('allNotifs')||document.getElementById('notificationsArea');
-  container.innerHTML='';
-  allNotifications.forEach(n=>{
-    const div=document.createElement('div');
-    div.style.padding='8px';
-    div.style.background='rgba(78,84,200,0.1)';
-    div.style.margin='4px 0';
-    div.style.borderRadius='8px';
-    div.textContent=n;
-    container.appendChild(div);
-  });
-}
-
-// قاعدة بيانات وهمية مؤقتاً حتى يتم ربط Google Sheets
-let allNotifications=[];
-
-async function fetchStudentData(parent,code){
-  if(typeof STUDENTS_DATA==='undefined') return null;
-  return STUDENTS_DATA.find(s=>{
-    return (s["رقم ولي الامر"]==parent||s["parent"]==parent) && (s["كود الطالب"]==code||s["id"]==code);
-  });
-}
-</script>
-
+  <footer>
+    <div class="contact">
+      <p>تواصل معنا إذا كنت تواجه مشاكل</p>
+      <a href="https://wsend.co/9647851521585" target="_blank">واتساب الدعم</a>
+    </div>
+  </footer>
 </body>
 </html>
