@@ -1,104 +1,81 @@
-const SHEET_API_URL = "ضع رابط Web App هنا";
+// رابط الـ API بعد نشر Google Apps Script
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxpge4rpbNb-dzD8xGsRLJXg0WHsELwzPNvJzwtlXhZ7o13L8QWIrlw89dyyP0xjq31/exec";
 
-let STUDENTS_DATA=[];
-let currentStudent=null;
-let refreshIntervalId;
-let chatHistory=[];
+// مصفوفة لتخزين البيانات بعد التحويل
+let STUDENTS_DATA = [];
 
-// parse CSV
-function parseCSV(text){
-  const rows=text.split("\n").map(r=>r.split(","));
-  return rows;
-}
-
-// fetch data
-async function fetchStudentsData(){
-  try{
+// تحميل البيانات من Google Sheet
+async function fetchStudentsData() {
+  try {
     const resp = await fetch(SHEET_API_URL);
-    const text = await resp.text();
-    const rows=parseCSV(text).filter(r=>r.some(c=>c.trim()!=""));
-    const header = rows[0];
-    STUDENTS_DATA = rows.slice(1).map(r=>{
-      let obj={};
-      header.forEach((h,i)=>obj[h.trim()]=r[i]?r[i].trim():"");
+    if (!resp.ok) throw new Error("فشل تحميل البيانات");
+    const data = await resp.json(); // تأكد أن الـ Apps Script يعيد JSON
+    STUDENTS_DATA = data.map(row => {
+      let obj = {};
+      Object.keys(row).forEach(k => obj[k.trim()] = row[k] ? row[k].trim() : "");
       return obj;
     });
-  }catch(e){console.error(e);}
+    console.log("تم تحميل البيانات بنجاح:", STUDENTS_DATA.length, "طالب");
+  } catch (err) {
+    console.error("حدث خطأ أثناء تحميل البيانات:", err);
+  }
 }
 
-// login
-document.getElementById("loginBtn").addEventListener("click", async ()=>{
-  const parent = document.getElementById("parentNumber").value.trim();
-  const code = document.getElementById("studentCode").value.trim();
-  await fetchStudentsData();
-  currentStudent = STUDENTS_DATA.find(s=>s["رقم ولي الامر"]==parent && s["كود الطالب"]==code);
-  if(!currentStudent){
-    alert("كود خاطئ");
-    updateStatus(parent, code,"خطاء");
+// دالة البحث عن الطالب
+function findStudent(parent, code) {
+  return STUDENTS_DATA.find(s => 
+    String(s["رقم ولي الامر"] || s["parent"] || "").trim() === parent.trim() &&
+    String(s["كود الطالب"] || s["id"] || "").trim() === code.trim()
+  );
+}
+
+// تسجيل الدخول
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const parent = document.getElementById('parentNumber').value.trim();
+  const code = document.getElementById('studentCode').value.trim();
+
+  if (!parent || !code) {
+    alert("ادخل جميع البيانات");
     return;
   }
-  updateStatus(parent, code,"تم تسجيل الدخول");
-  document.getElementById("loginPage").classList.add("hidden");
-  document.getElementById("mainPage").classList.remove("hidden");
-  startAutoRefresh();
+
+  // تحميل البيانات إذا لم تكن موجودة
+  if (STUDENTS_DATA.length === 0) await fetchStudentsData();
+
+  const student = findStudent(parent, code);
+
+  if (!student) {
+    alert("الرقم أو الكود خاطئ");
+    updateStudentStatus(parent, code, "خطأ");
+    return;
+  }
+
+  // تسجيل الدخول ناجح
+  updateStudentStatus(parent, code, "تم تسجيل الدخول");
+
+  // عرض البيانات
+  document.getElementById('loginForm').style.display = 'none';
+  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+  document.getElementById('accountSection').style.display = 'block';
+  populateAccount(student);
+  populateGrades(student);
+  populateNotifications(student);
+
+  // إظهار البار السفلي
+  document.querySelector('.bottom-bar').style.display = 'flex';
 });
 
-// logout
-document.getElementById("logoutBtn").addEventListener("click", ()=>{
-  document.getElementById("loginPage").classList.remove("hidden");
-  document.getElementById("mainPage").classList.add("hidden");
-  clearInterval(refreshIntervalId);
-  updateStatus(currentStudent["رقم ولي الامر"], currentStudent["كود الطالب"],"تم تسجيل الخروج");
-});
-
-// save edits
-document.getElementById("saveBtn").addEventListener("click", ()=>{
-  const editableFields=["رقم الطالب","رقم الخط","رقم ولي الامر","المدرسة القادم منها","العنوان","اسم الام"];
-  editableFields.forEach(f=>{
-    const el=document.querySelector(`[data-field="${f}"]`);
-    if(el) currentStudent[f]=el.value;
-  });
-  saveToSheet(currentStudent);
-});
-
-// auto refresh
-function startAutoRefresh(){
-  refreshIntervalId=setInterval(()=>{
-    populateAccount();
-    populateFinancial();
-    populateGrades();
-    populateNotifications();
-    populateChat();
-  },1000);
+// تحديث الحالة في العمود "الحالة" عبر API
+async function updateStudentStatus(parent, code, status) {
+  try {
+    await fetch(SHEET_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ parent, code, status }),
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (err) {
+    console.error("فشل تحديث الحالة:", err);
+  }
 }
 
-// populate account
-function populateAccount(){
-  const table=document.getElementById("generalInfoTable");
-  table.innerHTML="";
-  const fields=["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","الملاحظات",
-                "رقم الطالب","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"];
-  fields.forEach(f=>{
-    const tr=document.createElement("tr");
-    const val=currentStudent[f] || "";
-    if(["رقم الطالب","رقم الخط","رقم ولي الامر","المدرسة القادم منها","العنوان","اسم الام"].includes(f)){
-      tr.innerHTML=`<th>${f}</th><td><input data-field="${f}" value="${val}"></td>`;
-    }else{
-      tr.innerHTML=`<th>${f}</th><td>${val}</td>`;
-    }
-    table.appendChild(tr);
-  });
-}
-
-// باقي populateFinancial, populateGrades, populateNotifications, populateChat
-// يمكن استخدام نفس الكود السابق لكل الحقول الكبيرة مثل الدرجات والتبليغات والدردشة
-
-// update status in sheet
-function updateStatus(parent, code, status){
-  // هنا يمكن إضافة call لـ Apps Script لتحديث العمود الحالة
-}
-
-// save edited data
-function saveToSheet(student){
-  // call Apps Script لتحديث بيانات الطالب
-}
+// باقي دوال عرض الحساب والدرجات والتبليغات كما هي
