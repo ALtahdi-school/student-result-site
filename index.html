@@ -3,189 +3,206 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ثانوية التحدي</title>
+<title>لوحة تحكم - ثانوية التحدي الأهلية</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  margin:0;
-  padding:0;
-  background:linear-gradient(to bottom,#ffffff,#87cefa,#9370db);
-  overflow-x:hidden;
-}
-header{
-  background:linear-gradient(90deg,#87cefa,#9370db);
-  color:#fff;
-  text-align:center;
-  padding:25px 10px;
-  font-size:28px;
-  font-weight:bold;
-  box-shadow:0 4px 10px rgba(0,0,0,0.2);
-}
-.container{
-  max-width:1200px;
-  margin:0 auto;
-  padding:15px;
-}
-.input-group{
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:20px 0;
-}
-.input-group input{
-  flex:0 0 160px;
-  padding:10px;
-  font-size:14px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-.input-group input:focus{
-  outline:none;
-  border-color:#4e54c8;
-  box-shadow:0 0 8px rgba(78,84,200,0.3);
-}
-button{
-  padding:10px 20px;
-  font-size:14px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:700;
-  transition:all 0.3s ease;
-}
-button:hover{
-  transform:scale(1.05);
-}
-#loginBtn{
-  background:linear-gradient(90deg,#4e54c8,#8f94fb);
-  color:#fff;
-}
-#forgotBtn{
-  background:#ffc107;
-  color:#000;
-}
-.section{
-  background:#fff;
-  border-radius:12px;
-  padding:10px;
-  margin-bottom:20px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.1);
-  display:none;
-  max-height:500px;
-  overflow:auto;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  padding:4px 2px;
-  border:1px solid #ddd;
-  word-wrap:break-word;
-  text-align:right;
-  font-size:12px;
-}
-tr:hover{
-  background-color:rgba(78,84,200,0.1);
-}
-#bottomBar{
-  position:fixed;
-  bottom:0;
-  left:0;
-  width:100%;
-  display:flex;
-  background:linear-gradient(90deg,#ffffff,#87cefa,#9370db);
-  padding:10px 0;
-  box-shadow:0 -4px 12px rgba(0,0,0,0.2);
-  z-index:1000;
-}
-#bottomBar div{
-  flex:1;
-  margin:0 5px;
-  background:rgba(255,255,255,0.2);
-  border-radius:10px;
-  padding:5px;
-  overflow:auto;
-}
-#bottomBar div h4{
-  text-align:center;
-  margin:5px 0;
-  font-size:14px;
-}
-textarea{
-  width:100%;
-  height:60px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  padding:5px;
-  resize:none;
-}
-a.whatsapp{
-  display:block;
-  text-align:center;
-  margin-top:15px;
-  color:#fff;
-  font-weight:bold;
-  text-decoration:none;
-}
+  body {
+    margin:0;
+    font-family:'Cairo', sans-serif;
+    direction: rtl;
+    background: linear-gradient(to bottom, #e0f0ff, #f9f9ff);
+  }
+
+  /* صفحة تسجيل الدخول */
+  #loginPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+    transition: all 0.5s ease;
+  }
+  #loginPage h1 {
+    color:#007bff;
+    margin-bottom:20px;
+  }
+  .login-input {
+    margin:8px 0;
+    padding:10px 12px;
+    width:250px;
+    border-radius:8px;
+    border:1px solid #ccc;
+    font-size:14px;
+  }
+  .login-btn {
+    margin-top:12px;
+    padding:10px 20px;
+    width:270px;
+    background:linear-gradient(45deg,#007bff,#6f42c1);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:16px;
+    transition:all 0.3s ease;
+  }
+  .login-btn:hover {
+    transform: scale(1.05);
+  }
+  .login-footer {
+    margin-top:20px;
+    text-align:center;
+  }
+  .login-footer a {
+    display:inline-block;
+    margin:5px 10px;
+    color:#007bff;
+    text-decoration:none;
+    font-weight:bold;
+  }
+
+  /* واجهة المستخدم بعد تسجيل الدخول */
+  #dashboard {
+    display:none;
+    min-height:100vh;
+    padding-bottom:70px;
+    transition:all 0.5s ease;
+  }
+  .page {
+    display:none;
+    padding:20px;
+    animation:fadeIn 0.5s ease;
+  }
+  .page.active {
+    display:block;
+  }
+
+  @keyframes fadeIn {
+    from {opacity:0; transform:translateY(10px);}
+    to {opacity:1; transform:translateY(0);}
+  }
+
+  /* البار السفلي */
+  #bottomBar {
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:60px;
+    background:linear-gradient(45deg,#007bff,#6f42c1);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
+    box-shadow:0 -3px 10px rgba(0,0,0,0.2);
+    transition:all 0.3s ease;
+  }
+  #bottomBar button {
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:14px;
+    cursor:pointer;
+    transition:all 0.3s ease;
+  }
+  #bottomBar button.activeTab {
+    transform:scale(1.2);
+    font-weight:bold;
+    text-shadow:0 0 5px #fff;
+  }
+
+  /* الحوكمة */
+  #governance {
+    text-align:center;
+    font-size:12px;
+    color:#555;
+    margin-top:20px;
+  }
 </style>
 </head>
 <body>
 
-<header>
-🎓 ثانوية التحدي الأهلية
-<span style="font-size:16px; display:block; font-weight:normal;">العام الدراسي 2025-2026</span>
-</header>
+<!-- صفحة تسجيل الدخول -->
+<div id="loginPage">
+  <h1>ثانوية التحدي الأهلية</h1>
+  <input id="parentNumber" class="login-input" placeholder="رقم ولي الأمر">
+  <input id="studentCode" class="login-input" placeholder="كود الطالب">
+  <button class="login-btn" onclick="login()">تسجيل الدخول</button>
 
-<div class="input-group" id="loginForm">
-  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
-  <input id="studentCode" placeholder="أدخل كود الطالب">
-  <button id="loginBtn">تسجيل الدخول</button>
-  <button id="forgotBtn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
+  <div class="login-footer">
+    <a href="forgot.html">نسيت الكود؟</a> |
+    <a href="https://wa.me/96407851521585?text=مرحبا.%20🌟%20في%20حاجة%20لمساعدة%20لحل%20إشكال%20في%20المنصة.%20💬">الدعم السريع</a>
+  </div>
+  <div id="governance">قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية</div>
 </div>
 
-<div class="container">
-  <div class="section" id="accountSection">
-    <button id="logoutBtn">تسجيل الخروج</button>
-    <button id="saveBtn">حفظ التعديلات</button>
-    <h3>المعلومات العامة</h3>
-    <table id="generalInfoTable"></table>
-    <h3>المعلومات المالية</h3>
-    <table id="financialTable"></table>
+<!-- لوحة التحكم بعد تسجيل الدخول -->
+<div id="dashboard">
+  <div id="accountPage" class="page active">
+    <h2>الحساب</h2>
+    <p>هنا بيانات الحساب ستظهر بعد ربطها بالملف</p>
+    <button onclick="logout()">تسجيل الخروج</button>
   </div>
-  <div class="section" id="gradesSection">
-    <h3>الدرجات التفصيلية</h3>
-    <table id="gradesTable"></table>
-    <h3>الملاحظات والغياب</h3>
-    <table id="notesTable"></table>
+
+  <div id="chatPage" class="page">
+    <h2>الدردشة</h2>
+    <p>الدردشة معطلة مؤقتًا لأغراض الصيانة.</p>
   </div>
-  <div class="section" id="alertsSection">
-    <h3>التبليغات</h3>
-    <div id="notificationsArea">لا توجد تبليغات حتى الآن.</div>
+
+  <div id="notificationsPage" class="page">
+    <h2>التبليغات</h2>
+    <p>يمكن فقط للطلاب في صف الإدارة إضافة تبليغ.</p>
   </div>
-  <div class="section" id="chatSection">
-    <h3>الدردشة</h3>
-    <div id="chatArea">لا توجد رسائل حتى الآن.</div>
-    <textarea id="chatInput" placeholder="اكتب رسالتك هنا"></textarea>
-    <button id="sendChatBtn">إرسال</button>
+
+  <div id="gradesPage" class="page">
+    <h2>الدرجات</h2>
+    <p>ستظهر الدرجات هنا بعد ربطها بالملف.</p>
   </div>
-  <div class="section" id="contactSection">
-    <h3>تواصل معنا</h3>
-    <a class="whatsapp" href="https://wsend.co/9647851521585" target="_blank">رابط الواتساب</a>
+
+  <!-- البار السفلي -->
+  <div id="bottomBar">
+    <button class="activeTab" onclick="switchPage('accountPage', this)">الحساب</button>
+    <button onclick="switchPage('chatPage', this)">الدردشة</button>
+    <button onclick="switchPage('notificationsPage', this)">التبليغات</button>
+    <button onclick="switchPage('gradesPage', this)">الدرجات</button>
   </div>
 </div>
 
-<div id="bottomBar">
-  <div id="accountBar"><h4>الحساب</h4></div>
-  <div id="financeBar"><h4>المعلومات المالية</h4></div>
-  <div id="gradesBar"><h4>الدرجات</h4></div>
-  <div id="alertsBar"><h4>التبليغات والدردشة</h4></div>
-</div>
+<script>
+function login(){
+  const parent = document.getElementById("parentNumber").value.trim();
+  const code = document.getElementById("studentCode").value.trim();
+  if(!parent || !code){
+    alert("الرجاء إدخال رقم ولي الأمر وكود الطالب");
+    return;
+  }
+  // حفظ بيانات الجلسة
+  sessionStorage.setItem("parentNumber", parent);
+  sessionStorage.setItem("studentCode", code);
 
-<script src="main.js"></script>
+  // إخفاء صفحة تسجيل الدخول وعرض لوحة التحكم
+  document.getElementById("loginPage").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
+}
+
+function logout(){
+  sessionStorage.clear();
+  document.getElementById("dashboard").style.display = "none";
+  document.getElementById("loginPage").style.display = "flex";
+}
+
+// التنقل بين الصفحات
+function switchPage(pageId, btn){
+  // إخفاء كل الصفحات
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+
+  // تفعيل الزر المحدد في البار السفلي
+  document.querySelectorAll("#bottomBar button").forEach(b=>b.classList.remove("activeTab"));
+  btn.classList.add("activeTab");
+}
+</script>
+
 </body>
 </html>
