@@ -1,50 +1,17 @@
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom right, #e0e7ff, #c7d2fe, #a5b4fc);
-  color:#111;
-}
+body { font-family: Arial, sans-serif; background: linear-gradient(135deg,#4e54c8,#8f94fb); color:#fff; margin:0; padding:0; }
+.page { display:none; padding:20px; }
+.page.active { display:block; animation:fadeIn 0.6s; }
+.login-box { max-width:400px; margin:50px auto; padding:30px; background:rgba(0,0,0,0.4); border-radius:15px; text-align:center; }
+.login-box input { width:90%; margin:10px 0; padding:10px; border:none; border-radius:8px; }
+.login-box button { width:45%; margin:10px 2%; padding:10px; border:none; border-radius:8px; background:#6a11cb; color:#fff; cursor:pointer; transition:0.3s; }
+.login-box button:hover { background:#2575fc; }
+.support-btn { display:block; margin:15px 0; color:#fff; text-decoration:none; font-weight:bold; }
+footer { margin-top:20px; font-size:12px; color:#ccc; }
 
-.page{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  height:100vh;
-}
+.bottom-bar { position:fixed; bottom:0; width:100%; display:flex; justify-content:space-around; background:linear-gradient(to right,#4e54c8,#8f94fb); padding:10px 0; border-top-left-radius:15px; border-top-right-radius:15px; }
+.bottom-bar button { background:transparent; border:none; color:#fff; font-size:16px; cursor:pointer; transition:0.3s; }
+.bottom-bar button:hover { transform:scale(1.2); }
 
-.hidden{ display:none; }
+.logout-btn { padding:10px 20px; background:#ff416c; border:none; border-radius:8px; color:#fff; cursor:pointer; margin-top:20px; }
 
-h1{ font-size:2rem; margin-bottom:1rem; }
-
-.loginForm{
-  display:flex; flex-direction:column; gap:0.5rem;
-}
-.loginForm input{
-  padding:0.5rem; font-size:1rem; border-radius:6px; border:none; box-shadow:0 0 6px rgba(0,0,0,0.1);
-}
-.loginForm button{
-  padding:0.5rem; font-size:1rem; border:none; border-radius:6px; background:linear-gradient(90deg,#6366f1,#8b5cf6); color:white; cursor:pointer;
-}
-.loginForm button:hover{ opacity:0.9; }
-
-#mainPage header{
-  display:flex; justify-content:flex-end; gap:10px; padding:10px; background:#6366f1; color:white;
-}
-#mainPage header button{
-  border:none; border-radius:6px; padding:6px 12px; cursor:pointer; background:white; color:#6366f1; font-weight:bold;
-}
-#bottomBar{
-  display:flex; flex-direction:column; gap:20px; padding:10px;
-  max-height:80vh; overflow-y:auto; background:white; box-shadow:0 -2px 10px rgba(0,0,0,0.2);
-}
-table{ width:100%; border-collapse:collapse; font-size:0.75rem; }
-th, td{ border:1px solid #ddd; padding:4px; text-align:center; }
-th{ background:linear-gradient(to right,#6366f1,#8b5cf6); color:white; font-size:0.7rem; }
-
-#notificationsArea, #chatArea{ max-height:150px; overflow-y:auto; border:1px solid #ddd; padding:4px; margin-top:4px; }
-#chatInput{ width:80%; padding:4px; }
-#sendChat{ padding:4px; background:#6366f1; color:white; border:none; cursor:pointer; border-radius:4px; }
-
-footer{ padding:10px; text-align:center; background:#8b5cf6; color:white; }
-footer a{ color:white; text-decoration:none; font-weight:bold; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
