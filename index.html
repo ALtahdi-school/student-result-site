@@ -5,12 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة تحكم - ثانوية التحدي الأهلية</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
   body {
     margin:0;
     font-family:'Cairo', sans-serif;
     direction: rtl;
     background: linear-gradient(to bottom, #e0f0ff, #f9f9ff);
+    overflow-x:hidden;
   }
 
   /* صفحة تسجيل الدخول */
@@ -20,7 +22,6 @@
     align-items: center;
     justify-content: center;
     height:100vh;
-    transition: all 0.5s ease;
   }
   #loginPage h1 {
     color:#007bff;
@@ -44,7 +45,6 @@
     border-radius:10px;
     cursor:pointer;
     font-size:16px;
-    transition:all 0.3s ease;
   }
   .login-btn:hover {
     transform: scale(1.05);
@@ -61,25 +61,18 @@
     font-weight:bold;
   }
 
-  /* واجهة المستخدم بعد تسجيل الدخول */
+  /* لوحة التحكم */
   #dashboard {
     display:none;
     min-height:100vh;
     padding-bottom:70px;
-    transition:all 0.5s ease;
   }
   .page {
     display:none;
     padding:20px;
-    animation:fadeIn 0.5s ease;
   }
   .page.active {
     display:block;
-  }
-
-  @keyframes fadeIn {
-    from {opacity:0; transform:translateY(10px);}
-    to {opacity:1; transform:translateY(0);}
   }
 
   /* البار السفلي */
@@ -96,7 +89,6 @@
     border-top-left-radius:15px;
     border-top-right-radius:15px;
     box-shadow:0 -3px 10px rgba(0,0,0,0.2);
-    transition:all 0.3s ease;
   }
   #bottomBar button {
     background:none;
@@ -107,9 +99,9 @@
     transition:all 0.3s ease;
   }
   #bottomBar button.activeTab {
-    transform:scale(1.2);
+    transform:scale(1.3);
     font-weight:bold;
-    text-shadow:0 0 5px #fff;
+    text-shadow:0 0 8px #fff;
   }
 
   /* الحوكمة */
@@ -177,28 +169,39 @@ function login(){
     alert("الرجاء إدخال رقم ولي الأمر وكود الطالب");
     return;
   }
-  // حفظ بيانات الجلسة
   sessionStorage.setItem("parentNumber", parent);
   sessionStorage.setItem("studentCode", code);
 
-  // إخفاء صفحة تسجيل الدخول وعرض لوحة التحكم
-  document.getElementById("loginPage").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
+  // GSAP أنيميشن الانتقال
+  gsap.to("#loginPage", {duration:0.5, y:-50, opacity:0, onComplete:()=>{
+    document.getElementById("loginPage").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    gsap.from("#dashboard", {duration:0.5, opacity:0, y:50});
+  }});
 }
 
 function logout(){
   sessionStorage.clear();
-  document.getElementById("dashboard").style.display = "none";
-  document.getElementById("loginPage").style.display = "flex";
+  gsap.to("#dashboard", {duration:0.5, y:50, opacity:0, onComplete:()=>{
+    document.getElementById("dashboard").style.display="none";
+    document.getElementById("loginPage").style.display="flex";
+    gsap.from("#loginPage", {duration:0.5, opacity:0, y:-50});
+  }});
 }
 
-// التنقل بين الصفحات
 function switchPage(pageId, btn){
-  // إخفاء كل الصفحات
-  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-  document.getElementById(pageId).classList.add("active");
+  // GSAP أنيميشن للانتقال بين الصفحات
+  document.querySelectorAll(".page").forEach(p=>{
+    if(p.id!==pageId){
+      gsap.to(p,{duration:0.3, opacity:0, x:50, onComplete:()=>p.classList.remove("active")});
+    }
+  });
 
-  // تفعيل الزر المحدد في البار السفلي
+  const page = document.getElementById(pageId);
+  page.classList.add("active");
+  gsap.fromTo(page, {opacity:0, x:-50}, {duration:0.5, opacity:1, x:0});
+
+  // البار السفلي
   document.querySelectorAll("#bottomBar button").forEach(b=>b.classList.remove("activeTab"));
   btn.classList.add("activeTab");
 }
