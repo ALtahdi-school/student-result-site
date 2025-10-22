@@ -3,114 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الحساب - ثانوية التحدي</title>
-<link rel="stylesheet" href="style.css">
+<title>تسجيل الدخول - ثانوية التحدي الأهلية</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-body { font-family:'Cairo',sans-serif; direction:rtl; margin:0; background: linear-gradient(180deg,#f7fbff,#ffffff);}
-.app { max-width:980px; margin:24px auto 110px; padding:18px;}
-.app-header { text-align:center; margin-bottom:14px;}
-.app-header h1{margin:0; background:linear-gradient(90deg,#4f46e5,#0ea5e9); -webkit-background-clip:text; color:transparent; font-weight:800;}
-.app-header p { margin:8px 0 0 0; color:#6b7280; font-size:13px;}
-.card{background:#fff; border-radius:14px; padding:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:14px; transform: translateY(18px); opacity:0; transition: transform .6s, opacity .6s;}
-.section { margin-bottom:20px; }
-.section h3 { text-align:center; background:#4f46e5; color:#fff; padding:10px; border-radius:10px; margin-bottom:10px;}
-.field { margin-bottom:8px; font-size:14px;}
-.field strong { color:#1e3a8a;}
-.btn-logout {
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border:none;
-  border-radius:12px;
-  background: linear-gradient(90deg,#ef4444,#f87171);
-  color:#fff;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 40px;
+  opacity: 0;
+}
+
+header h1 {
+  font-size: 36px;
+  margin: 0;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+}
+
+.login-container {
+  background: rgba(255,255,255,0.1);
+  padding: 35px 30px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+  backdrop-filter: blur(15px);
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.login-container input {
+  width: 100%;
+  padding: 15px 12px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
   transition: all 0.3s ease;
 }
-.btn-logout:hover {
-  transform: translateY(-2px);
-  box-shadow:0 6px 15px rgba(239,68,68,0.4);
+
+.login-container input:focus {
+  outline: none;
+  box-shadow: 0 0 12px rgba(255,255,255,0.7);
+  transform: scale(1.02);
 }
-.bottom-nav {
-  position: fixed;
-  bottom:0; left:0; right:0;
-  height:60px;
-  background:#fff;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  box-shadow:0 -4px 15px rgba(0,0,0,0.08);
+
+.login-container button {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #fff;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
 }
-.bottom-nav a { text-decoration:none; color:#6b7280; font-size:12px; display:flex; flex-direction:column; align-items:center; }
-.bottom-nav a.active { color:#4f46e5; }
-.bottom-nav a span { margin-top:2px; }
+
+.login-container button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255,255,255,0.6);
+}
+
+#forgotBtn {
+  background: linear-gradient(90deg, #ffb347, #ffcc33);
+  color: #000;
+}
+
+#forgotBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255,255,255,0.6);
+}
+
+#supportBtn {
+  background: linear-gradient(90deg, #25d366, #128c7e);
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  padding: 12px 25px;
+  border-radius: 12px;
+  margin-top: 10px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#supportBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(255,255,255,0.6);
+}
+
+footer {
+  margin-top: 30px;
+  font-size: 12px;
+  text-align: center;
+  opacity: 0.8;
+}
+
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="app-header">
-    <h1>حساب الطالب</h1>
-    <p>عرض البيانات الشخصية والمالية</p>
-  </div>
 
-  <div class="card" id="accountCard">
-    <div id="infoSection" class="section">
-      <h3>معلومات الطالب</h3>
-      <div id="infoFields"></div>
-    </div>
+<header>
+  <h1>🎓 ثانوية التحدي الأهلية</h1>
+</header>
 
-    <div id="financeSection" class="section">
-      <h3>المعلومات المالية</h3>
-      <div id="financeFields"></div>
-    </div>
-
-    <button class="btn-logout" id="logoutBtn">🚪 تسجيل الخروج</button>
-  </div>
+<div class="login-container">
+  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر (بدون الصفر الأول)">
+  <input type="text" id="studentCode" placeholder="كود الطالب">
+  <button id="loginBtn" onclick="loginHandler()">تسجيل الدخول</button>
+  <button id="forgotBtn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
+  <a id="supportBtn" href="https://wa.me/96407851521585?text=مرحبا. 🌟 في حاجة لمساعدة لحل إشكال في المنصة . اريد المساعدة ؟ 💬" target="_blank">الدعم السريع عبر واتساب</a>
 </div>
 
-<nav class="bottom-nav">
-  <a href="account.html" class="active">👤<span>الحساب</span></a>
-  <a href="grades.html">📚<span>الدرجات</span></a>
-  <a href="notifications.html">🔔<span>التبليغات</span></a>
-  <a href="chat.html">💬<span>الدردشة</span></a>
-</nav>
+<footer>
+  قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
+</footer>
 
+<script src="main.js"></script>
 <script>
-function getSession(){ return JSON.parse(sessionStorage.getItem('studentData')||'null'); }
+  // 🎬 أنميشن GSAP عند تحميل الصفحة
+  gsap.from("header", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
+  gsap.to(".login-container", { duration: 1, opacity: 1, scale: 1, ease: "elastic.out(1, 0.5)" });
 
-document.addEventListener('DOMContentLoaded', ()=> {
-  const student = getSession();
-  if(!student){
-    // إعادة توجيه لمرة واحدة فقط
-    window.location.replace('index.html');
-    return;
+  async function loginHandler() {
+    let parent = document.getElementById("parentNumber").value.trim();
+    let code = document.getElementById("studentCode").value.trim();
+    if(parent.startsWith("0")) parent = parent.substring(1);
+
+    // استدعاء دالة تسجيل الدخول من main.js
+    const student = await login(code, parent);
+    if(student) {
+      // أنميشن اختفاء الصفحة الحالية
+      gsap.to(".login-container, header", { duration: 0.5, opacity: 0, y: -50, onComplete: () => {
+        window.location.href = "index.html"; // الانتقال للصفحة الرئيسية
+      }});
+    }
   }
-
-  const infoFieldsContainer = document.getElementById('infoFields');
-  const financeFieldsContainer = document.getElementById('financeFields');
-
-  const infoFields = ["id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط","الملاحظات","كود الطالب","رقم الطالب","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل"];
-  infoFields.forEach(f=>{
-    const val = student[f]||'';
-    infoFieldsContainer.innerHTML += `<div class="field"><strong>${f}:</strong> ${val}</div>`;
-  });
-
-  const financeFields = ["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
-  financeFields.forEach(f=>{
-    const val = student[f]||'';
-    financeFieldsContainer.innerHTML += `<div class="field"><strong>${f}:</strong> ${val}</div>`;
-  });
-
-  gsap.to('#accountCard', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
-
-  document.getElementById('logoutBtn').addEventListener('click', ()=>{
-    sessionStorage.clear();
-    window.location.replace('index.html'); // replace يمنع إعادة تحميل مستمرة
-  });
-});
 </script>
+
 </body>
 </html>
