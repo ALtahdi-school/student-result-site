@@ -1,157 +1,149 @@
-const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxpge4rpbNb-dzD8xGsRLJXg0WHsELwzPNvJzwtlXhZ7o13L8QWIrlw89dyyP0xjq31/exec";
+// -------------------- إعداد رابط Google Apps Script --------------------
+const SHEET_API_URL = "https://script.google.com/macros/s/AKfycby4oH2SrV2-8PqYZFcoJnZM9_AZ0X-l3Ol_urEsty-PmJ9RLrCKQdYaXjd34hTYah-cOA/exec";
 
-let currentStudent = null;
-let allStudents = [];
-let allNotifications = [];
+// -------------------- تسجيل الدخول --------------------
+async function login(studentCode, parentNumber) {
+  if(!studentCode || !parentNumber){
+    alert("الرجاء إدخال رقم ولي الأمر وكود الطالب.");
+    return null;
+  }
+  
+  const students = await fetchData();
+  const student = students.find(s => s["كود الطالب"] === studentCode && s["رقم ولي الامر"] === parentNumber);
+  if(!student){
+    alert("بيانات خاطئة أو غير موجودة.");
+    return null;
+  }
 
-// GSAP Animation عند التحميل
-window.addEventListener('DOMContentLoaded', ()=> {
-  gsap.from('.input-group input, #loginBtn, #forgotBtn', {duration:0.8,opacity:0,y:30,stagger:0.1});
-  gsap.from('header',{duration:0.8,opacity:0,y:-30});
-});
-
-// تسجيل الدخول
-document.getElementById('loginBtn').addEventListener('click', async ()=>{
-  const parent = document.getElementById('parentNumber').value.trim();
-  const code = document.getElementById('studentCode').value.trim();
-  if(!parent || !code){ alert("ادخل جميع البيانات"); return;}
-  const res = await fetch(SHEET_API_URL);
-  const data = await res.json();
-  allStudents = data;
-  currentStudent = allStudents.find(s=> s["رقم ولي الامر"]==parent && s["كود الطالب"]==code);
-  if(!currentStudent){ alert("البيانات غير صحيحة"); return;}
-  document.getElementById('loginForm').style.display='none';
-  showAllSections();
-  populateAccount();
-  populateFinance();
-  populateGrades();
-  populateNotifications();
-  populateChat();
-  saveLoginStatus("تم تسجيل الدخول");
-});
-
-// تسجيل الخروج
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
-  currentStudent=null;
-  document.getElementById('loginForm').style.display='flex';
-  hideAllSections();
-  saveLoginStatus("خارج");
-});
-
-// حفظ التعديلات
-document.getElementById('saveBtn').addEventListener('click', ()=>{
-  updateStudentData();
-  alert("تم حفظ التعديلات");
-});
-
-// إرسال رسالة في الدردشة
-document.getElementById('sendChatBtn').addEventListener('click', ()=>{
-  const msg = document.getElementById('chatInput').value.trim();
-  if(!msg) return;
-  addChatMessage(currentStudent["اسم الطالب"],msg);
-  document.getElementById('chatInput').value='';
-});
-
-function showAllSections(){
-  document.querySelectorAll('.section').forEach(s=> s.style.display='block');
-}
-function hideAllSections(){
-  document.querySelectorAll('.section').forEach(s=> s.style.display='none');
+  // حفظ الجلسة
+  localStorage.setItem("student", JSON.stringify(student));
+  await updateStatus(student.id, "دخول"); // تحديث الحالة في Google Sheet
+  return student;
 }
 
-// عرض معلومات الحساب
-function populateAccount(){
-  const table = document.getElementById('generalInfoTable');
-  table.innerHTML='';
-  const editable = ["رقم ولي الامر","رقم الخط","رقم الطالب","المدرسة القادم منها","العنوان","اسم الام"];
-  for(let key in currentStudent){
-    if(editable.includes(key)){
-      table.innerHTML+=`<tr><td>${key}</td><td><input value="${currentStudent[key]}" onchange="currentStudent['${key}']=this.value"></td></tr>`;
-    }else{
-      table.innerHTML+=`<tr><td>${key}</td><td>${currentStudent[key]}</td></tr>`;
+// -------------------- تسجيل الخروج --------------------
+async function logout() {
+  const student = getCurrentStudent();
+  if(student) await updateStatus(student.id, "خروج");
+  localStorage.removeItem("student");
+  window.location.href = "login.html";
+}
+
+// -------------------- جلب بيانات جميع الطلاب --------------------
+async function fetchData() {
+  try {
+    const resp = await fetch(SHEET_API_URL);
+    const json = await resp.json();
+    if(json.status === "success") return json.data;
+    else throw new Error(json.message);
+  } catch(err) {
+    console.error(err);
+    alert("فشل الاتصال بالبيانات.");
+    return [];
+  }
+}
+
+// -------------------- جلب الطالب الحالي --------------------
+function getCurrentStudent() {
+  const student = localStorage.getItem("student");
+  return student ? JSON.parse(student) : null;
+}
+
+// -------------------- تحديث الحالة --------------------
+async function updateStatus(studentId, status) {
+  try {
+    await fetch(SHEET_API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "updateStatus", id: studentId, status }),
+    });
+  } catch(err) {
+    console.error("خطأ في تحديث الحالة:", err);
+  }
+}
+
+// -------------------- تحديث بيانات الطالب --------------------
+async function updateStudentData(studentId, updates) {
+  try {
+    const resp = await fetch(SHEET_API_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "updateStudent", id: studentId, updates }),
+    });
+    const json = await resp.json();
+    return json;
+  } catch(err) {
+    console.error(err);
+    return { status: "error", message: err.message };
+  }
+}
+
+// -------------------- إدارة الدردشة --------------------
+async function addChatMessage(message) {
+  const student = getCurrentStudent();
+  if(!student) return;
+
+  // تحديد عمود دردشة فارغ (1–5)
+  let chatIndex = 0;
+  for(let i=1; i<=5; i++){
+    if(!student["دردشة " + i] || student["دردشة " + i].trim() === ""){
+      chatIndex = i; break;
     }
   }
-}
-
-// عرض المعلومات المالية
-function populateFinance(){
-  const table = document.getElementById('financialTable');
-  table.innerHTML='';
-  const financeFields = ["القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3","القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6","القسط 7","تاريخ 7","القسط 8","تاريخ 8","الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"];
-  financeFields.forEach(f=>{
-    table.innerHTML+=`<tr><td>${f}</td><td>${currentStudent[f]}</td></tr>`;
-  });
-}
-
-// عرض الدرجات
-function populateGrades(){
-  const table = document.getElementById('gradesTable');
-  table.innerHTML='';
-  const gradeFields = Object.keys(currentStudent).filter(k=> k.includes("شهر") || k.includes("فصل") || k.includes("السعي") || k.includes("التقدير") || k.includes("الامتحان النهائي"));
-  gradeFields.forEach(f=>{
-    table.innerHTML+=`<tr><td>${f}</td><td>${currentStudent[f]}</td></tr>`;
-  });
-}
-
-// التبليغات
-function populateNotifications(){
-  const div = document.getElementById('notificationsArea');
-  div.innerHTML='';
-  const notifications = allStudents.filter(s=> s["تبليغات"] && s["الصف"]==currentStudent["الصف"]);
-  if(notifications.length==0){ div.innerHTML="لا توجد تبليغات"; return;}
-  notifications.forEach(n=>{
-    div.innerHTML+=`<div style="border-bottom:1px solid #ccc; margin:5px 0; padding:5px;">${n["تبليغات"]}</div>`;
-  });
-}
-
-// الدردشة
-function populateChat(){
-  const div = document.getElementById('chatArea');
-  div.innerHTML='';
-  const chats = allStudents.filter(s=> s["الصف"]==currentStudent["الصف"]);
-  chats.forEach(c=>{
-    for(let i=1;i<=5;i++){
-      const msg = c[`دردشة ${i}`];
-      if(msg) div.innerHTML+=`<div><small>${c["اسم الطالب"]} - ${new Date().toLocaleTimeString()}</small><br>${msg}</div>`;
+  // إذا جميع الأعمدة ممتلئة، ندوّر الرسائل
+  if(chatIndex === 0){
+    for(let i=1; i<5; i++){
+      student["دردشة " + i] = student["دردشة " + (i+1)];
     }
+    chatIndex = 5;
+  }
+
+  student["دردشة " + chatIndex] = message;
+  await fetch(SHEET_API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "updateChat", id: student.id, chatNumber: chatIndex, message }),
   });
 }
 
-// إضافة رسالة
-function addChatMessage(name,msg){
-  // تحريك الدردشات للخلف إذا وصلنا 5 رسائل
-  for(let i=1;i<5;i++){
-    currentStudent[`دردشة ${i}`] = currentStudent[`دردشة ${i+1}`];
-  }
-  currentStudent["دردشة 5"] = msg;
-  populateChat();
-  updateStudentData();
-}
+// -------------------- إدارة التبليغات --------------------
+async function addNotification(notification) {
+  const student = getCurrentStudent();
+  if(!student) return;
 
-// تحديث البيانات في Google Sheet
-async function updateStudentData(){
-  await fetch(SHEET_API_URL,{
-    method:'POST',
-    body:JSON.stringify(currentStudent)
+  if(student["الصف"] !== "الإدارة") {
+    alert("غير مصرح لك بإضافة تبليغ.");
+    return;
+  }
+
+  await fetch(SHEET_API_URL, {
+    method: "POST",
+    body: JSON.stringify({ action: "addNotification", id: student.id, notification }),
   });
 }
 
-// حفظ حالة تسجيل الدخول/الخروج
-function saveLoginStatus(status){
-  currentStudent["الحالة"] = status;
-  updateStudentData();
+// -------------------- جلب التبليغات --------------------
+async function fetchNotifications() {
+  const students = await fetchData();
+  return students.map(s => s["تبليغات"] || "").filter(t => t.trim() !== "");
 }
 
-// تحديث تلقائي كل ثانية
-setInterval(async ()=>{
-  if(currentStudent){
-    const res = await fetch(SHEET_API_URL);
-    allStudents = await res.json();
-    currentStudent = allStudents.find(s=> s["كود الطالب"]==currentStudent["كود الطالب"]);
-    populateAccount();
-    populateFinance();
-    populateGrades();
-    populateNotifications();
-    populateChat();
-  }
-},1000);
+// -------------------- مثال استخدام في صفحة الحساب --------------------
+function displayStudentInfo() {
+  const student = getCurrentStudent();
+  if(!student) return;
+
+  const infoDiv = document.getElementById("studentInfo");
+  infoDiv.innerHTML = `
+    <h3>المعلومات العامة</h3>
+    <p>الاسم: ${student["اسم الطالب"]}</p>
+    <p>الصف: ${student["الصف"]}</p>
+    <p>رقم ولي الأمر: ${student["رقم ولي الامر"]}</p>
+    <p>رقم الخط: ${student["رقم الخط"]}</p>
+    <!-- أضف باقي الحقول حسب الحاجة -->
+  `;
+}
+
+// -------------------- مثال استخدام في صفحة التبليغات --------------------
+async function displayNotifications() {
+  const notifDiv = document.getElementById("notifications");
+  const notifications = await fetchNotifications();
+  notifDiv.innerHTML = notifications.map(n => `<p>${n}</p>`).join("");
+}
