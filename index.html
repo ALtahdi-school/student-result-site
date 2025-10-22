@@ -1,211 +1,117 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة تحكم - ثانوية التحدي الأهلية</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<title>ثانوية التحدي الأهلية</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<style>
-  body {
-    margin:0;
-    font-family:'Cairo', sans-serif;
-    direction: rtl;
-    background: linear-gradient(to bottom, #e0f0ff, #f9f9ff);
-    overflow-x:hidden;
-  }
-
-  /* صفحة تسجيل الدخول */
-  #loginPage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height:100vh;
-  }
-  #loginPage h1 {
-    color:#007bff;
-    margin-bottom:20px;
-  }
-  .login-input {
-    margin:8px 0;
-    padding:10px 12px;
-    width:250px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    font-size:14px;
-  }
-  .login-btn {
-    margin-top:12px;
-    padding:10px 20px;
-    width:270px;
-    background:linear-gradient(45deg,#007bff,#6f42c1);
-    color:#fff;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-    font-size:16px;
-  }
-  .login-btn:hover {
-    transform: scale(1.05);
-  }
-  .login-footer {
-    margin-top:20px;
-    text-align:center;
-  }
-  .login-footer a {
-    display:inline-block;
-    margin:5px 10px;
-    color:#007bff;
-    text-decoration:none;
-    font-weight:bold;
-  }
-
-  /* لوحة التحكم */
-  #dashboard {
-    display:none;
-    min-height:100vh;
-    padding-bottom:70px;
-  }
-  .page {
-    display:none;
-    padding:20px;
-  }
-  .page.active {
-    display:block;
-  }
-
-  /* البار السفلي */
-  #bottomBar {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    height:60px;
-    background:linear-gradient(45deg,#007bff,#6f42c1);
-    display:flex;
-    justify-content:space-around;
-    align-items:center;
-    border-top-left-radius:15px;
-    border-top-right-radius:15px;
-    box-shadow:0 -3px 10px rgba(0,0,0,0.2);
-  }
-  #bottomBar button {
-    background:none;
-    border:none;
-    color:#fff;
-    font-size:14px;
-    cursor:pointer;
-    transition:all 0.3s ease;
-  }
-  #bottomBar button.activeTab {
-    transform:scale(1.3);
-    font-weight:bold;
-    text-shadow:0 0 8px #fff;
-  }
-
-  /* الحوكمة */
-  #governance {
-    text-align:center;
-    font-size:12px;
-    color:#555;
-    margin-top:20px;
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- صفحة تسجيل الدخول -->
-<div id="loginPage">
-  <h1>ثانوية التحدي الأهلية</h1>
-  <input id="parentNumber" class="login-input" placeholder="رقم ولي الأمر">
-  <input id="studentCode" class="login-input" placeholder="كود الطالب">
-  <button class="login-btn" onclick="login()">تسجيل الدخول</button>
-
-  <div class="login-footer">
-    <a href="forgot.html">نسيت الكود؟</a> |
-    <a href="https://wa.me/96407851521585?text=مرحبا.%20🌟%20في%20حاجة%20لمساعدة%20لحل%20إشكال%20في%20المنصة.%20💬">الدعم السريع</a>
-  </div>
-  <div id="governance">قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية</div>
-</div>
-
-<!-- لوحة التحكم بعد تسجيل الدخول -->
-<div id="dashboard">
-  <div id="accountPage" class="page active">
-    <h2>الحساب</h2>
-    <p>هنا بيانات الحساب ستظهر بعد ربطها بالملف</p>
-    <button onclick="logout()">تسجيل الخروج</button>
-  </div>
-
-  <div id="chatPage" class="page">
-    <h2>الدردشة</h2>
-    <p>الدردشة معطلة مؤقتًا لأغراض الصيانة.</p>
-  </div>
-
-  <div id="notificationsPage" class="page">
-    <h2>التبليغات</h2>
-    <p>يمكن فقط للطلاب في صف الإدارة إضافة تبليغ.</p>
-  </div>
-
-  <div id="gradesPage" class="page">
-    <h2>الدرجات</h2>
-    <p>ستظهر الدرجات هنا بعد ربطها بالملف.</p>
-  </div>
-
-  <!-- البار السفلي -->
-  <div id="bottomBar">
-    <button class="activeTab" onclick="switchPage('accountPage', this)">الحساب</button>
-    <button onclick="switchPage('chatPage', this)">الدردشة</button>
-    <button onclick="switchPage('notificationsPage', this)">التبليغات</button>
-    <button onclick="switchPage('gradesPage', this)">الدرجات</button>
+<!-- ==================== صفحة تسجيل الدخول ==================== -->
+<div class="page" id="loginPage">
+  <div class="login-box">
+    <h1>ثانوية التحدي الأهلية</h1>
+    <input type="text" id="parentNum" placeholder="رقم ولي الأمر بدون الصفر الأول">
+    <input type="text" id="studentCode" placeholder="كود الطالب">
+    <button class="login-btn" onclick="login()">تسجيل الدخول</button>
+    <button class="forgot-btn" onclick="window.location.href='forgot.html'">لا أعرف الكود</button>
+    <a class="support-btn" href="https://wa.me/96407851521585?text=مرحبا.%20🌟%20في%20حاجة%20لمساعدة%20لحل%20إشكال%20في%20المنصة.%20اريد%20المساعدة%20؟%20💬" target="_blank">
+      الدعم السريع
+    </a>
+    <footer>قسم الحوكمة © جميع الحقوق محفوظة</footer>
   </div>
 </div>
 
-<script>
-function login(){
-  const parent = document.getElementById("parentNumber").value.trim();
-  const code = document.getElementById("studentCode").value.trim();
-  if(!parent || !code){
-    alert("الرجاء إدخال رقم ولي الأمر وكود الطالب");
-    return;
-  }
-  sessionStorage.setItem("parentNumber", parent);
-  sessionStorage.setItem("studentCode", code);
+<!-- ==================== صفحة الحساب ==================== -->
+<div class="page" id="accountPage">
+  <h2>الحساب الشخصي</h2>
+  <div class="account-info">
+    <h3>المعلومات العامة</h3>
+    <p>ID: <span id="infoId"></span></p>
+    <p>اسم الطالب: <span id="infoName"></span></p>
+    <p>الصف: <span id="infoClass"></span></p>
+    <p>القاعة: <span id="infoRoom"></span></p>
+    <p>الجنس: <span id="infoGender"></span></p>
+    <p>رقم ولي الأمر: <span id="infoParent"></span></p>
+    <p>رقم الخط: <span id="infoLine"></span></p>
+    <p>الملاحظات: <span id="infoNotes"></span></p>
+    <p>الكتب: <span id="infoBooks"></span></p>
+    <p>العنوان: <span id="infoAddress"></span></p>
+    <p>اسم الأم: <span id="infoMother"></span></p>
+    <p>المدرسة القادم منها: <span id="infoSchool"></span></p>
+    <p>المعدل في الصف السابق: <span id="infoPrevGrade"></span></p>
+  </div>
+  <div class="financial-info">
+    <h3>المعلومات المالية</h3>
+    <p>القسط 1: <span id="fee1"></span> | التاريخ: <span id="date1"></span></p>
+    <p>القسط 2: <span id="fee2"></span> | التاريخ: <span id="date2"></span></p>
+    <p>القسط 3: <span id="fee3"></span> | التاريخ: <span id="date3"></span></p>
+    <p>القسط 4: <span id="fee4"></span> | التاريخ: <span id="date4"></span></p>
+    <p>القسط 5: <span id="fee5"></span> | التاريخ: <span id="date5"></span></p>
+    <p>القسط 6: <span id="fee6"></span> | التاريخ: <span id="date6"></span></p>
+    <p>القسط 7: <span id="fee7"></span> | التاريخ: <span id="date7"></span></p>
+    <p>القسط 8: <span id="fee8"></span> | التاريخ: <span id="date8"></span></p>
+    <p>الباقي الكلي: <span id="remaining"></span></p>
+    <p>المبلغ الكلي: <span id="total"></span></p>
+    <p>الواصل الكلي: <span id="paid"></span></p>
+    <p>الكفالة: <span id="guarantee"></span> | مبلغ الكفالة: <span id="guaranteeAmount"></span></p>
+  </div>
+  <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+</div>
 
-  // GSAP أنيميشن الانتقال
-  gsap.to("#loginPage", {duration:0.5, y:-50, opacity:0, onComplete:()=>{
-    document.getElementById("loginPage").style.display="none";
-    document.getElementById("dashboard").style.display="block";
-    gsap.from("#dashboard", {duration:0.5, opacity:0, y:50});
-  }});
-}
+<!-- ==================== صفحة الدردشة ==================== -->
+<div class="page" id="chatPage">
+  <h2>الدردشة</h2>
+  <div class="chat-box">
+    <p>الدردشة معطلة لأغراض الصيانة</p>
+    <div id="chatInputs">
+      <input type="text" id="chatInput1" placeholder="رسالة 1">
+      <input type="text" id="chatInput2" placeholder="رسالة 2">
+      <input type="text" id="chatInput3" placeholder="رسالة 3">
+      <input type="text" id="chatInput4" placeholder="رسالة 4">
+      <input type="text" id="chatInput5" placeholder="رسالة 5">
+      <button onclick="sendMessage(1)">إرسال 1</button>
+      <button onclick="sendMessage(2)">إرسال 2</button>
+      <button onclick="sendMessage(3)">إرسال 3</button>
+      <button onclick="sendMessage(4)">إرسال 4</button>
+      <button onclick="sendMessage(5)">إرسال 5</button>
+    </div>
+  </div>
+</div>
 
-function logout(){
-  sessionStorage.clear();
-  gsap.to("#dashboard", {duration:0.5, y:50, opacity:0, onComplete:()=>{
-    document.getElementById("dashboard").style.display="none";
-    document.getElementById("loginPage").style.display="flex";
-    gsap.from("#loginPage", {duration:0.5, opacity:0, y:-50});
-  }});
-}
+<!-- ==================== صفحة التبليغات ==================== -->
+<div class="page" id="notificationsPage">
+  <h2>التبليغات</h2>
+  <textarea id="newNotification" placeholder="أدخل التبليغ هنا"></textarea>
+  <button onclick="addNotification()">إضافة تبليغ</button>
+  <div id="allNotifications"></div>
+</div>
 
-function switchPage(pageId, btn){
-  // GSAP أنيميشن للانتقال بين الصفحات
-  document.querySelectorAll(".page").forEach(p=>{
-    if(p.id!==pageId){
-      gsap.to(p,{duration:0.3, opacity:0, x:50, onComplete:()=>p.classList.remove("active")});
-    }
-  });
+<!-- ==================== صفحة الدرجات ==================== -->
+<div class="page" id="gradesPage">
+  <h2>الدرجات</h2>
+  <div class="grades-box">
+    <p>اسلامية شهر 1: <span id="islamicMonth1"></span></p>
+    <p>اسلامية شهر 2: <span id="islamicMonth2"></span></p>
+    <p>اسلامية فصل 1: <span id="islamicTerm1"></span></p>
+    <p>اسلامية نصف سنة: <span id="islamicHalf1"></span></p>
+    <!-- أضف باقي المواد بنفس النمط -->
+  </div>
+  <button onclick="downloadGrades()">تنزيل الدرجات</button>
+</div>
 
-  const page = document.getElementById(pageId);
-  page.classList.add("active");
-  gsap.fromTo(page, {opacity:0, x:-50}, {duration:0.5, opacity:1, x:0});
+<!-- ==================== البار السفلي ==================== -->
+<div class="bottom-bar">
+  <button onclick="showPage('accountPage')"><i class="fa fa-user"></i> الحساب</button>
+  <button onclick="showPage('chatPage')"><i class="fa fa-comment"></i> الدردشة</button>
+  <button onclick="showPage('notificationsPage')"><i class="fa fa-bell"></i> التبليغات</button>
+  <button onclick="showPage('gradesPage')"><i class="fa fa-graduation-cap"></i> الدرجات</button>
+</div>
 
-  // البار السفلي
-  document.querySelectorAll("#bottomBar button").forEach(b=>b.classList.remove("activeTab"));
-  btn.classList.add("activeTab");
-}
-</script>
-
+<script src="app.js"></script>
+<script src="animations.js"></script>
 </body>
 </html>
