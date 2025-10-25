@@ -101,7 +101,6 @@ const parentNumber = urlParams.get('parent');
 const studentCode = urlParams.get('code');
 
 if (!parentNumber || !studentCode) {
-  alert("الرجاء تسجيل الدخول.");
   window.location.href = "index.html";
 }
 
@@ -111,7 +110,6 @@ async function loadStudentData() {
     const data = await resp.json();
     
     if (!data || !data.valid) {
-      alert("رقم ولي الأمر أو كود الطالب غير صحيح.");
       window.location.href = "index.html";
       return;
     }
@@ -150,12 +148,12 @@ async function loadStudentData() {
 
   } catch (err) {
     console.error(err);
-    alert("حدث خطأ أثناء جلب البيانات.");
   }
 }
 
+// زر تسجيل الخروج
 function logout() {
-  window.location.href = "index.html"; // العودة إلى صفحة تسجيل الدخول فقط
+  window.location.href = "index.html";
 }
 
 window.addEventListener("DOMContentLoaded", loadStudentData);
