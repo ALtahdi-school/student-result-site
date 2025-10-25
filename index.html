@@ -3,181 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول | نظام استعلام الطالب</title>
+<title>تسجيل الدخول - نظام استعلام الطالب</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-
 <style>
-body {
-  font-family: 'Cairo', sans-serif;
-  direction: rtl;
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ffffff);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.login-container {
-  background: rgba(255, 255, 255, 0.9);
-  padding: 40px 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  width: 90%;
-  max-width: 380px;
-  text-align: center;
-  backdrop-filter: blur(8px);
-}
-
-.login-container h2 {
-  color: #3b82f6;
-  margin-bottom: 10px;
-  font-size: 26px;
-}
-
-.login-container p {
-  color: #555;
-  font-size: 14px;
-  margin-bottom: 25px;
-}
-
-input {
-  width: 100%;
-  padding: 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
-}
-
-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 10px rgba(59,130,246,0.3);
-}
-
-.buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-button {
-  flex: 1;
-  padding: 12px;
-  font-size: 14px;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#loginBtn {
-  background: linear-gradient(90deg, #3b82f6, #6366f1);
-}
-
-#loginBtn:hover {
-  transform: scale(1.05);
-  background: linear-gradient(90deg, #2563eb, #4f46e5);
-}
-
-#forgotBtn {
-  background: #fbbf24;
-  color: #000;
-}
-
-#forgotBtn:hover {
-  background: #f59e0b;
-  transform: scale(1.05);
-}
-
-.whatsapp-btn {
-  margin-top: 25px;
-  background: #25D366;
-  color: #fff;
-  padding: 12px;
-  border: none;
-  border-radius: 10px;
-  width: 100%;
-  cursor: pointer;
-  font-size: 15px;
-  transition: all 0.3s ease;
-}
-
-.whatsapp-btn:hover {
-  background: #1ebe5d;
-  transform: scale(1.05);
-}
-
-footer {
-  text-align: center;
-  font-size: 12px;
-  color: #555;
-  margin-top: 20px;
-  opacity: 0.8;
-}
-</style>
-</head>
-
-<body>
-
-<div class="login-container" id="loginBox">
-  <h2>🎓 ثانوية التحدي الأهلية</h2>
-  <p>تسجيل الدخول إلى نظام الاستعلام عن الطالب</p>
-
-  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
-  <input type="text" id="studentCode" placeholder="كود الطالب">
-
-  <div class="buttons">
-    <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
-    <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
-  </div>
-
-  <button class="whatsapp-btn" onclick="openWhatsApp()">💬 الدخول السريع عبر واتساب</button>
-
-  <footer>جميع الحقوق محفوظة © ثانوية التحدي الأهلية 2025</footer>
-</div>
-
-<script>
-// أنيميشن دخول الحاوية فقط
-window.addEventListener("load", () => {
-  gsap.from("#loginBox", { duration: 1.2, opacity: 0, scale: 0.9, ease: "power3.out" });
-  gsap.from(".buttons", { duration: 1, opacity: 0, y: 20, delay: 0.8 });
-  gsap.from(".whatsapp-btn", { duration: 1, opacity: 0, y: 20, delay: 1 });
-});
-
-function login() {
-  const parent = document.getElementById("parentNumber").value.trim();
-  const code = document.getElementById("studentCode").value.trim();
-
-  if (!parent || !code) {
-    alert("⚠️ يرجى إدخال رقم ولي الأمر وكود الطالب.");
-    return;
+  * {
+    box-sizing: border-box;
   }
 
-  localStorage.setItem("parentNumber", parent);
-  localStorage.setItem("studentCode", code);
+  body {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #4a00e0, #8e2de2, #ffffff);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+  }
 
-  // بعد تسجيل الدخول افتح صفحة main.html
-  window.location.href = "main.html";
-}
+  @keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
 
-function goToForgot() {
-  window.location.href = "forgot.html";
-}
+  .login-container {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
 
-function openWhatsApp() {
-  const message = encodeURIComponent("مرحباً، أريد معرفة كود الطالب الخاص بي.");
-  const phone = "9647XXXXXXXX"; // ضع رقم المدرسة هنا بصيغة دولية بدون "+"
-  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
-}
-</script>
+  h2 {
+    color: #fff;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 700;
+  }
 
+  input {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+    outline: none;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  .btn-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+  }
+
+  button {
+    background: linear-gradient(90deg, #4a00e0, #8e2de2);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+
+  .forgot-btn {
+    background: transparent;
+    color: #fff;
+    text-decoration: underline;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .whatsapp-support {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #25D366;
+    color: white;
+    font-weight: 700;
+    padding: 12px 18px;
+    border-radius: 50px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+  }
+
+  .whatsapp-support:hover {
+    transform: scale(1.1);
+  }
+
+  .whatsapp-support img {
+    width: 22px;
+    height: 22px;
+  }
+
+  @media (max-width: 480px) {
+    .btn-container {
+      flex-direction: column;
+      gap: 10px;
+    }
+    button, .forgot-btn {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>تسجيل الدخول</h2>
+    <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
+    <input type="text" id="studentCode" placeholder="كود الطالب">
+    <div class="btn-container">
+      <button onclick="login()">تسجيل الدخول</button>
+      <button class="forgot-btn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
+    </div>
+  </div>
+
+  <a class="whatsapp-support" href="https://wsend.co/9647851521585" target="_blank">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="واتساب">
+    الدعم السريع
+  </a>
+
+  <script>
+    // انميشن دخول الحاوية
+    gsap.from(".login-container", {
+      duration: 1.2,
+      y: 60,
+      opacity: 0,
+      ease: "back.out(1.7)"
+    });
+
+    function login() {
+      const parentNumber = document.getElementById('parentNumber').value.trim();
+      const studentCode = document.getElementById('studentCode').value.trim();
+
+      if (parentNumber === "" || studentCode === "") {
+        alert("يرجى إدخال جميع الحقول");
+        return;
+      }
+
+      // حفظ البيانات في LocalStorage مؤقتًا
+      localStorage.setItem("parentNumber", parentNumber);
+      localStorage.setItem("studentCode", studentCode);
+
+      // الانتقال لصفحة المين
+      window.location.href = "main.html";
+    }
+  </script>
 </body>
 </html>
