@@ -3,160 +3,106 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول - ثانوية التحدي الأهلية</title>
+<title>الحساب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
-body {
-  font-family: 'Cairo', sans-serif;
-  direction: rtl;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-header {
-  text-align: center;
-  margin-bottom: 40px;
-  opacity: 0;
-}
-
-header h1 {
-  font-size: 36px;
-  margin: 0;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-}
-
-.login-container {
-  background: rgba(255,255,255,0.1);
-  padding: 35px 30px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 400px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.3);
-  backdrop-filter: blur(15px);
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-.login-container input {
-  width: 100%;
-  padding: 15px 12px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  border: none;
-  font-size: 16px;
-  transition: all 0.3s ease;
-}
-
-.login-container input:focus {
-  outline: none;
-  box-shadow: 0 0 12px rgba(255,255,255,0.7);
-  transform: scale(1.02);
-}
-
-.login-container button {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 15px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: bold;
-  transition: all 0.3s ease;
-  background: linear-gradient(90deg, #00c6ff, #0072ff);
-}
-
-.login-container button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(255,255,255,0.6);
-}
-
-#forgotBtn {
-  background: linear-gradient(90deg, #ffb347, #ffcc33);
-  color: #000;
-}
-
-#forgotBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(255,255,255,0.6);
-}
-
-#supportBtn {
-  background: linear-gradient(90deg, #25d366, #128c7e);
-  color: #fff;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-  padding: 12px 25px;
-  border-radius: 12px;
-  margin-top: 10px;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-#supportBtn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 15px rgba(255,255,255,0.6);
-}
-
-footer {
-  margin-top: 30px;
-  font-size: 12px;
-  text-align: center;
-  opacity: 0.8;
-}
-
+body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; background: #f6f6f6; }
+.header { background: linear-gradient(90deg, #6a0dad, #007bff); color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: 700; }
+.section { margin: 20px; padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
+.section h3 { margin-top: 0; margin-bottom: 15px; font-size: 20px; color: #333; border-bottom: 2px solid #007bff; display: inline-block; padding-bottom: 5px; }
+.info-row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+.info-label { font-weight: 600; color: #555; flex: 1 1 45%; }
+.info-value { flex: 1 1 50%; color: #222; }
+@media(max-width: 600px){ .info-label, .info-value { flex: 1 1 100%; } }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>🎓 ثانوية التحدي الأهلية</h1>
-</header>
+<div class="header">الحساب</div>
 
-<div class="login-container">
-  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر (بدون الصفر الأول)">
-  <input type="text" id="studentCode" placeholder="كود الطالب">
-  <button id="loginBtn" onclick="loginHandler()">تسجيل الدخول</button>
-  <button id="forgotBtn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
-  <a id="supportBtn" href="https://wa.me/96407851521585?text=مرحبا. 🌟 في حاجة لمساعدة لحل إشكال في المنصة . اريد المساعدة ؟ 💬" target="_blank">الدعم السريع عبر واتساب</a>
+<div class="section" id="generalInfo">
+    <h3>المعلومات العامة</h3>
+    <div class="info-row"><div class="info-label">ID:</div><div class="info-value" id="id">-</div></div>
+    <div class="info-row"><div class="info-label">اسم الطالب:</div><div class="info-value" id="studentName">-</div></div>
+    <div class="info-row"><div class="info-label">الصف:</div><div class="info-value" id="grade">-</div></div>
+    <div class="info-row"><div class="info-label">القاعة:</div><div class="info-value" id="classRoom">-</div></div>
+    <div class="info-row"><div class="info-label">الجنس:</div><div class="info-value" id="gender">-</div></div>
+    <div class="info-row"><div class="info-label">كود الطالب:</div><div class="info-value" id="studentCode">-</div></div>
+    <div class="info-row"><div class="info-label">رقم ولي الأمر:</div><div class="info-value" id="parentNumber">-</div></div>
+    <div class="info-row"><div class="info-label">رقم الخط:</div><div class="info-value" id="lineNumber">-</div></div>
+    <div class="info-row"><div class="info-label">الملاحظات:</div><div class="info-value" id="notes">-</div></div>
+    <div class="info-row"><div class="info-label">الكتب:</div><div class="info-value" id="books">-</div></div>
+    <div class="info-row"><div class="info-label">العنوان:</div><div class="info-value" id="address">-</div></div>
+    <div class="info-row"><div class="info-label">اسم الأم:</div><div class="info-value" id="motherName">-</div></div>
+    <div class="info-row"><div class="info-label">المدرسة القادم منها:</div><div class="info-value" id="previousSchool">-</div></div>
+    <div class="info-row"><div class="info-label">المعدل في الصف السابق:</div><div class="info-value" id="previousGrade">-</div></div>
 </div>
 
-<footer>
-  قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
-</footer>
+<div class="section" id="financialInfo">
+    <h3>المعلومات المالية</h3>
+    <div class="info-row"><div class="info-label">القسط 1:</div><div class="info-value" id="fee1">-</div><div class="info-label">تاريخ 1:</div><div class="info-value" id="date1">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 2:</div><div class="info-value" id="fee2">-</div><div class="info-label">تاريخ 2:</div><div class="info-value" id="date2">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 3:</div><div class="info-value" id="fee3">-</div><div class="info-label">تاريخ 3:</div><div class="info-value" id="date3">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 4:</div><div class="info-value" id="fee4">-</div><div class="info-label">تاريخ 4:</div><div class="info-value" id="date4">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 5:</div><div class="info-value" id="fee5">-</div><div class="info-label">تاريخ 5:</div><div class="info-value" id="date5">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 6:</div><div class="info-value" id="fee6">-</div><div class="info-label">تاريخ 6:</div><div class="info-value" id="date6">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 7:</div><div class="info-value" id="fee7">-</div><div class="info-label">تاريخ 7:</div><div class="info-value" id="date7">-</div></div>
+    <div class="info-row"><div class="info-label">القسط 8:</div><div class="info-value" id="fee8">-</div><div class="info-label">تاريخ 8:</div><div class="info-value" id="date8">-</div></div>
+    <div class="info-row"><div class="info-label">الباقي الكلي:</div><div class="info-value" id="remaining">-</div></div>
+    <div class="info-row"><div class="info-label">المبلغ الكلي:</div><div class="info-value" id="totalAmount">-</div></div>
+    <div class="info-row"><div class="info-label">الواصل الكلي:</div><div class="info-value" id="paid">-</div></div>
+    <div class="info-row"><div class="info-label">الكفالة:</div><div class="info-value" id="guarantee">-</div></div>
+    <div class="info-row"><div class="info-label">مبلغ الكفالة:</div><div class="info-value" id="guaranteeAmount">-</div></div>
+</div>
 
-<script src="main.js"></script>
 <script>
-  // 🎬 أنميشن GSAP عند تحميل الصفحة
-  gsap.from("header", { duration: 1, y: -50, opacity: 0, ease: "bounce.out" });
-  gsap.to(".login-container", { duration: 1, opacity: 1, scale: 1, ease: "elastic.out(1, 0.5)" });
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-  async function loginHandler() {
-    let parent = document.getElementById("parentNumber").value.trim();
-    let code = document.getElementById("studentCode").value.trim();
-    if(parent.startsWith("0")) parent = parent.substring(1);
+// لنفترض أن كود الطالب مخزن في LocalStorage بعد تسجيل الدخول
+const studentCode = localStorage.getItem('studentCode') || '';
 
-    // استدعاء دالة تسجيل الدخول من main.js
-    const student = await login(code, parent);
-    if(student) {
-      // أنميشن اختفاء الصفحة الحالية
-      gsap.to(".login-container, header", { duration: 0.5, opacity: 0, y: -50, onComplete: () => {
-        window.location.href = "index.html"; // الانتقال للصفحة الرئيسية
-      }});
-    }
-  }
+if(!studentCode){
+    alert('لم يتم تحديد كود الطالب، الرجاء تسجيل الدخول أولاً.');
+} else {
+    fetch(`${GAS_URL}?code=${studentCode}`)
+    .then(res => res.json())
+    .then(data => {
+        if(!data || Object.keys(data).length===0) return alert('لم يتم العثور على بيانات الطالب.');
+
+        // ملء الحقول العامة
+        document.getElementById('id').textContent = data.id || '-';
+        document.getElementById('studentName').textContent = data['اسم الطالب'] || '-';
+        document.getElementById('grade').textContent = data['الصف'] || '-';
+        document.getElementById('classRoom').textContent = data['القاعة'] || '-';
+        document.getElementById('gender').textContent = data['الجنس'] || '-';
+        document.getElementById('studentCode').textContent = data['كود الطالب'] || '-';
+        document.getElementById('parentNumber').textContent = data['رقم ولي الامر'] || data['رقم ولي الأمر'] || '-';
+        document.getElementById('lineNumber').textContent = data['رقم الخط'] || '-';
+        document.getElementById('notes').textContent = data['الملاحظات'] || '-';
+        document.getElementById('books').textContent = data['الكتب'] || '-';
+        document.getElementById('address').textContent = data['العنوان'] || '-';
+        document.getElementById('motherName').textContent = data['اسم الام'] || '-';
+        document.getElementById('previousSchool').textContent = data['المدرسة القادم منها'] || '-';
+        document.getElementById('previousGrade').textContent = data['المعدل في الصف السابق'] || '-';
+
+        // ملء الحقول المالية
+        for(let i=1;i<=8;i++){
+            document.getElementById(`fee${i}`).textContent = data[`القسط ${i}`] || '-';
+            document.getElementById(`date${i}`).textContent = data[`تاريخ ${i}`] || '-';
+        }
+        document.getElementById('remaining').textContent = data['الباقي الكلي'] || '-';
+        document.getElementById('totalAmount').textContent = data['المبلغ الكلي'] || '-';
+        document.getElementById('paid').textContent = data['الواصل الكلي'] || '-';
+        document.getElementById('guarantee').textContent = data['الكفالة'] || '-';
+        document.getElementById('guaranteeAmount').textContent = data['مبلغ الكفالة'] || '-';
+
+        // أنيميشن GSAP بعد تعبئة البيانات
+        gsap.from('.section h3', {duration: 0.8, y:-30, opacity:0, stagger:0.2, ease: "power3.out"});
+        gsap.from('.info-row', {duration: 1, x:-50, opacity:0, stagger:0.05, delay:0.5, ease: "power4.out"});
+    })
+    .catch(err => { console.error(err); alert('حدث خطأ أثناء جلب البيانات'); });
+}
 </script>
 
 </body>
