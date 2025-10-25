@@ -29,7 +29,7 @@ body {
   font-size: 18px;
 }
 
-.top-bar button {
+button.logoutBtn {
   background: #dc3545;
   border: none;
   color: #fff;
@@ -40,7 +40,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.top-bar button:hover {
+button.logoutBtn:hover {
   background: #c82333;
   transform: scale(1.05);
 }
@@ -92,7 +92,10 @@ table td.label {
 
 <div class="top-bar">
   <h2 id="studentName">مرحبا، الطالب</h2>
-  <button onclick="logout()">تسجيل الخروج</button>
+</div>
+
+<div class="container">
+  <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
 </div>
 
 <div class="container">
@@ -163,8 +166,8 @@ async function logout() {
     console.error(err);
   }
 
-  localStorage.removeItem("studentData");
-  window.location.href = "index.html";
+  localStorage.clear(); // مسح جميع الجلسات
+  window.location.href = "index.html"; // العودة إلى صفحة تسجيل الدخول
 }
 </script>
 
