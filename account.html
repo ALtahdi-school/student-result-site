@@ -15,20 +15,6 @@ body {
   background: #f0f2f5;
 }
 
-.top-bar {
-  background: #007bff;
-  color: #fff;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.top-bar h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
 button.logoutBtn {
   background: #dc3545;
   border: none;
@@ -92,16 +78,11 @@ table td.label {
 </head>
 <body>
 
-<div class="top-bar">
-  <h2 id="studentName">مرحبا، الطالب</h2>
-</div>
-
 <div class="container">
   <h3>المعلومات العامة</h3>
   <table id="generalInfo"></table>
 </div>
 
-<!-- زر تسجيل الخروج بين الأقسام -->
 <div class="container">
   <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
 </div>
@@ -112,52 +93,72 @@ table td.label {
 </div>
 
 <script>
-window.addEventListener("DOMContentLoaded", () => {
-  const studentData = JSON.parse(localStorage.getItem("studentData") || "{}");
-  if (!studentData || Object.keys(studentData).length === 0) {
-    alert("لا توجد بيانات متاحة، الرجاء تسجيل الدخول.");
-    window.location.href = "index.html";
-    return;
-  }
+const SHEET_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_URL/exec"; // ضع رابط Web App هنا
 
-  document.getElementById("studentName").textContent = `مرحبا، ${studentData["اسم الطالب"]}`;
+// تمرير parentNumber و studentCode عبر query string
+const urlParams = new URLSearchParams(window.location.search);
+const parentNumber = urlParams.get('parent');
+const studentCode = urlParams.get('code');
 
-  // قسم المعلومات العامة
-  const generalFields = [
-    "id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط",
-    "الملاحظات","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"
-  ];
-  const generalTable = document.getElementById("generalInfo");
-  generalFields.forEach(field => {
-    const row = document.createElement("tr");
-    const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
-    const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
-    row.appendChild(cellLabel); row.appendChild(cellValue);
-    generalTable.appendChild(row);
-  });
-
-  // قسم المعلومات المالية
-  const financialFields = [
-    "القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3",
-    "القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6",
-    "القسط 7","تاريخ 7","القسط 8","تاريخ 8",
-    "الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"
-  ];
-  const financialTable = document.getElementById("financialInfo");
-  financialFields.forEach(field => {
-    const row = document.createElement("tr");
-    const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
-    const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
-    row.appendChild(cellLabel); row.appendChild(cellValue);
-    financialTable.appendChild(row);
-  });
-});
-
-// دالة تسجيل الخروج (مسح الجلسة فقط)
-function logout() {
-  localStorage.clear(); // مسح جميع بيانات الجلسة
-  window.location.href = "index.html"; // العودة إلى صفحة تسجيل الدخول
+if (!parentNumber || !studentCode) {
+  alert("الرجاء تسجيل الدخول.");
+  window.location.href = "index.html";
 }
+
+async function loadStudentData() {
+  try {
+    const resp = await fetch(`${SHEET_URL}?action=getStudent&parent=${encodeURIComponent(parentNumber)}&code=${encodeURIComponent(studentCode)}`);
+    const data = await resp.json();
+    
+    if (!data || !data.valid) {
+      alert("رقم ولي الأمر أو كود الطالب غير صحيح.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    const studentData = data.student;
+
+    // قسم المعلومات العامة
+    const generalFields = [
+      "id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط",
+      "الملاحظات","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"
+    ];
+    const generalTable = document.getElementById("generalInfo");
+    generalFields.forEach(field => {
+      const row = document.createElement("tr");
+      const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
+      const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
+      row.appendChild(cellLabel); row.appendChild(cellValue);
+      generalTable.appendChild(row);
+    });
+
+    // قسم المعلومات المالية
+    const financialFields = [
+      "القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3",
+      "القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6",
+      "القسط 7","تاريخ 7","القسط 8","تاريخ 8",
+      "الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"
+    ];
+    const financialTable = document.getElementById("financialInfo");
+    financialFields.forEach(field => {
+      const row = document.createElement("tr");
+      const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
+      const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
+      row.appendChild(cellLabel); row.appendChild(cellValue);
+      financialTable.appendChild(row);
+    });
+
+  } catch (err) {
+    console.error(err);
+    alert("حدث خطأ أثناء جلب البيانات.");
+  }
+}
+
+function logout() {
+  window.location.href = "index.html"; // العودة إلى صفحة تسجيل الدخول فقط
+}
+
+window.addEventListener("DOMContentLoaded", loadStudentData);
 </script>
 
 </body>
