@@ -112,8 +112,6 @@ table td.label {
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_URL/exec"; // ضع رابط Web App النهائي هنا
-
 window.addEventListener("DOMContentLoaded", () => {
   const studentData = JSON.parse(localStorage.getItem("studentData") || "{}");
   if (!studentData || Object.keys(studentData).length === 0) {
@@ -155,21 +153,9 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// دالة تسجيل الخروج
-async function logout() {
-  const studentData = JSON.parse(localStorage.getItem("studentData") || "{}");
-  if (!studentData) { window.location.href = "index.html"; return; }
-
-  const parent = studentData["رقم ولي الامر"];
-  const code = studentData["كود الطالب"];
-
-  try {
-    await fetch(`${SHEET_URL}?action=logout&parent=${encodeURIComponent(parent)}&code=${encodeURIComponent(code)}`, { method: "POST" });
-  } catch (err) {
-    console.error(err);
-  }
-
-  localStorage.clear(); // مسح جميع الجلسات
+// دالة تسجيل الخروج (مسح الجلسة فقط)
+function logout() {
+  localStorage.clear(); // مسح جميع بيانات الجلسة
   window.location.href = "index.html"; // العودة إلى صفحة تسجيل الدخول
 }
 </script>
