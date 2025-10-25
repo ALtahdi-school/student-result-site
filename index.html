@@ -3,173 +3,191 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تسجيل الدخول - نظام استعلام الطالب</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<title>تسجيل دخول الطالب</title>
 <style>
-  * {
-    box-sizing: border-box;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-  body {
-    font-family: 'Cairo', sans-serif;
-    direction: rtl;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #4a00e0, #8e2de2, #ffffff);
-    background-size: 400% 400%;
-    animation: gradientMove 10s ease infinite;
-  }
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #007bff, #6a0dad, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  @keyframes gradientMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+.login-container {
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
+}
 
-  .login-container {
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 30px;
-    width: 90%;
-    max-width: 380px;
-    text-align: center;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  }
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+}
 
-  h2 {
-    color: #fff;
-    margin-bottom: 25px;
-    font-size: 26px;
-    font-weight: 700;
-  }
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 
-  input {
-    width: 100%;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    text-align: center;
-    outline: none;
-    background: rgba(255, 255, 255, 0.85);
-  }
+.input-group input {
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
 
-  .btn-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 15px;
-  }
+.input-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+}
 
-  button {
-    background: linear-gradient(90deg, #4a00e0, #8e2de2);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 12px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
 
-  button:hover {
-    transform: scale(1.05);
-    opacity: 0.9;
-  }
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
 
-  .forgot-btn {
-    background: transparent;
-    color: #fff;
-    text-decoration: underline;
-    font-size: 15px;
-    cursor: pointer;
-  }
+#loginBtn {
+  background: #28a745;
+  color: #fff;
+  flex: 1;
+}
 
-  .whatsapp-support {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: #25D366;
-    color: white;
-    font-weight: 700;
-    padding: 12px 18px;
-    border-radius: 50px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: 0.3s;
-  }
+#loginBtn:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
 
-  .whatsapp-support:hover {
-    transform: scale(1.1);
-  }
+#forgotBtn {
+  background: #ffc107;
+  color: #000;
+  flex: 1;
+}
 
-  .whatsapp-support img {
-    width: 22px;
-    height: 22px;
-  }
+#forgotBtn:hover {
+  background: #e0a800;
+  transform: scale(1.05);
+}
 
-  @media (max-width: 480px) {
-    .btn-container {
-      flex-direction: column;
-      gap: 10px;
-    }
-    button, .forgot-btn {
-      width: 100%;
-    }
-  }
+#whatsappBtn {
+  background: #25D366;
+  color: #fff;
+  width: 100%;
+  margin-top: 15px;
+}
+
+#whatsappBtn:hover {
+  background: #1ebe57;
+  transform: scale(1.05);
+}
+
+.message {
+  text-align: center;
+  margin-top: 10px;
+  color: #dc3545;
+  min-height: 20px;
+}
+
+@media (max-width: 480px) {
+  .button-group { flex-direction: column; }
+}
 </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>تسجيل الدخول</h2>
-    <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
-    <input type="text" id="studentCode" placeholder="كود الطالب">
-    <div class="btn-container">
-      <button onclick="login()">تسجيل الدخول</button>
-      <button class="forgot-btn" onclick="window.location.href='forgot.html'">نسيت الكود؟</button>
-    </div>
+
+<div class="login-container">
+  <h2>تسجيل دخول الطالب</h2>
+  <div class="input-group">
+    <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
+    <input id="studentCode" placeholder="أدخل كود الطالب">
   </div>
+  <div class="button-group">
+    <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
+    <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
+  </div>
+  <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
+  <div class="message" id="message"></div>
+</div>
 
-  <a class="whatsapp-support" href="https://wsend.co/9647851521585" target="_blank">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="واتساب">
-    الدعم السريع
-  </a>
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxpge4rpbNb-dzD8xGsRLJXg0WHsELwzPNvJzwtlXhZ7o13L8QWIrlw89dyyP0xjq31/exec";
 
-  <script>
-    // انميشن دخول الحاوية
-    gsap.from(".login-container", {
-      duration: 1.2,
-      y: 60,
-      opacity: 0,
-      ease: "back.out(1.7)"
-    });
+function goToForgot() {
+  window.location.href = "forgot.html";
+}
 
-    function login() {
-      const parentNumber = document.getElementById('parentNumber').value.trim();
-      const studentCode = document.getElementById('studentCode').value.trim();
+function openWhatsApp() {
+  window.open("https://wsend.co/9647851521585", "_blank");
+}
 
-      if (parentNumber === "" || studentCode === "") {
-        alert("يرجى إدخال جميع الحقول");
-        return;
-      }
+async function login() {
+  const parent = document.getElementById("parentNumber").value.trim();
+  const code = document.getElementById("studentCode").value.trim();
+  const msgEl = document.getElementById("message");
+  msgEl.textContent = "";
 
-      // حفظ البيانات في LocalStorage مؤقتًا
-      localStorage.setItem("parentNumber", parentNumber);
-      localStorage.setItem("studentCode", studentCode);
+  if (!parent || !code) {
+    msgEl.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
+    return;
+  }
 
-      // الانتقال لصفحة المين
-      window.location.href = "main.html";
+  msgEl.textContent = "⏳ جاري التحقق...";
+
+  try {
+    const resp = await fetch(`${SHEET_URL}?action=check&parent=${encodeURIComponent(parent)}&code=${encodeURIComponent(code)}`);
+    const data = await resp.json();
+
+    if (data.valid) {
+      // حفظ تسجيل الدخول
+      localStorage.setItem("studentCode", code);
+      localStorage.setItem("parentNumber", parent);
+      msgEl.style.color = "#28a745";
+      msgEl.textContent = "✅ تم تسجيل الدخول بنجاح. سيتم تحويلك...";
+      setTimeout(() => { window.location.href = "main.html"; }, 1500);
+    } else {
+      msgEl.style.color = "#dc3545";
+      msgEl.textContent = "❌ رقم ولي الأمر أو كود الطالب غير صحيح.";
     }
-  </script>
+  } catch (err) {
+    console.error(err);
+    msgEl.style.color = "#dc3545";
+    msgEl.textContent = "❌ حدث خطأ أثناء التحقق. حاول لاحقًا.";
+  }
+}
+
+// تحميل بيانات مسجلة سابقًا
+window.addEventListener("DOMContentLoaded", () => {
+  const savedCode = localStorage.getItem("studentCode");
+  const savedParent = localStorage.getItem("parentNumber");
+  if (savedCode && savedParent) {
+    document.getElementById("studentCode").value = savedCode;
+    document.getElementById("parentNumber").value = savedParent;
+  }
+});
+</script>
+
 </body>
 </html>
