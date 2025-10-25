@@ -1,74 +1,193 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>نسيت الكود - استرجاع كود الطالب</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل دخول الطالب</title>
 <style>
-:root{
-  --blue:#007bff;
-  --success:#28a745;
-  --danger:#dc3545;
-  --card:#fff;
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #007bff, #6a0dad, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,#f6fbff,#ffffff);
-  padding:18px;
+
+.login-container {
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
 }
-.box{
-  max-width:760px;
-  width:100%;
-  background:var(--card);
-  border-radius:12px;
-  box-shadow:0 12px 30px rgba(0,0,0,0.09);
-  padding:22px;
-  opacity:0;
-  transform:translateY(40px);
+
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
 }
-.header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap}
-.header h2{margin:0}
-.form{margin-top:14px;display:flex;flex-direction:column;gap:12px}
-.input{display:flex;align-items:center;border:1px solid #eee;padding:10px;border-radius:8px;background:#fafafa}
-.input input{border:0;outline:0;flex:1;background:transparent;font-size:15px}
-.btn{
-  padding:12px 18px;
-  border-radius:8px;
-  border:0;
-  cursor:pointer;
-  font-weight:700;
-  transition:0.2s;
-  font-size:15px;
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
-.btn-primary{background:var(--blue);color:#fff}
-.btn-primary:hover{
-  transform:scale(1.03);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+.input-group input {
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
-.btn-secondary{background:#f0f0f0;color:#333}
-.btn-secondary:hover{
-  transform:scale(1.03);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+
+.input-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0,123,255,0.3);
 }
-.result{margin-top:16px;min-height:120px;display:flex;align-items:center;justify-content:center;}
-.card{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#f7fbff);box-shadow:0 12px 26px rgba(0,0,0,0.06);text-align:center;width:100%;max-width:520px;}
-.card h3{margin:0 0 8px 0;font-size:18px}
-.codeBox{margin-top:12px;font-size:26px;font-weight:800;letter-spacing:6px;padding:12px 18px;border-radius:10px;display:inline-block;background:linear-gradient(90deg,#fff,#f8fffb);box-shadow:0 6px 18px rgba(0,0,0,0.06);}
-.chars{display:inline-block;opacity:0}
-.chars.visible{opacity:1;animation:fadeUp .6s ease forwards}
-@keyframes fadeUp{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
-.err{color:var(--danger);font-weight:700;animation:shake .5s}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-.copyBtn{margin-top:12px;padding:10px 12px;border-radius:8px;border:0;cursor:pointer;font-weight:700;transition:0.2s;}
-.copyBtn.success{background:var(--success);color:#fff}
-.copyBtn.fail{background:#f0f0f0;color:#333}
-.copyBtn:hover{transform:scale(1.05);}
-.back{ma
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#loginBtn {
+  background: #28a745;
+  color: #fff;
+  flex: 1;
+}
+
+#loginBtn:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+
+#forgotBtn {
+  background: #ffc107;
+  color: #000;
+  flex: 1;
+}
+
+#forgotBtn:hover {
+  background: #e0a800;
+  transform: scale(1.05);
+}
+
+#whatsappBtn {
+  background: #25D366;
+  color: #fff;
+  width: 100%;
+  margin-top: 15px;
+}
+
+#whatsappBtn:hover {
+  background: #1ebe57;
+  transform: scale(1.05);
+}
+
+.message {
+  text-align: center;
+  margin-top: 10px;
+  color: #dc3545;
+  min-height: 20px;
+}
+
+@media (max-width: 480px) {
+  .button-group { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>تسجيل دخول الطالب</h2>
+  <div class="input-group">
+    <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
+    <input id="studentCode" placeholder="أدخل كود الطالب">
+  </div>
+  <div class="button-group">
+    <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
+    <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
+  </div>
+  <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
+  <div class="message" id="message"></div>
+</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+
+function goToForgot() {
+  window.location.href = "forgot.html";
+}
+
+function openWhatsApp() {
+  window.open("https://wsend.co/9647851521585", "_blank");
+}
+
+async function login() {
+  const parent = document.getElementById("parentNumber").value.trim();
+  const code = document.getElementById("studentCode").value.trim();
+  const msgEl = document.getElementById("message");
+  msgEl.textContent = "";
+
+  if (!parent || !code) {
+    msgEl.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
+    return;
+  }
+
+  msgEl.textContent = "⏳ جاري التحقق...";
+
+  try {
+    const resp = await fetch(`${SHEET_URL}?action=check&parent=${encodeURIComponent(parent)}&code=${encodeURIComponent(code)}`);
+    const data = await resp.json();
+
+    if (data.valid) {
+      // حفظ تسجيل الدخول
+      localStorage.setItem("studentCode", code);
+      localStorage.setItem("parentNumber", parent);
+      msgEl.style.color = "#28a745";
+      msgEl.textContent = "✅ تم تسجيل الدخول بنجاح. سيتم تحويلك...";
+      setTimeout(() => { window.location.href = "main.html"; }, 1500);
+    } else {
+      msgEl.style.color = "#dc3545";
+      msgEl.textContent = "❌ رقم ولي الأمر أو كود الطالب غير صحيح.";
+    }
+  } catch (err) {
+    console.error(err);
+    msgEl.style.color = "#dc3545";
+    msgEl.textContent = "❌ حدث خطأ أثناء التحقق. حاول لاحقًا.";
+  }
+}
+
+// تحميل بيانات مسجلة سابقًا
+window.addEventListener("DOMContentLoaded", () => {
+  const savedCode = localStorage.getItem("studentCode");
+  const savedParent = localStorage.getItem("parentNumber");
+  if (savedCode && savedParent) {
+    document.getElementById("studentCode").value = savedCode;
+    document.getElementById("parentNumber").value = savedParent;
+  }
+});
+</script>
+
+</body>
+</html>
