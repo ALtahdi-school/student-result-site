@@ -5,124 +5,100 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الحساب</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; background: #f6f6f6; }
-.header { background: linear-gradient(90deg, #6a0dad, #007bff); color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: 700; }
-.section { margin: 20px; padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
-.section h3 { margin-top: 0; margin-bottom: 15px; font-size: 20px; color: #333; border-bottom: 2px solid #007bff; display: inline-block; padding-bottom: 5px; }
-.info-row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
-.info-label { font-weight: 600; color: #555; flex: 1 1 45%; margin-bottom: 5px;}
-.info-value { flex: 1 1 50%; color: #222; margin-bottom: 5px;}
-input.editable { width: 95%; padding: 5px; border-radius: 5px; border: 1px solid #ccc; }
-button { padding: 10px 20px; margin: 10px 5px 0 0; border: none; border-radius: 8px; background: #007bff; color: #fff; cursor: pointer; font-weight: 700; }
-button:hover { background: #0056b3; }
-@media(max-width: 600px){ .info-label, .info-value { flex: 1 1 100%; } }
+body { font-family:'Cairo',sans-serif; direction:rtl; background:#f6f6f6; margin:0; padding:0;}
+.section{margin:20px;padding:20px;background:#fff;border-radius:15px;box-shadow:0 10px 25px rgba(0,0,0,0.08);}
+.section h3{border-bottom:2px solid #007bff;padding-bottom:5px;}
+.info-row{display:flex;flex-wrap:wrap;margin-bottom:12px;}
+.info-label{flex:1 1 40%;font-weight:600;color:#555;}
+.info-value{flex:1 1 55%;}
+input[type=text]{width:100%;padding:5px;border-radius:5px;border:1px solid #ccc;}
+button{padding:10px 20px;margin:10px;border:none;border-radius:8px;background:#007bff;color:#fff;cursor:pointer;}
+button:hover{background:#0056b3;}
 </style>
 </head>
 <body>
 
-<div class="header">الحساب</div>
-
 <div class="section" id="generalInfo">
-    <h3>المعلومات العامة</h3>
-    <div class="info-row"><div class="info-label">كود الطالب:</div><div class="info-value"><input class="editable" id="studentCode" disabled /></div></div>
-    <div class="info-row"><div class="info-label">رقم ولي الأمر:</div><div class="info-value"><input class="editable" id="parentNumber" /></div></div>
-    <div class="info-row"><div class="info-label">رقم الطالب:</div><div class="info-value"><input class="editable" id="studentNumber" /></div></div>
-    <div class="info-row"><div class="info-label">رقم الخط:</div><div class="info-value"><input class="editable" id="lineNumber" /></div></div>
-    <div class="info-row"><div class="info-label">العنوان:</div><div class="info-value"><input class="editable" id="address" /></div></div>
-    <div class="info-row"><div class="info-label">المدرسة القادمة منها:</div><div class="info-value"><input class="editable" id="previousSchool" /></div></div>
-    <div class="info-row"><div class="info-label">اسم الأم:</div><div class="info-value"><input class="editable" id="motherName" /></div></div>
-    <button id="saveBtn">حفظ التغييرات</button>
-    <button id="logoutBtn">تسجيل الخروج</button>
+<h3>المعلومات العامة</h3>
+<div class="info-row"><div class="info-label">رقم ولي الأمر:</div><div class="info-value"><input type="text" id="parentNumber"></div></div>
+<div class="info-row"><div class="info-label">رقم الطالب:</div><div class="info-value"><input type="text" id="studentNumber"></div></div>
+<div class="info-row"><div class="info-label">رقم الخط:</div><div class="info-value"><input type="text" id="lineNumber"></div></div>
+<div class="info-row"><div class="info-label">العنوان:</div><div class="info-value"><input type="text" id="address"></div></div>
+<div class="info-row"><div class="info-label">المدرسة القادمة منها:</div><div class="info-value"><input type="text" id="previousSchool"></div></div>
+<div class="info-row"><div class="info-label">اسم الأم:</div><div class="info-value"><input type="text" id="motherName"></div></div>
 </div>
 
-<div class="section" id="financialInfo">
-    <h3>المعلومات المالية</h3>
-    <div class="info-row"><div class="info-label">القسط 1:</div><div class="info-value" id="fee1">-</div><div class="info-label">تاريخ 1:</div><div class="info-value" id="date1">-</div></div>
-    <div class="info-row"><div class="info-label">القسط 2:</div><div class="info-value" id="fee2">-</div><div class="info-label">تاريخ 2:</div><div class="info-value" id="date2">-</div></div>
-    <div class="info-row"><div class="info-label">الباقي الكلي:</div><div class="info-value" id="remaining">-</div></div>
-    <div class="info-row"><div class="info-label">المبلغ الكلي:</div><div class="info-value" id="totalAmount">-</div></div>
+<div class="section" id="otherInfo">
+<h3>المعلومات الأخرى</h3>
+<div class="info-row"><div class="info-label">اسم الطالب:</div><div class="info-value" id="studentName"></div></div>
+<div class="info-row"><div class="info-label">الصف:</div><div class="info-value" id="grade"></div></div>
+<div class="info-row"><div class="info-label">القاعة:</div><div class="info-value" id="classRoom"></div></div>
+<div class="info-row"><div class="info-label">الجنس:</div><div class="info-value" id="gender"></div></div>
+<!-- أضف باقي الحقول هنا حسب الحاجة -->
+</div>
+
+<div style="text-align:center;">
+<button id="saveBtn">حفظ التغييرات</button>
+<button id="logoutBtn">تسجيل الخروج</button>
 </div>
 
 <script>
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+const GAS_URL = "ضع هنا رابط Google Apps Script";
+const studentCode = localStorage.getItem("studentCode");
+const parentNumberLS = localStorage.getItem("parentNumber");
 
-// بيانات تسجيل الدخول مخزنة
-const studentCode = localStorage.getItem('studentCode') || '';
-const parentNumberLogin = localStorage.getItem('parentNumber') || '';
-
-if(!studentCode || !parentNumberLogin){
-    alert('لم يتم تحديد بيانات الدخول، الرجاء تسجيل الدخول أولاً.');
-    window.location.href = "index.html";
+if(!studentCode || !parentNumberLS){
+    alert("الرجاء تسجيل الدخول أولاً"); window.location.href="index.html";
 } else {
-    // جلب بيانات الطالب من Google Apps Script
-    fetch(`${GAS_URL}?action=get&code=${encodeURIComponent(studentCode)}&parent=${encodeURIComponent(parentNumberLogin)}`)
-    .then(res => res.json())
-    .then(data => {
-        if(!data.valid) return alert('لم يتم العثور على بيانات الطالب.');
-
-        // تعبئة الحقول القابلة للتعديل
-        document.getElementById('studentCode').value = data.student['كود الطالب'] || '';
-        document.getElementById('parentNumber').value = data.student['رقم ولي الامر'] || data.student['رقم ولي الأمر'] || '';
-        document.getElementById('studentNumber').value = data.student['رقم الطالب'] || '';
-        document.getElementById('lineNumber').value = data.student['رقم الخط'] || '';
-        document.getElementById('address').value = data.student['العنوان'] || '';
-        document.getElementById('previousSchool').value = data.student['المدرسة القادم منها'] || '';
-        document.getElementById('motherName').value = data.student['اسم الام'] || '';
-
-        // تعبئة البيانات المالية
-        for(let i=1;i<=8;i++){
-            document.getElementById(`fee${i}`).textContent = data.student[`القسط ${i}`] || '-';
-            document.getElementById(`date${i}`).textContent = data.student[`تاريخ ${i}`] || '-';
-        }
-        document.getElementById('remaining').textContent = data.student['الباقي الكلي'] || '-';
-        document.getElementById('totalAmount').textContent = data.student['المبلغ الكلي'] || '-';
-    })
-    .catch(err => { console.error(err); alert('حدث خطأ أثناء جلب البيانات'); });
+    fetch(`${GAS_URL}?action=get&code=${studentCode}&parent=${parentNumberLS}`)
+    .then(r=>r.json())
+    .then(data=>{
+        if(!data.valid){ alert("لم يتم العثور على بيانات الطالب"); return; }
+        const s = data.student;
+        // حقول قابلة للتعديل
+        document.getElementById("parentNumber").value = s["رقم ولي الامر"];
+        document.getElementById("studentNumber").value = s["رقم الطالب"];
+        document.getElementById("lineNumber").value = s["رقم الخط"];
+        document.getElementById("address").value = s["العنوان"];
+        document.getElementById("previousSchool").value = s["المدرسة القادم منها"];
+        document.getElementById("motherName").value = s["اسم الام"];
+        // باقي البيانات للعرض فقط
+        document.getElementById("studentName").textContent = s["اسم الطالب"];
+        document.getElementById("grade").textContent = s["الصف"];
+        document.getElementById("classRoom").textContent = s["القاعة"];
+        document.getElementById("gender").textContent = s["الجنس"];
+    });
 }
 
-// حفظ التعديلات باستخدام كود الطالب ورقم ولي الأمر لتحديد الصف
-document.getElementById('saveBtn').addEventListener('click', ()=>{
-    const updatedData = {
-        action: "update",
-        code: studentCode,
-        parent: document.getElementById('parentNumber').value,
-        fields: {
-            "رقم الطالب": document.getElementById('studentNumber').value,
-            "رقم ولي الامر": document.getElementById('parentNumber').value,
-            "رقم الخط": document.getElementById('lineNumber').value,
-            "العنوان": document.getElementById('address').value,
-            "المدرسة القادم منها": document.getElementById('previousSchool').value,
-            "اسم الام": document.getElementById('motherName').value
-        }
+document.getElementById("saveBtn").onclick = ()=>{
+    const fields = {
+        "رقم ولي الامر": document.getElementById("parentNumber").value,
+        "رقم الطالب": document.getElementById("studentNumber").value,
+        "رقم الخط": document.getElementById("lineNumber").value,
+        "العنوان": document.getElementById("address").value,
+        "المدرسة القادم منها": document.getElementById("previousSchool").value,
+        "اسم الام": document.getElementById("motherName").value
     };
-
-    fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify(updatedData)
-    })
-    .then(res => res.json())
-    .then(res => {
-        if(res.success){
-            alert("تم حفظ التغييرات بنجاح!");
-        } else {
-            alert("فشل الحفظ: " + (res.message||""));
-        }
-    })
-    .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
-});
-
-// تسجيل الخروج
-document.getElementById('logoutBtn').addEventListener('click', ()=>{
-    fetch(GAS_URL, {
-        method: "POST",
-        body: JSON.stringify({ action:"logout", code: studentCode, parent: document.getElementById('parentNumber').value })
-    }).finally(()=>{
-        localStorage.clear();
-        window.location.href = "index.html";
+    fetch(GAS_URL,{
+        method:"POST",
+        body: JSON.stringify({action:"update", code:studentCode, parent:parentNumberLS, fields}),
+        headers: {"Content-Type":"application/json"}
+    }).then(r=>r.json()).then(d=>{
+        if(d.success){ alert("تم حفظ التغييرات بنجاح"); } else { alert("حدث خطأ"); }
     });
-});
+};
+
+document.getElementById("logoutBtn").onclick = ()=>{
+    fetch(GAS_URL,{
+        method:"POST",
+        body: JSON.stringify({action:"logout", code:studentCode, parent:parentNumberLS}),
+        headers: {"Content-Type":"application/json"}
+    }).then(r=>r.json()).then(d=>{
+        localStorage.clear();
+        window.location.href="index.html";
+    });
+};
 </script>
 
 </body>
