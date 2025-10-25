@@ -144,15 +144,20 @@ function openWhatsApp() {
 }
 
 async function login() {
-  const parent = document.getElementById("parentNumber").value.trim();
-  const code = document.getElementById("studentCode").value.trim();
+  let parent = document.getElementById("parentNumber").value.trim();
+  let code = document.getElementById("studentCode").value.trim();
   const msgEl = document.getElementById("message");
+  msgEl.style.color = "#dc3545";
   msgEl.textContent = "";
 
   if (!parent || !code) {
     msgEl.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
     return;
   }
+
+  // إزالة الصفر البادئ إذا موجود
+  if (parent.startsWith("0")) parent = parent.substring(1);
+  if (code.startsWith("0")) code = code.substring(1);
 
   msgEl.textContent = "⏳ جاري التحقق...";
 
@@ -161,24 +166,21 @@ async function login() {
     const data = await resp.json();
 
     if (data.valid) {
-      // حفظ تسجيل الدخول
       localStorage.setItem("studentCode", code);
       localStorage.setItem("parentNumber", parent);
       msgEl.style.color = "#28a745";
       msgEl.textContent = "✅ تم تسجيل الدخول بنجاح. سيتم تحويلك...";
       setTimeout(() => { window.location.href = "main.html"; }, 1500);
     } else {
-      msgEl.style.color = "#dc3545";
-      msgEl.textContent = "❌ رقم ولي الأمر أو كود الطالب غير صحيح.";
+      msgEl.textContent = data.message || "❌ رقم ولي الأمر أو كود الطالب غير صحيح.";
     }
   } catch (err) {
     console.error(err);
-    msgEl.style.color = "#dc3545";
     msgEl.textContent = "❌ حدث خطأ أثناء التحقق. حاول لاحقًا.";
   }
 }
 
-// تحميل بيانات مسجلة سابقًا
+// تحميل البيانات المسجلة سابقًا
 window.addEventListener("DOMContentLoaded", () => {
   const savedCode = localStorage.getItem("studentCode");
   const savedParent = localStorage.getItem("parentNumber");
