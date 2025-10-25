@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>واجهة الطالب - تطبيق متقدم</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{
+  --primary:#6a0dad;
+  --secondary:#007bff;
+  --bg:#f5f6fa;
+  --active:#ffffff;
+  --inactive:#cccccc;
+  --glow:rgba(255,255,255,0.6);
+}
+body{
+  font-family:'Cairo',sans-serif;
+  margin:0;
+  background:var(--bg);
+  direction:rtl;
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+.page{
+  flex:1;
+  display:none;
+  padding:20px;
+  perspective:1200px;
+}
+.page.active{
+  display:block;
+}
+.bottom-bar{
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:12px 0;
+  background:linear-gradient(90deg,var(--secondary),var(--primary));
+  border-top-left-radius:20px;
+  border-top-right-radius:20px;
+  box-shadow:0 -6px 20px rgba(0,0,0,0.2);
+}
+.bottom-bar button{
+  background:transparent;
+  border:none;
+  color:var(--inactive);
+  font-weight:700;
+  font-size:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  position:relative;
+}
+.bottom-bar button.active{
+  color:var(--active);
+}
+.bottom-bar button.active::after{
+  content:'';
+  position:absolute;
+  top:-6px;
+  width:40px;
+  height:4px;
+  border-radius:2px;
+  background:var(--glow);
+  box-shadow:0 0 10px var(--glow);
+  animation:glowAnim 1s infinite alternate;
+}
+@keyframes glowAnim{
+  0%{box-shadow:0 0 10px var(--glow);}
+  100%{box-shadow:0 0 20px var(--glow);}
+}
+.bottom-bar button svg{
+  width:28px;
+  height:28px;
+}
+h2{text-align:center;color:#333;margin-top:0;}
+</style>
+</head>
+<body>
+
+<!-- الصفحات -->
+<div id="accountPage" class="page active">
+  <h2>الحساب</h2>
+  <p>هنا بيانات الطالب الشخصية وحسابه.</p>
+</div>
+<div id="gradesPage" class="page">
+  <h2>الدرجات</h2>
+  <p>نتائج الطالب في جميع المواد.</p>
+</div>
+<div id="chatPage" class="page">
+  <h2>الدردشة</h2>
+  <p>صفحة الدردشة الخاصة بالصف أو المجموعة.</p>
+</div>
+<div id="notificationsPage" class="page">
+  <h2>التبليغات</h2>
+  <p>كل الإشعارات والتنبيهات للطالب.</p>
+</div>
+
+<!-- البار السفلي -->
+<div class="bottom-bar">
+  <button class="active" data-target="accountPage">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/></svg>
+    الحساب
+  </button>
+  <button data-target="gradesPage">
+    <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" fill="currentColor"/></svg>
+    الدرجات
+  </button>
+  <button data-target="chatPage">
+    <svg viewBox="0 0 24 24"><path d="M2 2h20v20H2z" fill="currentColor"/></svg>
+    الدردشة
+  </button>
+  <button data-target="notificationsPage">
+    <svg viewBox="0 0 24 24"><polygon points="12,2 22,22 2,22" fill="currentColor"/></svg>
+    التبليغات
+  </button>
+</div>
+
+<script>
+const buttons = document.querySelectorAll('.bottom-bar button');
+const pages = document.querySelectorAll('.page');
+let currentPage = document.querySelector('.page.active');
+
+buttons.forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    if(btn.classList.contains('active')) return;
+    const targetId = btn.dataset.target;
+    const targetPage = document.getElementById(targetId);
+
+    // إزالة active من جميع الأزرار
+    buttons.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // أنميشن خروج الصفحة الحالية
+    const tl = gsap.timeline();
+    tl.to(currentPage, {
+      duration:0.5,
+      x:100,
+      rotationY:-45,
+      opacity:0,
+      scale:0.85,
+      ease:"power3.in",
+      onComplete:()=>{
+        currentPage.classList.remove('active');
+        currentPage.style.transform='';
+      }
+    });
+
+    // أنميشن دخول الصفحة الجديدة
+    targetPage.classList.add('active');
+    tl.fromTo(targetPage,{
+      x:-100,
+      rotationY:45,
+      opacity:0,
+      scale:0.85
+    },{
+      duration:0.6,
+      x:0,
+      rotationY:0,
+      opacity:1,
+      scale:1,
+      ease:"power4.out"
+    });
+
+    // زر النشط bounce
+    gsap.fromTo(btn,{
+      scale:1
+    },{
+      scale:1.2,
+      duration:0.25,
+      yoyo:true,
+      repeat:1,
+      ease:"elastic.out(1,0.5)"
+    });
+
+    currentPage = targetPage;
+  });
+});
+</script>
+
+</body>
+</html>
