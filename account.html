@@ -15,24 +15,6 @@ body {
   background: #f0f2f5;
 }
 
-button.logoutBtn {
-  background: #dc3545;
-  border: none;
-  color: #fff;
-  padding: 8px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  margin: 20px auto;
-  display: block;
-}
-
-button.logoutBtn:hover {
-  background: #c82333;
-  transform: scale(1.05);
-}
-
 .container {
   max-width: 900px;
   margin: 30px auto;
@@ -42,10 +24,28 @@ button.logoutBtn:hover {
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);
 }
 
+button.logoutBtn {
+  background: #dc3545;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  display: block;
+  margin: 20px auto;
+}
+button.logoutBtn:hover {
+  background: #c82333;
+  transform: scale(1.05);
+}
+
 h3 {
   margin-top: 0;
   margin-bottom: 20px;
   color: #333;
+  text-align: center;
 }
 
 table {
@@ -93,24 +93,23 @@ table td.label {
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/YOUR_DEPLOYED_WEBAPP_URL/exec"; // ضع رابط Web App هنا
+// رابط Google Apps Script النهائي
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-// تمرير parentNumber و studentCode عبر query string
+// الحصول على المعلمات من الرابط (إن وُجدت)
 const urlParams = new URLSearchParams(window.location.search);
-const parentNumber = urlParams.get('parent');
-const studentCode = urlParams.get('code');
+const parentNumber = urlParams.get('parent') || "";
+const studentCode = urlParams.get('code') || "";
 
-if (!parentNumber || !studentCode) {
-  window.location.href = "index.html";
-}
-
+// تحميل بيانات الطالب
 async function loadStudentData() {
   try {
-    const resp = await fetch(`${SHEET_URL}?action=getStudent&parent=${encodeURIComponent(parentNumber)}&code=${encodeURIComponent(studentCode)}`);
-    const data = await resp.json();
-    
-    if (!data || !data.valid) {
-      window.location.href = "index.html";
+    const query = `?action=getStudent&parent=${encodeURIComponent(parentNumber)}&code=${encodeURIComponent(studentCode)}`;
+    const response = await fetch(SHEET_URL + query);
+    const data = await response.json();
+
+    if (!data || !data.student) {
+      console.warn("⚠️ لم يتم العثور على بيانات الطالب، تحقق من Google Sheet أو الرابط.");
       return;
     }
 
@@ -124,9 +123,13 @@ async function loadStudentData() {
     const generalTable = document.getElementById("generalInfo");
     generalFields.forEach(field => {
       const row = document.createElement("tr");
-      const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
-      const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
-      row.appendChild(cellLabel); row.appendChild(cellValue);
+      const label = document.createElement("td");
+      label.textContent = field;
+      label.className = "label";
+      const value = document.createElement("td");
+      value.textContent = studentData[field] || "";
+      row.appendChild(label);
+      row.appendChild(value);
       generalTable.appendChild(row);
     });
 
@@ -140,18 +143,22 @@ async function loadStudentData() {
     const financialTable = document.getElementById("financialInfo");
     financialFields.forEach(field => {
       const row = document.createElement("tr");
-      const cellLabel = document.createElement("td"); cellLabel.textContent = field; cellLabel.className = "label";
-      const cellValue = document.createElement("td"); cellValue.textContent = studentData[field] || "";
-      row.appendChild(cellLabel); row.appendChild(cellValue);
+      const label = document.createElement("td");
+      label.textContent = field;
+      label.className = "label";
+      const value = document.createElement("td");
+      value.textContent = studentData[field] || "";
+      row.appendChild(label);
+      row.appendChild(value);
       financialTable.appendChild(row);
     });
 
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("حدث خطأ أثناء تحميل البيانات:", error);
   }
 }
 
-// زر تسجيل الخروج
+// زر تسجيل الخروج (بدون مسح الجلسة)
 function logout() {
   window.location.href = "index.html";
 }
