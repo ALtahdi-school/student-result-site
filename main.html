@@ -6,7 +6,6 @@
 <title>واجهة الطالب - Main</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 <style>
 body {
   margin: 0;
@@ -70,63 +69,31 @@ body {
 .tab.active svg {
   filter: drop-shadow(0 0 6px #fff);
 }
-
-/* GSAP color animation target */
-.tab-bg {
-  position: absolute;
-  width: 100%;
-  height: 70px;
-  bottom: 0;
-  left: 0;
-  z-index: -1;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  background: linear-gradient(90deg, #6a0dad, #007bff);
-}
 </style>
 </head>
 <body>
 
 <!-- الصفحات -->
-<div id="pageAccount" class="page">
-  <h2>الحساب</h2>
-  <h3>الرصيد الحالي</h3>
-  <span>تفاصيل الحساب...</span>
-</div>
-
-<div id="pageGrades" class="page">
-  <h2>الدرجات</h2>
-  <h3>النتائج الأكاديمية</h3>
-  <span>تفاصيل المواد والدرجات...</span>
-</div>
-
-<div id="pageChat" class="page">
-  <h2>الدردشة</h2>
-  <h3>رسائل الطلاب</h3>
-  <span>محادثات خاصة بالصف...</span>
-</div>
-
-<div id="pageAlerts" class="page">
-  <h2>التبليغات</h2>
-  <h3>الإشعارات</h3>
-  <span>الرسائل والتنبيهات المهمة...</span>
-</div>
+<div id="pageAccount" class="page"></div>
+<div id="pageGrades" class="page"></div>
+<div id="pageChat" class="page"></div>
+<div id="pageNotifications" class="page"></div>
 
 <!-- البار السفلي -->
 <div class="bottom-bar">
-  <div class="tab active" data-target="pageAccount">
+  <div class="tab active" data-page="account.html" data-target="pageAccount">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
     الحساب
   </div>
-  <div class="tab" data-target="pageGrades">
+  <div class="tab" data-page="grades.html" data-target="pageGrades">
     <svg viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm0 4v2h14V8H5zm0 4v2h14v-2H5zm0 4v2h14v-2H5z"/></svg>
     الدرجات
   </div>
-  <div class="tab" data-target="pageChat">
+  <div class="tab" data-page="chat.html" data-target="pageChat">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
     الدردشة
   </div>
-  <div class="tab" data-target="pageAlerts">
+  <div class="tab" data-page="notifications.html" data-target="pageNotifications">
     <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2H10c0 1.1.9 2 2 2zm6-6V9c0-3.1-1.6-5.6-4.5-6.3V2h-3v.7C7.6 3.4 6 5.9 6 9v7l-2 2v1h16v-1l-2-2z"/></svg>
     التبليغات
   </div>
@@ -136,43 +103,52 @@ body {
 const tabs = document.querySelectorAll('.tab');
 const pages = document.querySelectorAll('.page');
 
+async function loadPageContent(tab){
+  const pageId = tab.dataset.target;
+  const pageDiv = document.getElementById(pageId);
+  pageDiv.innerHTML = '...جارٍ التحميل';
+  try {
+    const res = await fetch(tab.dataset.page);
+    const html = await res.text();
+    pageDiv.innerHTML = html;
+    
+    // أنيميشن العناوين داخل الصفحة
+    const headers = pageDiv.querySelectorAll('h2, h3, span');
+    gsap.from(headers, {duration:0.8, opacity:0, y:20, stagger:0.15, ease:"power3.out"});
+  } catch {
+    pageDiv.innerHTML = 'حدث خطأ أثناء تحميل الصفحة';
+  }
+}
+
+function showPage(targetId){
+  pages.forEach(p=>{
+    if(p.id===targetId){
+      p.style.display = 'flex';
+      gsap.fromTo(p, {opacity:0}, {opacity:1, duration:0.8, ease:"power3.out"});
+    } else {
+      gsap.to(p, {opacity:0, duration:0.5, onComplete:()=>{p.style.display='none';}});
+    }
+  });
+}
+
 // عرض الصفحة الأولى تلقائيًا عند التحميل
-window.addEventListener('DOMContentLoaded', () => {
-  const firstPage = document.getElementById('pageAccount');
-  firstPage.style.display = 'flex';
-  gsap.to(firstPage, {duration: 0.8, opacity: 1});
-  
-  // ظهور العناوين تدريجيًا
-  const headers = firstPage.querySelectorAll('h2, h3, span');
-  gsap.from(headers, {duration:0.8, opacity:0, y:20, stagger:0.15, ease:"power3.out"});
+window.addEventListener('DOMContentLoaded',()=>{
+  const firstTab = document.querySelector('.tab.active');
+  loadPageContent(firstTab);
+  showPage(firstTab.dataset.target);
 });
 
-// وظيفة تبديل الصفحات مع GSAP متقدم
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    const targetId = tab.dataset.target;
-    const targetPage = document.getElementById(targetId);
-
+tabs.forEach(tab=>{
+  tab.addEventListener('click',()=>{
     // إزالة النشط من الباقي
     tabs.forEach(t=>t.classList.remove('active'));
-
-    // إضافة النشط للتاب الحالي
     tab.classList.add('active');
 
-    // اخفاء كل الصفحات مع GSAP
-    pages.forEach(p=>{
-      if(p!==targetPage){
-        gsap.to(p,{duration:0.5, opacity:0, onComplete:()=>{p.style.display='none';}});
-      }
-    });
+    // اظهار الصفحة المختارة
+    showPage(tab.dataset.target);
 
-    // اظهار الصفحة الجديدة
-    targetPage.style.display='flex';
-    gsap.fromTo(targetPage, {opacity:0}, {duration:0.8, opacity:1, ease:"power3.out"});
-
-    // ظهور العناوين داخل الصفحة الجديدة تدريجيًا
-    const headers = targetPage.querySelectorAll('h2, h3, span');
-    gsap.from(headers, {duration:0.8, opacity:0, y:20, stagger:0.15, ease:"power3.out"});
+    // تحميل المحتوى من الصفحة المرتبطة
+    loadPageContent(tab);
   });
 });
 </script>
