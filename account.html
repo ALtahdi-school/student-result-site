@@ -11,16 +11,21 @@ body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; 
 .header { background: linear-gradient(90deg, #6a0dad, #007bff); color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: 700; }
 .section { margin: 20px; padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 .section h3 { margin-top: 0; margin-bottom: 15px; font-size: 20px; color: #333; border-bottom: 2px solid #007bff; display: inline-block; padding-bottom: 5px; }
-.info-row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
+.info-row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; align-items:center; }
 .info-label { font-weight: 600; color: #555; flex: 1 1 45%; }
 .info-value { flex: 1 1 50%; color: #222; }
-@media(max-width: 600px){ .info-label, .info-value { flex: 1 1 100%; } }
+input.editable { width: 100%; padding:4px 6px; border-radius:4px; border:1px solid #ccc; }
+button { padding:10px 20px; border:none; border-radius:5px; cursor:pointer; margin-top:15px; }
+#saveBtn { background:#28a745; color:#fff; }
+#logoutBtn { background:#dc3545; color:#fff; margin-left:10px; }
+@media(max-width: 600px){ .info-label, .info-value { flex: 1 1 100%; margin-bottom:5px; } }
 </style>
 </head>
 <body>
 
 <div class="header">الحساب</div>
 
+<!-- القسم العام -->
 <div class="section" id="generalInfo">
     <h3>المعلومات العامة</h3>
     <div class="info-row"><div class="info-label">ID:</div><div class="info-value" id="id">-</div></div>
@@ -31,14 +36,14 @@ body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; 
     <div class="info-row"><div class="info-label">كود الطالب:</div><div class="info-value" id="studentCode">-</div></div>
     <div class="info-row"><div class="info-label">رقم ولي الأمر:</div><div class="info-value" id="parentNumber">-</div></div>
     <div class="info-row"><div class="info-label">رقم الخط:</div><div class="info-value" id="lineNumber">-</div></div>
+    <div class="info-row"><div class="info-label">العنوان:</div><div class="info-value" id="address">-</div></div>
+    <div class="info-row"><div class="info-label">المدرسة القادم منها:</div><div class="info-value" id="previousSchool">-</div></div>
+    <div class="info-row"><div class="info-label">اسم الأم:</div><div class="info-value" id="motherName">-</div></div>
     <div class="info-row"><div class="info-label">الملاحظات:</div><div class="info-value" id="notes">-</div></div>
     <div class="info-row"><div class="info-label">الكتب:</div><div class="info-value" id="books">-</div></div>
-    <div class="info-row"><div class="info-label">العنوان:</div><div class="info-value" id="address">-</div></div>
-    <div class="info-row"><div class="info-label">اسم الأم:</div><div class="info-value" id="motherName">-</div></div>
-    <div class="info-row"><div class="info-label">المدرسة القادم منها:</div><div class="info-value" id="previousSchool">-</div></div>
-    <div class="info-row"><div class="info-label">المعدل في الصف السابق:</div><div class="info-value" id="previousGrade">-</div></div>
 </div>
 
+<!-- القسم المالي -->
 <div class="section" id="financialInfo">
     <h3>المعلومات المالية</h3>
     <div class="info-row"><div class="info-label">القسط 1:</div><div class="info-value" id="fee1">-</div><div class="info-label">تاريخ 1:</div><div class="info-value" id="date1">-</div></div>
@@ -56,53 +61,122 @@ body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; 
     <div class="info-row"><div class="info-label">مبلغ الكفالة:</div><div class="info-value" id="guaranteeAmount">-</div></div>
 </div>
 
+<!-- أزرار الحفظ والخروج -->
+<div style="text-align:center; margin-bottom:30px;">
+    <button id="saveBtn">حفظ التعديلات</button>
+    <button id="logoutBtn">تسجيل الخروج</button>
+</div>
+
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
-
-// لنفترض أن كود الطالب مخزن في LocalStorage بعد تسجيل الدخول
+const parentCode = localStorage.getItem('parent') || '';
 const studentCode = localStorage.getItem('studentCode') || '';
 
-if(!studentCode){
-    alert('لم يتم تحديد كود الطالب، الرجاء تسجيل الدخول أولاً.');
-} else {
-    fetch(`${GAS_URL}?code=${studentCode}`)
-    .then(res => res.json())
-    .then(data => {
-        if(!data || Object.keys(data).length===0) return alert('لم يتم العثور على بيانات الطالب.');
-
-        // ملء الحقول العامة
-        document.getElementById('id').textContent = data.id || '-';
-        document.getElementById('studentName').textContent = data['اسم الطالب'] || '-';
-        document.getElementById('grade').textContent = data['الصف'] || '-';
-        document.getElementById('classRoom').textContent = data['القاعة'] || '-';
-        document.getElementById('gender').textContent = data['الجنس'] || '-';
-        document.getElementById('studentCode').textContent = data['كود الطالب'] || '-';
-        document.getElementById('parentNumber').textContent = data['رقم ولي الامر'] || data['رقم ولي الأمر'] || '-';
-        document.getElementById('lineNumber').textContent = data['رقم الخط'] || '-';
-        document.getElementById('notes').textContent = data['الملاحظات'] || '-';
-        document.getElementById('books').textContent = data['الكتب'] || '-';
-        document.getElementById('address').textContent = data['العنوان'] || '-';
-        document.getElementById('motherName').textContent = data['اسم الام'] || '-';
-        document.getElementById('previousSchool').textContent = data['المدرسة القادم منها'] || '-';
-        document.getElementById('previousGrade').textContent = data['المعدل في الصف السابق'] || '-';
-
-        // ملء الحقول المالية
-        for(let i=1;i<=8;i++){
-            document.getElementById(`fee${i}`).textContent = data[`القسط ${i}`] || '-';
-            document.getElementById(`date${i}`).textContent = data[`تاريخ ${i}`] || '-';
-        }
-        document.getElementById('remaining').textContent = data['الباقي الكلي'] || '-';
-        document.getElementById('totalAmount').textContent = data['المبلغ الكلي'] || '-';
-        document.getElementById('paid').textContent = data['الواصل الكلي'] || '-';
-        document.getElementById('guarantee').textContent = data['الكفالة'] || '-';
-        document.getElementById('guaranteeAmount').textContent = data['مبلغ الكفالة'] || '-';
-
-        // أنيميشن GSAP بعد تعبئة البيانات
-        gsap.from('.section h3', {duration: 0.8, y:-30, opacity:0, stagger:0.2, ease: "power3.out"});
-        gsap.from('.info-row', {duration: 1, x:-50, opacity:0, stagger:0.05, delay:0.5, ease: "power4.out"});
-    })
-    .catch(err => { console.error(err); alert('حدث خطأ أثناء جلب البيانات'); });
+if(!studentCode || !parentCode){
+    alert('الرجاء تسجيل الدخول أولاً');
+    window.location.href = 'index.html';
 }
+
+// جلب البيانات
+fetch(`${GAS_URL}?action=get&parent=${parentCode}&code=${studentCode}`)
+.then(res=>res.json())
+.then(data=>{
+    if(!data.valid){
+        alert('لم يتم العثور على بيانات الطالب');
+        window.location.href = 'index.html';
+        return;
+    }
+    const student = data.student;
+
+    // حقول عامة
+    const generalFields = [
+        {id:'id', key:'id'},
+        {id:'studentName', key:'اسم الطالب'},
+        {id:'grade', key:'الصف'},
+        {id:'classRoom', key:'القاعة'},
+        {id:'gender', key:'الجنس'},
+        {id:'studentCode', key:'كود الطالب'},
+        {id:'parentNumber', key:'رقم ولي الامر'},
+        {id:'lineNumber', key:'رقم الخط'},
+        {id:'address', key:'العنوان'},
+        {id:'previousSchool', key:'المدرسة القادم منها'},
+        {id:'motherName', key:'اسم الام'},
+        {id:'notes', key:'الملاحظات'},
+        {id:'books', key:'الكتب'}
+    ];
+
+    generalFields.forEach(f=>{
+        const container = document.getElementById(f.id);
+        // الحقول القابلة للتعديل
+        if(['parentNumber','studentCode','lineNumber','address','previousSchool','motherName'].includes(f.id)){
+            const input = document.createElement('input');
+            input.value = student[f.key] || '';
+            input.className = 'editable';
+            container.textContent = '';
+            container.appendChild(input);
+        } else {
+            container.textContent = student[f.key] || '-';
+        }
+    });
+
+    // الأقساط
+    for(let i=1;i<=8;i++){
+        document.getElementById(`fee${i}`).textContent = student[`القسط ${i}`]||'-';
+        document.getElementById(`date${i}`).textContent = student[`تاريخ ${i}`]||'-';
+    }
+    document.getElementById('remaining').textContent = student['الباقي الكلي']||'-';
+    document.getElementById('totalAmount').textContent = student['المبلغ الكلي']||'-';
+    document.getElementById('paid').textContent = student['الواصل الكلي']||'-';
+    document.getElementById('guarantee').textContent = student['الكفالة']||'-';
+    document.getElementById('guaranteeAmount').textContent = student['مبلغ الكفالة']||'-';
+
+    gsap.from('.section h3', {duration:0.8, y:-30, opacity:0, stagger:0.2, ease:"power3.out"});
+    gsap.from('.info-row', {duration:1, x:-50, opacity:0, stagger:0.05, delay:0.5, ease:"power4.out"});
+});
+
+// حفظ التعديلات
+document.getElementById('saveBtn').addEventListener('click', ()=>{
+    const editableFields = ['parentNumber','studentCode','lineNumber','address','previousSchool','motherName'];
+    editableFields.forEach(f=>{
+        const val = document.getElementById(f).querySelector('input').value;
+        fetch(GAS_URL,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                action:'update',
+                parent: parentCode,
+                code: studentCode,
+                column: document.getElementById(f).getAttribute('data-key') || f,
+                value: val
+            })
+        }).then(res=>res.json())
+        .then(resp=>{
+            if(!resp.success) console.error('خطأ في تحديث', f, resp.message);
+        });
+    });
+    alert('تم حفظ التعديلات بنجاح');
+});
+
+// تسجيل الخروج
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+    // تحديث العمود "الحالة" إلى "خرج"
+    fetch(GAS_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            action:'update',
+            parent: parentCode,
+            code: studentCode,
+            column:'الحالة',
+            value:'خرج'
+        })
+    }).then(res=>res.json())
+    .finally(()=>{
+        // مسح الجلسة وإعادة التوجيه
+        localStorage.clear();
+        window.location.href = 'index.html';
+    });
+});
 </script>
 
 </body>
