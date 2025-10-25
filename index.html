@@ -1,117 +1,184 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ثانوية التحدي الأهلية</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<title>تسجيل الدخول | نظام استعلام الطالب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.login-container {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+.login-container h2 {
+  color: #3b82f6;
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+
+.login-container p {
+  color: #555;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59,130,246,0.3);
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+button {
+  flex: 1;
+  padding: 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#loginBtn {
+  background: linear-gradient(90deg, #3b82f6, #6366f1);
+}
+
+#loginBtn:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #2563eb, #4f46e5);
+}
+
+#forgotBtn {
+  background: #fbbf24;
+  color: #000;
+}
+
+#forgotBtn:hover {
+  background: #f59e0b;
+  transform: scale(1.05);
+}
+
+.whatsapp-btn {
+  margin-top: 25px;
+  background: #25D366;
+  color: #fff;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-btn:hover {
+  background: #1ebe5d;
+  transform: scale(1.05);
+}
+
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  margin-top: 20px;
+  opacity: 0.8;
+}
+</style>
 </head>
+
 <body>
 
-<!-- ==================== صفحة تسجيل الدخول ==================== -->
-<div class="page" id="loginPage">
-  <div class="login-box">
-    <h1>ثانوية التحدي الأهلية</h1>
-    <input type="text" id="parentNum" placeholder="رقم ولي الأمر بدون الصفر الأول">
-    <input type="text" id="studentCode" placeholder="كود الطالب">
-    <button class="login-btn" onclick="login()">تسجيل الدخول</button>
-    <button class="forgot-btn" onclick="window.location.href='forgot.html'">لا أعرف الكود</button>
-    <a class="support-btn" href="https://wa.me/96407851521585?text=مرحبا.%20🌟%20في%20حاجة%20لمساعدة%20لحل%20إشكال%20في%20المنصة.%20اريد%20المساعدة%20؟%20💬" target="_blank">
-      الدعم السريع
-    </a>
-    <footer>قسم الحوكمة © جميع الحقوق محفوظة</footer>
+<div class="login-container" id="loginBox">
+  <h2>🎓 ثانوية التحدي الأهلية</h2>
+  <p>تسجيل الدخول إلى نظام الاستعلام عن الطالب</p>
+
+  <input type="text" id="parentNumber" placeholder="رقم ولي الأمر">
+  <input type="text" id="studentCode" placeholder="كود الطالب">
+
+  <div class="buttons">
+    <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
+    <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
   </div>
+
+  <button class="whatsapp-btn" onclick="openWhatsApp()">💬 دخول سريع عبر واتساب</button>
+
+  <footer>جميع الحقوق محفوظة © ثانوية التحدي الأهلية 2025</footer>
 </div>
 
-<!-- ==================== صفحة الحساب ==================== -->
-<div class="page" id="accountPage">
-  <h2>الحساب الشخصي</h2>
-  <div class="account-info">
-    <h3>المعلومات العامة</h3>
-    <p>ID: <span id="infoId"></span></p>
-    <p>اسم الطالب: <span id="infoName"></span></p>
-    <p>الصف: <span id="infoClass"></span></p>
-    <p>القاعة: <span id="infoRoom"></span></p>
-    <p>الجنس: <span id="infoGender"></span></p>
-    <p>رقم ولي الأمر: <span id="infoParent"></span></p>
-    <p>رقم الخط: <span id="infoLine"></span></p>
-    <p>الملاحظات: <span id="infoNotes"></span></p>
-    <p>الكتب: <span id="infoBooks"></span></p>
-    <p>العنوان: <span id="infoAddress"></span></p>
-    <p>اسم الأم: <span id="infoMother"></span></p>
-    <p>المدرسة القادم منها: <span id="infoSchool"></span></p>
-    <p>المعدل في الصف السابق: <span id="infoPrevGrade"></span></p>
-  </div>
-  <div class="financial-info">
-    <h3>المعلومات المالية</h3>
-    <p>القسط 1: <span id="fee1"></span> | التاريخ: <span id="date1"></span></p>
-    <p>القسط 2: <span id="fee2"></span> | التاريخ: <span id="date2"></span></p>
-    <p>القسط 3: <span id="fee3"></span> | التاريخ: <span id="date3"></span></p>
-    <p>القسط 4: <span id="fee4"></span> | التاريخ: <span id="date4"></span></p>
-    <p>القسط 5: <span id="fee5"></span> | التاريخ: <span id="date5"></span></p>
-    <p>القسط 6: <span id="fee6"></span> | التاريخ: <span id="date6"></span></p>
-    <p>القسط 7: <span id="fee7"></span> | التاريخ: <span id="date7"></span></p>
-    <p>القسط 8: <span id="fee8"></span> | التاريخ: <span id="date8"></span></p>
-    <p>الباقي الكلي: <span id="remaining"></span></p>
-    <p>المبلغ الكلي: <span id="total"></span></p>
-    <p>الواصل الكلي: <span id="paid"></span></p>
-    <p>الكفالة: <span id="guarantee"></span> | مبلغ الكفالة: <span id="guaranteeAmount"></span></p>
-  </div>
-  <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
-</div>
+<script>
+// GSAP Animation
+window.addEventListener("load", () => {
+  gsap.from("#loginBox", { duration: 1, opacity: 0, y: 80, ease: "power3.out" });
+  gsap.from("input", { duration: 0.8, opacity: 0, y: 30, stagger: 0.2, delay: 0.4 });
+  gsap.from(".buttons", { duration: 1, opacity: 0, y: 20, delay: 0.8 });
+  gsap.from(".whatsapp-btn", { duration: 1, opacity: 0, y: 20, delay: 1 });
+});
 
-<!-- ==================== صفحة الدردشة ==================== -->
-<div class="page" id="chatPage">
-  <h2>الدردشة</h2>
-  <div class="chat-box">
-    <p>الدردشة معطلة لأغراض الصيانة</p>
-    <div id="chatInputs">
-      <input type="text" id="chatInput1" placeholder="رسالة 1">
-      <input type="text" id="chatInput2" placeholder="رسالة 2">
-      <input type="text" id="chatInput3" placeholder="رسالة 3">
-      <input type="text" id="chatInput4" placeholder="رسالة 4">
-      <input type="text" id="chatInput5" placeholder="رسالة 5">
-      <button onclick="sendMessage(1)">إرسال 1</button>
-      <button onclick="sendMessage(2)">إرسال 2</button>
-      <button onclick="sendMessage(3)">إرسال 3</button>
-      <button onclick="sendMessage(4)">إرسال 4</button>
-      <button onclick="sendMessage(5)">إرسال 5</button>
-    </div>
-  </div>
-</div>
+function login() {
+  const parent = document.getElementById("parentNumber").value.trim();
+  const code = document.getElementById("studentCode").value.trim();
 
-<!-- ==================== صفحة التبليغات ==================== -->
-<div class="page" id="notificationsPage">
-  <h2>التبليغات</h2>
-  <textarea id="newNotification" placeholder="أدخل التبليغ هنا"></textarea>
-  <button onclick="addNotification()">إضافة تبليغ</button>
-  <div id="allNotifications"></div>
-</div>
+  if (!parent || !code) {
+    alert("⚠️ يرجى إدخال رقم ولي الأمر وكود الطالب.");
+    return;
+  }
 
-<!-- ==================== صفحة الدرجات ==================== -->
-<div class="page" id="gradesPage">
-  <h2>الدرجات</h2>
-  <div class="grades-box">
-    <p>اسلامية شهر 1: <span id="islamicMonth1"></span></p>
-    <p>اسلامية شهر 2: <span id="islamicMonth2"></span></p>
-    <p>اسلامية فصل 1: <span id="islamicTerm1"></span></p>
-    <p>اسلامية نصف سنة: <span id="islamicHalf1"></span></p>
-    <!-- أضف باقي المواد بنفس النمط -->
-  </div>
-  <button onclick="downloadGrades()">تنزيل الدرجات</button>
-</div>
+  localStorage.setItem("parentNumber", parent);
+  localStorage.setItem("studentCode", code);
 
-<!-- ==================== البار السفلي ==================== -->
-<div class="bottom-bar">
-  <button onclick="showPage('accountPage')"><i class="fa fa-user"></i> الحساب</button>
-  <button onclick="showPage('chatPage')"><i class="fa fa-comment"></i> الدردشة</button>
-  <button onclick="showPage('notificationsPage')"><i class="fa fa-bell"></i> التبليغات</button>
-  <button onclick="showPage('gradesPage')"><i class="fa fa-graduation-cap"></i> الدرجات</button>
-</div>
+  // بعد تسجيل الدخول افتح صفحة main.html
+  window.location.href = "main.html";
+}
 
-<script src="app.js"></script>
-<script src="animations.js"></script>
+function goToForgot() {
+  window.location.href = "forgot.html";
+}
+
+function openWhatsApp() {
+  const message = encodeURIComponent("مرحباً، أريد معرفة كود الطالب الخاص بي.");
+  const phone = "9647XXXXXXXX"; // ← ضع رقم المدرسة هنا بصيغة دولية بدون "+"
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+}
+</script>
+
 </body>
 </html>
