@@ -8,21 +8,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 body { font-family: 'Cairo', sans-serif; direction: rtl; margin: 0; padding: 0; background: #f6f6f6; }
-.header { background: linear-gradient(90deg, #6a0dad, #007bff); color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: 700; }
-.message { text-align: center; color: red; font-weight: 600; margin-top: 5px; }
+.header { background: linear-gradient(90deg, #6a0dad, #007bff); color: #fff; padding: 20px; text-align: center; font-size: 22px; font-weight: 700; position: relative; }
+.logout-icon { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 22px; color: #fff; }
+.message { text-align: center; color: red; font-weight: 600; margin-top: 10px; }
 .section { margin: 20px; padding: 20px; background: #fff; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); }
 .section h3 { margin-top: 0; margin-bottom: 15px; font-size: 20px; color: #333; border-bottom: 2px solid #007bff; display: inline-block; padding-bottom: 5px; }
 .info-row { display: flex; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; }
 .info-label { font-weight: 600; color: #555; flex: 1 1 45%; }
 .info-value { flex: 1 1 50%; color: #222; }
-button { padding: 10px 20px; margin-top: 15px; font-size: 16px; border:none; border-radius: 8px; cursor: pointer; }
-#logoutBtn { background:#ff4d4d; color:#fff; }
 @media(max-width: 600px){ .info-label, .info-value { flex: 1 1 100%; } }
 </style>
 </head>
 <body>
 
-<div class="header">الحساب</div>
+<div class="header">
+    الحساب
+    <span class="logout-icon" id="logoutBtn" title="تسجيل الخروج">&#x23FB;</span>
+</div>
+
 <div class="message" id="message"></div>
 
 <div class="section" id="generalInfo">
@@ -60,10 +63,6 @@ button { padding: 10px 20px; margin-top: 15px; font-size: 16px; border:none; bor
     <div class="info-row"><div class="info-label">مبلغ الكفالة:</div><div class="info-value" id="guaranteeAmount">-</div></div>
 </div>
 
-<div style="text-align:center;">
-    <button id="logoutBtn">تسجيل الخروج</button>
-</div>
-
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 const studentCode = localStorage.getItem('studentCode') || '';
@@ -80,13 +79,12 @@ if(!studentCode || !parentNumber){
             messageBox.textContent = data.error;
             return;
         }
-        // عرض البيانات
         document.getElementById('id').textContent = data.id || '-';
         document.getElementById('studentName').textContent = data['اسم الطالب'] || '-';
         document.getElementById('grade').textContent = data['الصف'] || '-';
         document.getElementById('classRoom').textContent = data['القاعة'] || '-';
         document.getElementById('gender').textContent = data['الجنس'] || '-';
-        document.getElementById('parentNumber').textContent = data['رقم ولي الامر'] || data['رقم ولي الأمر'] || '-';
+        document.getElementById('parentNumber').textContent = data['رقم ولي الامر'] || '-';
         document.getElementById('studentNum').textContent = data['رقم الطالب'] || '-';
         document.getElementById('lineNumber').textContent = data['رقم الخط'] || '-';
         document.getElementById('notes').textContent = data['الملاحظات'] || '-';
@@ -109,7 +107,10 @@ if(!studentCode || !parentNumber){
         gsap.from('.section h3', {duration: 0.8, y:-30, opacity:0, stagger:0.2, ease: "power3.out"});
         gsap.from('.info-row', {duration: 1, x:-50, opacity:0, stagger:0.05, delay:0.5, ease: "power4.out"});
     })
-    .catch(err => { console.error(err); messageBox.textContent = 'حدث خطأ أثناء جلب البيانات'; });
+    .catch(err => { 
+        console.error(err);
+        messageBox.textContent = 'حدث خطأ أثناء جلب البيانات';
+    });
 }
 
 // تسجيل الخروج
