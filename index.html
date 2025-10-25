@@ -139,16 +139,15 @@ footer {
     <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
   </div>
 
-  <button class="whatsapp-btn" onclick="openWhatsApp()">💬 دخول سريع عبر واتساب</button>
+  <button class="whatsapp-btn" onclick="openWhatsApp()">💬 الدخول السريع عبر واتساب</button>
 
   <footer>جميع الحقوق محفوظة © ثانوية التحدي الأهلية 2025</footer>
 </div>
 
 <script>
-// GSAP Animation
+// أنيميشن دخول الحاوية فقط
 window.addEventListener("load", () => {
-  gsap.from("#loginBox", { duration: 1, opacity: 0, y: 80, ease: "power3.out" });
-  gsap.from("input", { duration: 0.8, opacity: 0, y: 30, stagger: 0.2, delay: 0.4 });
+  gsap.from("#loginBox", { duration: 1.2, opacity: 0, scale: 0.9, ease: "power3.out" });
   gsap.from(".buttons", { duration: 1, opacity: 0, y: 20, delay: 0.8 });
   gsap.from(".whatsapp-btn", { duration: 1, opacity: 0, y: 20, delay: 1 });
 });
@@ -175,7 +174,7 @@ function goToForgot() {
 
 function openWhatsApp() {
   const message = encodeURIComponent("مرحباً، أريد معرفة كود الطالب الخاص بي.");
-  const phone = "9647XXXXXXXX"; // ← ضع رقم المدرسة هنا بصيغة دولية بدون "+"
+  const phone = "9647XXXXXXXX"; // ضع رقم المدرسة هنا بصيغة دولية بدون "+"
   window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
 }
 </script>
