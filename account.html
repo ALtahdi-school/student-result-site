@@ -38,6 +38,8 @@ button.logoutBtn {
   cursor: pointer;
   font-size: 14px;
   transition: all 0.3s ease;
+  margin: 20px auto;
+  display: block;
 }
 
 button.logoutBtn:hover {
@@ -95,12 +97,13 @@ table td.label {
 </div>
 
 <div class="container">
-  <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
-</div>
-
-<div class="container">
   <h3>المعلومات العامة</h3>
   <table id="generalInfo"></table>
+</div>
+
+<!-- زر تسجيل الخروج بين الأقسام -->
+<div class="container">
+  <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
 </div>
 
 <div class="container">
