@@ -3,9 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>واجهة الطالب - Main</title>
+<title>واجهة الطالب</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
 body {
   margin: 0;
@@ -14,20 +13,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-}
-
-.page {
-  flex: 1;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 20px;
-  opacity: 0;
-}
-
-.page h2, .page h3, .page span {
-  margin: 8px 0;
 }
 
 .bottom-bar {
@@ -62,6 +47,10 @@ body {
   fill: white;
 }
 
+.tab:hover {
+  transform: scale(1.1);
+}
+
 .tab.active {
   transform: scale(1.2);
 }
@@ -73,82 +62,38 @@ body {
 </head>
 <body>
 
-<!-- الصفحات -->
-<div id="pageAccount" class="page"></div>
-<div id="pageGrades" class="page"></div>
-<div id="pageChat" class="page"></div>
-<div id="pageNotifications" class="page"></div>
-
 <!-- البار السفلي -->
 <div class="bottom-bar">
-  <div class="tab active" data-page="account.html" data-target="pageAccount">
+  <div class="tab active" data-page="account.html">
     <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 5-2.3 5-5s-2.3-5-5-5-5 2.3-5 5 2.3 5 5 5zm0 2c-3.3 0-10 1.7-10 5v3h20v-3c0-3.3-6.7-5-10-5z"/></svg>
     الحساب
   </div>
-  <div class="tab" data-page="grades.html" data-target="pageGrades">
+  <div class="tab" data-page="grades.html">
     <svg viewBox="0 0 24 24"><path d="M5 4v2h14V4H5zm0 4v2h14V8H5zm0 4v2h14v-2H5zm0 4v2h14v-2H5z"/></svg>
     الدرجات
   </div>
-  <div class="tab" data-page="chat.html" data-target="pageChat">
+  <div class="tab" data-page="chat.html">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
     الدردشة
   </div>
-  <div class="tab" data-page="notifications.html" data-target="pageNotifications">
+  <div class="tab" data-page="notifications.html">
     <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2H10c0 1.1.9 2 2 2zm6-6V9c0-3.1-1.6-5.6-4.5-6.3V2h-3v.7C7.6 3.4 6 5.9 6 9v7l-2 2v1h16v-1l-2-2z"/></svg>
     التبليغات
   </div>
 </div>
 
 <script>
+// تفعيل الانتقال المباشر عند الضغط على التبويب
 const tabs = document.querySelectorAll('.tab');
-const pages = document.querySelectorAll('.page');
 
-async function loadPageContent(tab){
-  const pageId = tab.dataset.target;
-  const pageDiv = document.getElementById(pageId);
-  pageDiv.innerHTML = '...جارٍ التحميل';
-  try {
-    const res = await fetch(tab.dataset.page);
-    const html = await res.text();
-    pageDiv.innerHTML = html;
-    
-    // أنيميشن العناوين داخل الصفحة
-    const headers = pageDiv.querySelectorAll('h2, h3, span');
-    gsap.from(headers, {duration:0.8, opacity:0, y:20, stagger:0.15, ease:"power3.out"});
-  } catch {
-    pageDiv.innerHTML = 'حدث خطأ أثناء تحميل الصفحة';
-  }
-}
-
-function showPage(targetId){
-  pages.forEach(p=>{
-    if(p.id===targetId){
-      p.style.display = 'flex';
-      gsap.fromTo(p, {opacity:0}, {opacity:1, duration:0.8, ease:"power3.out"});
-    } else {
-      gsap.to(p, {opacity:0, duration:0.5, onComplete:()=>{p.style.display='none';}});
-    }
-  });
-}
-
-// عرض الصفحة الأولى تلقائيًا عند التحميل
-window.addEventListener('DOMContentLoaded',()=>{
-  const firstTab = document.querySelector('.tab.active');
-  loadPageContent(firstTab);
-  showPage(firstTab.dataset.target);
-});
-
-tabs.forEach(tab=>{
-  tab.addEventListener('click',()=>{
-    // إزالة النشط من الباقي
-    tabs.forEach(t=>t.classList.remove('active'));
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    // لتفعيل تأثير النشط
+    tabs.forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
 
-    // اظهار الصفحة المختارة
-    showPage(tab.dataset.target);
-
-    // تحميل المحتوى من الصفحة المرتبطة
-    loadPageContent(tab);
+    // فتح الصفحة المرتبطة مباشرة
+    window.location.href = tab.dataset.page;
   });
 });
 </script>
