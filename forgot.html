@@ -1,1 +1,147 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نسيت كود الطالب</title>
 
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
+body{
+  font-family:'Cairo',sans-serif;
+  direction:rtl;
+  margin:0;
+  padding:0;
+  background:linear-gradient(to bottom,#007bff,#6a0dad,#ffffff);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.box{
+  background:#fff;
+  padding:30px;
+  width:100%;
+  max-width:380px;
+  border-radius:12px;
+  box-shadow:0 5px 25px rgba(0,0,0,0.2);
+}
+
+h2{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+input{
+  width:100%;
+  padding:12px;
+  margin-bottom:15px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  background:#007bff;
+  color:#fff;
+  font-size:16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#005fc1;
+}
+
+.msg{
+  text-align:center;
+  margin-top:15px;
+  white-space:pre-line;
+  min-height:25px;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+
+  <h2>🔍 استرجاع كود الطالب</h2>
+
+  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر فقط">
+
+  <button onclick="getCode()">عرض كود الطالب</button>
+
+  <div class="msg" id="msg"></div>
+
+  <button style="margin-top:15px;background:#28a745;" onclick="goBack()">رجوع لصفحة الدخول</button>
+
+</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+
+function normalize(v){
+  v = String(v||"").trim();
+  v = v.replace(/\s+/g,"");
+  if (v.startsWith("0")) v = v.substring(1);
+  return v;
+}
+
+function goBack(){
+  window.location.href = "index.html";
+}
+
+async function getCode(){
+
+  const rawParent = document.getElementById("parentNumber").value.trim();
+  const msg = document.getElementById("msg");
+
+  if (!rawParent){
+    msg.style.color="#dc3545";
+    msg.textContent="⚠️ الرجاء إدخال رقم ولي الأمر.";
+    return;
+  }
+
+  const parent = normalize(rawParent);
+
+  msg.style.color="#333";
+  msg.textContent="⏳ جاري البحث...";
+
+  const body = new URLSearchParams({
+    action:"getCode",
+    parent: parent
+  });
+
+  try{
+    const res = await fetch(SHEET_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:body.toString()
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (data.success){
+      msg.style.color="#28a745";
+      msg.innerHTML = 
+        "✔ تم العثور على كود الطالب:\n" +
+        "<b style='font-size:22px;'>"+ data.code +"</b>";
+    } else {
+      msg.style.color="#dc3545";
+      msg.textContent = data.message || "❌ لم يتم العثور على بيانات.";
+    }
+
+  }catch(err){
+    msg.style.color="#dc3545";
+    msg.textContent = "⚠️ خطأ أثناء الاتصال بالسيرفر.";
+  }
+}
+</script>
+
+</body>
+</html>
