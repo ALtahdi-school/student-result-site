@@ -7,89 +7,64 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-body {
-  font-family: 'Cairo', sans-serif;
-  direction: rtl;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(to bottom, #007bff, #6a0dad, #ffffff);
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+body{
+  font-family:'Cairo',sans-serif;
+  direction:rtl;
+  margin:0;
+  padding:0;
+  background:linear-gradient(to bottom,#007bff,#6a0dad,#ffffff);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-.login-container {
-  background: #fff;
-  padding: 30px 25px;
-  border-radius: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  width: 100%;
-  max-width: 400px;
+.login-container{
+  background:#fff;
+  padding:30px 25px;
+  border-radius:15px;
+  width:100%;
+  max-width:400px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
 }
 
-.login-container h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #333;
+.login-container h2{
+  text-align:center;
+  margin-bottom:25px;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.input-group{
+  display:flex;
+  flex-direction:column;
+  gap:15px;
 }
 
-.input-group input {
-  padding: 12px;
-  font-size: 14px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+.input-group input{
+  padding:12px;
+  border-radius:8px;
+  border:1px solid #ccc;
 }
 
-.input-group input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:10px;
+  font-size:14px;
 }
 
-button {
-  padding: 10px 20px;
-  font-size: 14px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  margin-top: 10px;
-}
+#loginBtn{background:#28a745;color:#fff;}
+#loginBtn:hover{background:#218838;}
 
-#loginBtn {
-  background: #28a745;
-  color: #fff;
-}
+#whatsappBtn{background:#25D366;color:#fff;}
+#whatsappBtn:hover{background:#1ebe57;}
 
-#loginBtn:hover {
-  background: #218838;
-  transform: scale(1.05);
-}
-
-#whatsappBtn {
-  background: #25D366;
-  color: #fff;
-}
-
-#whatsappBtn:hover {
-  background: #1ebe57;
-  transform: scale(1.05);
-}
-
-.message {
-  text-align: center;
-  margin-top: 10px;
-  color: #dc3545;
-  min-height: 20px;
-  white-space: pre-line;
+.message{
+  margin-top:10px;
+  min-height:20px;
+  text-align:center;
+  white-space:pre-line;
 }
 </style>
 </head>
@@ -97,208 +72,84 @@ button {
 
 <div class="login-container">
   <h2>تسجيل دخول الطالب</h2>
+
   <div class="input-group">
     <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
     <input id="studentCode" placeholder="أدخل كود الطالب">
   </div>
+
   <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
   <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
+
   <div class="message" id="message"></div>
 </div>
 
 <script>
-// رابط السكربت (نفس الرابط اللي عطيتني)
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-// رابط الـ CSV نفس مجموعة 2
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
-
-// دالة لتطبيع الأرقام مثل مجموعة 2 و السكربت
 function normalize(v){
-  v = String(v || "").trim();
-  v = v.replace(/\s+/g, ""); // إزالة أي مسافات داخلية
-  if (v.startsWith("0")) v = v.substring(1);
+  v = String(v||"").trim();
+  v = v.replace(/\s+/g,"");
+  if(v.startsWith("0")) v = v.substring(1);
   return v;
 }
 
-function openWhatsApp() {
-  window.open("https://wsend.co/9647851521585", "_blank");
+function openWhatsApp(){
+  window.open("https://wsend.co/9647851521585","_blank");
 }
 
-async function login() {
+async function login(){
   const rawParent = document.getElementById("parentNumber").value.trim();
   const rawCode   = document.getElementById("studentCode").value.trim();
   const msg       = document.getElementById("message");
 
-  if (!rawParent || !rawCode) {
-    msg.style.color = "#dc3545";
-    msg.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
+  if(!rawParent || !rawCode){
+    msg.style.color="#dc3545";
+    msg.textContent="⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
     return;
   }
 
-  // نطبع النسخة الخام للعلم فقط (تقدر تشوفها من F12 لو حبيت)
-  console.log("RAW PARENT:", rawParent, "RAW CODE:", rawCode);
-
-  // نطبّع القيم (إزالة صفر البداية والمسافات) حتى تتطابق مع الشيت والسكربت
   const parent = normalize(rawParent);
   const code   = normalize(rawCode);
 
-  console.log("NORMALIZED PARENT:", parent, "NORMALIZED CODE:", code);
-
-  msg.style.color = "#333";
-  msg.textContent = "⏳ جاري التحقق من البيانات...";
-
-  // حفظ في localStorage في حال كان صحيح
-  localStorage.setItem("parentNumber", rawParent);
-  localStorage.setItem("studentCode", rawCode);
+  msg.style.color="#333";
+  msg.textContent="⏳ جاري التحقق...";
 
   const body = new URLSearchParams({
-    action: "check",
-    parent: parent,
-    code: code
+    action:"check",
+    parent:parent,
+    code:code
   });
 
-  try {
-    const res  = await fetch(SHEET_URL, {
-      method: "POST",
-      headers: {"Content-Type":"application/x-www-form-urlencoded"},
-      body: body.toString()
+  try{
+    const res = await fetch(SHEET_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:body.toString()
     });
 
     const data = await res.json();
-    console.log("RESPONSE FROM SCRIPT:", data);
+    console.log("SCRIPT RESPONSE:",data);
 
-    if (data.valid) {
-      msg.style.color = "#28a745";
-      msg.textContent = "✅ تسجيل الدخول ناجح، جاري تحويلك...";
-      // نحدّث التخزين بالتطبيع أيضًا
-      localStorage.setItem("parentNumberNormalized", parent);
-      localStorage.setItem("studentCodeNormalized", code);
-      setTimeout(()=>{ window.location.href = "main.html"; }, 800);
-    } else {
-      // هنا نبدأ تحليل الخطأ بالتفصيل من خلال الـ CSV
-      await diagnoseError(parent, code, msg);
+    if(data.valid){
+      msg.style.color="#28a745";
+      msg.textContent="✅ تسجيل الدخول ناجح";
+
+      localStorage.setItem("parentNumber",parent);
+      localStorage.setItem("studentCode",code);
+
+      setTimeout(()=>{ window.location.href="main.html"; },1000);
+
+    }else{
+      msg.style.color="#dc3545";
+      msg.textContent = data.message ? data.message : "❌ بيانات خاطئة";
     }
 
-  } catch (err) {
-    console.error(err);
-    msg.style.color = "#dc3545";
-    msg.textContent = "⚠️ خطأ أثناء الاتصال بالسيرفر.";
+  }catch(err){
+    msg.style.color="#dc3545";
+    msg.textContent="⚠️ خطأ أثناء الاتصال بالسيرفر.";
   }
 }
-
-// دالة لتحليل الخطأ بالتفصيل من خلال نفس الشيت بصيغة CSV
-async function diagnoseError(parent, code, msgElem){
-  try {
-    msgElem.style.color = "#333";
-    msgElem.textContent = "❌ البيانات غير صحيحة.\n⏳ جاري فحص السبب (رقم ولي الأمر أم كود الطالب)...";
-
-    const resp = await fetch(CSV_URL);
-    if (!resp.ok) throw new Error("فشل في جلب بيانات الشيت للتحليل.");
-
-    const text   = await resp.text();
-    const rows   = text.split("\n").map(r => r.split(","));
-    const header = rows[0].map(h => h.trim());
-    const dataRows = rows.slice(1);
-
-    const idxParent = header.indexOf("رقم ولي الامر");
-    const idxCode   = header.indexOf("كود الطالب");
-
-    if (idxParent === -1 || idxCode === -1) {
-      msgElem.style.color = "#dc3545";
-      msgElem.textContent =
-        "❌ لم أستطع تحليل الخطأ بدقة.\n" +
-        "⚠️ تأكد أن عناوين الأعمدة في الصف الأول هي تماماً: (رقم ولي الامر) و (كود الطالب).";
-      return;
-    }
-
-    // نعمل Arrays حسب الحاجة
-    const normalizedRows = dataRows.map(r => {
-      return {
-        parent: normalize(r[idxParent] || ""),
-        code:   normalize(r[idxCode]   || "")
-      };
-    });
-
-    const existsBothSameRow = normalizedRows.some(
-      o => o.parent === parent && o.code === code
-    );
-
-    const existsParentOnly = normalizedRows.some(
-      o => o.parent === parent && o.code !== code
-    );
-
-    const existsCodeOnly = normalizedRows.some(
-      o => o.code === code && o.parent !== parent
-    );
-
-    const existsParentAtAll = normalizedRows.some(
-      o => o.parent === parent
-    );
-
-    const existsCodeAtAll = normalizedRows.some(
-      o => o.code === code
-    );
-
-    let message = "";
-
-    if (existsBothSameRow) {
-      // هذا يعني أن البيانات صحيحة على الشيت لكن السكربت رجّع false
-      message =
-        "⚠️ البيانات موجودة في الشيت لكن السكربت لم يتحقق منها بشكل صحيح.\n" +
-        "▪ تأكد من أن السكربت المنشور هو آخر نسخة.\n" +
-        "▪ أو أعد نشر Web App من جديد (Deploy → New version).";
-    } else if (existsParentOnly && !existsCodeAtAll) {
-      message =
-        "❌ الخطأ في كود الطالب.\n" +
-        "✔ رقم ولي الأمر موجود في النظام.\n" +
-        "✏ تأكد من كتابة كود الطالب كما هو في الشيت.";
-    } else if (existsCodeOnly && !existsParentAtAll) {
-      message =
-        "❌ الخطأ في رقم ولي الأمر.\n" +
-        "✔ كود الطالب موجود في النظام.\n" +
-        "✏ تأكد من كتابة رقم ولي الأمر كما هو في الشيت.";
-    } else if (existsParentOnly && existsCodeOnly) {
-      message =
-        "⚠ يوجد رقم ولي أمر موجود وكود طالب موجود،\n" +
-        "لكن كل واحد مرتبط بطالب مختلف.\n" +
-        "✏ تأكد أنك تكتب رقم ولي الأمر الخاص بنفس الطالب لهذا الكود.";
-    } else if (!existsParentAtAll && existsCodeAtAll) {
-      message =
-        "❌ رقم ولي الأمر غير موجود في النظام.\n" +
-        "✔ كود الطالب موجود لكن مرتبط برقم ولي أمر مختلف.";
-    } else if (existsParentAtAll && !existsCodeAtAll) {
-      message =
-        "✔ رقم ولي الأمر موجود في النظام.\n" +
-        "❌ كود الطالب غير موجود نهائياً.\n" +
-        "✏ تحقق من صحة الكود المدخل.";
-    } else {
-      message =
-        "❌ لا يوجد أي سجل يطابق رقم ولي الأمر أو كود الطالب.\n" +
-        "✏ تأكد أن البيانات مسجلة في الشيت بشكل صحيح.";
-    }
-
-    msgElem.style.color = "#dc3545";
-    msgElem.textContent = message;
-
-  } catch (err) {
-    console.error(err);
-    msgElem.style.color = "#dc3545";
-    msgElem.textContent =
-      "❌ البيانات غير صحيحة، وتعذر تحليل الخطأ بالتفصيل.\n" +
-      "⚠ ربما يوجد خطأ في نشر الشيت كـ CSV أو في الاتصال بالإنترنت.";
-  }
-}
-
-// لو المستخدم مسجل سابقاً، يمكن تحويله مباشرة
-window.onload = () => {
-  const p = localStorage.getItem("parentNumber");
-  const c = localStorage.getItem("studentCode");
-  if (p && c) {
-    // تقدر تلغي السطر التالي لو ما تحب التحويل التلقائي
-    // window.location.href = "main.html";
-  }
-};
 </script>
 
 </body>
