@@ -3,248 +3,183 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الحساب الشخصي</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<title>إدارة حساب الطالب</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
 body{
-  margin:0;
-  font-family:'Cairo', sans-serif;
+  font-family:'Cairo',sans-serif;
   direction:rtl;
-  background:#f0f2f5;
+  margin:0;
+  padding:0;
+  background:#f6f6f6;
+}
+
+.header{
+  background:#007bff;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
 }
 
 .container{
-  max-width:900px;
+  max-width:550px;
   margin:20px auto;
   background:#fff;
   padding:20px;
-  border-radius:15px;
+  border-radius:12px;
   box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-h3{
-  margin-top:0;
+h2{
   text-align:center;
-  color:#333;
-  font-size:20px;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
   margin-bottom:20px;
 }
 
-td{
-  padding:10px;
-  border:1px solid #ccc;
-  font-size:14px;
-}
-
-td.label{
+label{
+  display:block;
+  margin-top:12px;
   font-weight:bold;
-  background:#f7f7f7;
-  width:30%;
 }
 
-input.edit-input{
+input{
   width:100%;
-  padding:8px;
-  border-radius:6px;
+  padding:12px;
+  margin-top:6px;
   border:1px solid #ccc;
-  font-family:inherit;
-}
-
-/* زر الحفظ */
-.saveBtn {
-  background:#007bff;
-  color:#fff;
-  padding:10px 20px;
-  border:none;
-  font-size:14px;
   border-radius:8px;
-  cursor:pointer;
-  display:block;
-  margin:10px auto;
-  transition:0.3s;
-}
-.saveBtn:hover{
-  background:#0069d9;
-  transform:scale(1.05);
 }
 
-/* تسجيل الخروج */
-.logoutBtn{
-  background:#dc3545;
+button{
+  width:100%;
+  padding:12px;
+  background:#28a745;
   color:#fff;
-  padding:10px 20px;
   border:none;
   border-radius:8px;
+  font-size:16px;
+  margin-top:20px;
   cursor:pointer;
-  font-size:15px;
-  display:block;
-  margin:20px auto;
-  transition:0.3s;
-}
-.logoutBtn:hover{
-  background:#c82333;
-  transform:scale(1.05);
 }
 
-/* شريط أسفل */
-.bottom-nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  height:60px;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
-  border-top:1px solid #ccc;
+button:hover{
+  background:#218838;
 }
-.bottom-nav a{
-  text-decoration:none;
-  color:#777;
-  font-size:13px;
-  font-weight:bold;
+
+.logout{
+  background:#dc3545 !important;
 }
-.bottom-nav a.active{
-  color:#007bff;
+
+.msg{
+  margin-top:15px;
+  white-space:pre-line;
+  text-align:center;
+  min-height:25px;
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h3>المعلومات الشخصية</h3>
-  <table id="generalInfo"></table>
+<div class="header">👤 حساب الطالب</div>
 
-  <button class="saveBtn" onclick="saveData()">💾 حفظ التغييرات</button>
-  <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
+<div class="container">
+
+  <h2>تعديل معلومات الحساب</h2>
+
+  <label>رقم ولي الأمر</label>
+  <input id="newParent" placeholder="رقم ولي الأمر الجديد">
+
+  <label>رقم الخط</label>
+  <input id="newLine" placeholder="رقم الخط الجديد">
+
+  <label>العنوان</label>
+  <input id="newAddress" placeholder="عنوان الطالب">
+
+  <label>رقم الطالب</label>
+  <input id="newStudentNumber" placeholder="الرقم المدرسي للطالب">
+
+  <label>المدرسة القادم منها</label>
+  <input id="newSchoolFrom" placeholder="اكتب اسم المدرسة">
+
+  <button onclick="updateData()">حفظ التعديلات</button>
+  <button class="logout" onclick="logout()">تسجيل الخروج</button>
+
+  <div class="msg" id="msg"></div>
 </div>
 
-<!-- البار السفلي -->
-<nav class="bottom-nav">
-  <a href="account.html" class="active">الحساب</a>
-  <a href="grades.html">الدرجات</a>
-  <a href="chat.html">الدردشة</a>
-  <a href="notifications.html">التبليغات</a>
-</nav>
-
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec"; // ضع الرابط هنا
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-const parentNumber = localStorage.getItem("parentNumber");
-const studentCode = localStorage.getItem("studentCode");
-
-if(!parentNumber || !studentCode){
-  window.location.href = "index.html";
+function normalize(v){
+  v = String(v||"").trim();
+  v = v.replace(/\s+/g,"");
+  if(v.startsWith("0")) v = v.substring(1);
+  return v;
 }
 
-let studentData = null;
+// تحديث البيانات
+async function updateData(){
+  const msg = document.getElementById("msg");
 
-// تحميل بيانات الطالب
-async function loadStudent(){
-  const res = await fetch(SHEET_URL + "?action=getStudent&parent=" + parentNumber + "&code=" + studentCode);
-  const data = await res.json();
+  const rawParent = localStorage.getItem("parentNumber");
+  const rawCode   = localStorage.getItem("studentCode");
 
-  if(!data.student){
-    alert("خطأ: لم يتم العثور على بيانات.");
+  if(!rawParent || !rawCode){
+    msg.style.color="#dc3545";
+    msg.textContent="⛔ انتهت الجلسة. سيتم الرجوع...";
+    setTimeout(()=>{ window.location.href="index.html"; },1000);
     return;
   }
 
-  studentData = data.student;
-
-  const fields = [
-    "id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر",
-    "رقم الخط","الملاحظات","كود الطالب","الكتب","العنوان",
-    "اسم الام","المدرسة القادم منها","المعدل في الصف السابق","رقم الطالب"
-  ];
-
-  const editable = ["رقم ولي الامر","رقم الخط","العنوان","المدرسة القادم منها","رقم الطالب"];
-
-  const table = document.getElementById("generalInfo");
-
-  fields.forEach(f=>{
-    const tr = document.createElement("tr");
-    const td1 = document.createElement("td");
-    td1.className = "label";
-    td1.textContent = f;
-
-    const td2 = document.createElement("td");
-
-    if(editable.includes(f)){
-      td2.innerHTML = `<input class="edit-input" id="edit_${f}" value="${studentData[f] || ""}">`;
-    } else {
-      td2.textContent = studentData[f] || "";
-    }
-
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    table.appendChild(tr);
-  });
-}
-
-loadStudent();
-
-// حفظ البيانات
-async function saveData(){
-  const newParent = document.getElementById("edit_رقم ولي الامر")?.value || "";
-  const newLine   = document.getElementById("edit_رقم الخط")?.value || "";
-  const newAddr   = document.getElementById("edit_العنوان")?.value || "";
-  const newSchool = document.getElementById("edit_المدرسة القادم منها")?.value || "";
-  const newNumber = document.getElementById("edit_رقم الطالب")?.value || "";
+  const parent = normalize(rawParent);
+  const code   = normalize(rawCode);
 
   const body = new URLSearchParams({
-    action: "updateStudent",
-    parent: parentNumber,
-    code: studentCode,
-    newParent,
-    newLine,
-    newAddress: newAddr,
-    newSchoolFrom: newSchool,
-    newStudentNumber: newNumber
+    action:"updateStudent",
+    parent: parent,
+    code: code,
+    newParent: document.getElementById("newParent").value.trim(),
+    newLine: document.getElementById("newLine").value.trim(),
+    newAddress: document.getElementById("newAddress").value.trim(),
+    newStudentNumber: document.getElementById("newStudentNumber").value.trim(),
+    newSchoolFrom: document.getElementById("newSchoolFrom").value.trim()
   });
 
-  const res = await fetch(SHEET_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
-    body: body.toString()
-  });
+  msg.style.color="#333";
+  msg.textContent="⏳ جاري تحديث البيانات...";
 
-  const result = await res.json();
+  try{
+    const res = await fetch(SHEET_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:body.toString()
+    });
 
-  if(result.success){
-    alert("✔ تم حفظ التعديلات بنجاح");
-  }else{
-    alert("⚠ حدث خطأ في الحفظ");
+    const data = await res.json();
+    console.log(data);
+
+    if(data.success){
+      msg.style.color="#28a745";
+      msg.textContent="✔ تم تحديث البيانات بنجاح.";
+    } else {
+      msg.style.color="#dc3545";
+      msg.textContent = data.message || "❌ لم يتم تحديث البيانات.";
+    }
+
+  }catch(err){
+    msg.style.color="#dc3545";
+    msg.textContent="⚠️ خطأ أثناء الاتصال بالسيرفر.";
   }
 }
 
-// تسجيل الخروج
 async function logout(){
-  const body = new URLSearchParams({
-    action:"logout",
-    parent: parentNumber,
-    code: studentCode
-  });
-
-  await fetch(SHEET_URL, {
-    method:"POST",
-    headers:{ "Content-Type":"application/x-www-form-urlencoded"},
-    body: body.toString()
-  });
-
   localStorage.clear();
-  window.location.href = "index.html";
+  window.location.href="index.html";
 }
 </script>
 
 </body>
 </html>
-
