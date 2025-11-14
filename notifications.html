@@ -3,294 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>التبليغات - ثانوية التحدي</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<title>التبليغات</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+
 body{
-  margin:0;
   font-family:'Cairo',sans-serif;
-  background:#f4f5f7;
   direction:rtl;
-  padding-bottom:70px;
+  margin:0;
+  padding:0;
+  background:#f5f5f5;
 }
 
-/* الحاوية */
+.header{
+  background:#007bff;
+  color:#fff;
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
+
 .container{
-  max-width:900px;
-  background:#fff;
+  max-width:700px;
   margin:20px auto;
+  background:#fff;
   padding:20px;
   border-radius:12px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.1);
+  box-shadow:0 4px 20px rgba(0,0,0,0.1);
 }
 
-/* عنوان */
-h1{
-  margin:0;
-  text-align:center;
-  font-size:20px;
+.note{
+  background:#f0f8ff;
+  padding:15px;
+  border-radius:10px;
+  border:1px solid #d0e7ff;
   margin-bottom:15px;
 }
 
-/* نموذج الإدارة */
-#adminBox{
-  background:#fff4d2;
-  padding:15px;
-  border-radius:10px;
-  border-right:5px solid #f59e0b;
-  display:none;
-  margin-bottom:20px;
-}
-#adminBox h3{
-  margin:0 0 10px;
-}
-.admin-input{
-  width:100%;
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  margin-bottom:10px;
-  font-family:inherit;
-}
-.admin-btn{
-  padding:10px 15px;
-  background:#f59e0b;
-  color:#fff;
-  border:none;
-  font-size:14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-.admin-btn:hover{
-  background:#d97706;
-}
-
-/* التبليغات */
-.notification-card{
-  background:#eef2ff;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.05);
-  border-right:6px solid #6366f1;
-  opacity:0;
-  transform:translateY(20px);
-  transition:0.4s;
-}
-
-.notification-card.show {
-  opacity:1;
-  transform:translateY(0);
-}
-
-.nt-title{
-  font-size:16px;
+.note-title{
+  color:#007bff;
+  font-size:18px;
   font-weight:bold;
-  margin-bottom:8px;
-  color:#4f46e5;
-}
-.nt-text{
-  font-size:14px;
   margin-bottom:6px;
 }
-.nt-time{
-  font-size:12px;
-  color:#6b7280;
+
+.note-date{
+  color:#555;
+  font-size:13px;
+  margin-bottom:8px;
 }
 
-/* البار السفلي */
-.bottom-nav{
-  position:fixed;
-  bottom:0; left:0; right:0;
-  background:#fff;
-  height:60px;
-  border-top:1px solid #ccc;
-  display:flex;
-  justify-content:space-around;
-  align-items:center;
+.note-text{
+  font-size:15px;
+  color:#333;
 }
-.bottom-nav a{
-  text-decoration:none;
-  color:#6b7280;
-  font-size:13px;
-  font-weight:bold;
+
+.logout-btn{
+  margin-top:20px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background:#dc3545;
+  color:#fff;
+  font-size:16px;
+  cursor:pointer;
 }
-.bottom-nav a.active{
-  color:#4f46e5;
+
+.logout-btn:hover{
+  background:#c82333;
 }
 </style>
 </head>
-
 <body>
 
-<div class="container">
-  <h1>التبليغات</h1>
+<div class="header">🔔 التبليغات</div>
 
-  <!-- صندوق الإدارة -->
-  <div id="adminBox">
-    <h3>إضافة تبليغ جديد 📢</h3>
-    <input id="ntTitle" class="admin-input" placeholder="عنوان التبليغ">
-    <textarea id="ntText" class="admin-input" placeholder="نص التبليغ" rows="4"></textarea>
-    <button class="admin-btn" onclick="sendNotification()">إرسال التبليغ</button>
-  </div>
-
-  <!-- منطقة عرض التبليغات -->
-  <div id="notifArea">جاري تحميل التبليغات...</div>
+<div class="container" id="notifBox">
+  ⏳ جاري تحميل التبليغات...
 </div>
 
-<nav class="bottom-nav">
-  <a href="account.html">الحساب</a>
-  <a href="grades.html">الدرجات</a>
-  <a href="chat.html">الدردشة</a>
-  <a class="active" href="notifications.html">التبليغات</a>
-</nav>
-
-<!-- Firebase compat -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
 
 <script>
-// رابط السكربت
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec"; // ضع الرابط هنا
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-// البيانات المخزنة
-const parentNumber = localStorage.getItem("parentNumber");
-const studentCode  = localStorage.getItem("studentCode");
-
-if (!parentNumber || !studentCode) {
-  window.location.href="index.html";
+function normalize(v){
+  v = String(v||"").trim();
+  v = v.replace(/\s+/g,"");
+  if (v.startsWith("0")) v = v.substring(1);
+  return v;
 }
 
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyD0o9zko_GU4o81zwVZycWhybybrvvcvUA",
-  authDomain: "tahadi-school.firebaseapp.com",
-  databaseURL: "https://tahadi-school-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "tahadi-school",
-  storageBucket: "tahadi-school.firebasestorage.app",
-  messagingSenderId: "829722194594",
-  appId: "1:829722194594:web:4fe0401e1e872485259dfb"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+async function loadNotifications(){
+  const rawParent = localStorage.getItem("parentNumber");
+  const rawCode   = localStorage.getItem("studentCode");
 
-let currentUser = null;
+  const box = document.getElementById("notifBox");
 
-// تحميل بيانات الطالب لمعرفة هل هو الإدارة
-async function loadUser(){
+  if(!rawParent || !rawCode){
+    box.textContent = "⛔ انتهت الجلسة، سيتم تحويلك...";
+    setTimeout(()=>{ window.location.href="index.html"; },1200);
+    return;
+  }
+
+  const parent = normalize(rawParent);
+  const code   = normalize(rawCode);
+
   const body = new URLSearchParams({
-    action:"getStudent",
-    parent: parentNumber,
-    code:   studentCode
+    action:"getNotifications",
+    parent:parent,
+    code:code
   });
 
-  const res = await fetch(SHEET_URL,{
-    method:"POST",
-    headers:{"Content-Type":"application/x-www-form-urlencoded"},
-    body: body.toString()
-  });
+  try{
+    const res = await fetch(SHEET_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:body.toString()
+    });
 
-  const data = await res.json();
-  if(!data.student){
-    document.getElementById("notifArea").innerHTML="خطأ بتحميل بيانات المستخدم";
-    return;
-  }
+    const data = await res.json();
+    console.log("NOTIFICATIONS:", data);
 
-  currentUser = data.student;
-
-  const grade = currentUser["الصف"];
-
-  // إذا إدارة → أظهر صندوق الإضافة
-  if(String(grade).trim() === "الادارة"){
-    document.getElementById("adminBox").style.display="block";
-  }
-
-  loadNotifications();
-}
-
-// إرسال تبليغ (للإدارة فقط)
-function sendNotification(){
-  const title = document.getElementById("ntTitle").value.trim();
-  const text  = document.getElementById("ntText").value.trim();
-
-  if(!title || !text){
-    alert("املأ جميع الحقول");
-    return;
-  }
-
-  const notifRef = db.ref("notifications").push();
-  notifRef.set({
-    title: title,
-    text: text,
-    time: Date.now()
-  });
-
-  document.getElementById("ntTitle").value="";
-  document.getElementById("ntText").value="";
-  alert("تم إرسال التبليغ ✔");
-}
-
-// تحميل التبليغات وعرضها بأنميشن
-function loadNotifications(){
-  const notifArea = document.getElementById("notifArea");
-  notifArea.innerHTML = "جاري تحميل...";
-
-  const ref = db.ref("notifications").orderByChild("time");
-
-  ref.on("value",snap=>{
-    const data = snap.val();
-
-    notifArea.innerHTML = "";
-
-    if(!data){
-      notifArea.innerHTML = "<p>لا توجد تبليغات</p>";
+    if(!data.success){
+      box.textContent = "لا توجد تبليغات.";
       return;
     }
 
-    const keys = Object.keys(data).sort((a,b)=> data[b].time - data[a].time);
+    const notes = data.notifications || [];
+    let html = "";
 
-    keys.forEach((id,i)=>{
-      const nt = data[id];
-
-      const card = document.createElement("div");
-      card.className="notification-card";
-
-      const t1 = document.createElement("div");
-      t1.className="nt-title";
-      t1.textContent = "🔔 " + nt.title;
-
-      const t2 = document.createElement("div");
-      t2.className="nt-text";
-      t2.textContent = nt.text;
-
-      const t3 = document.createElement("div");
-      t3.className="nt-time";
-      t3.textContent = formatTime(nt.time);
-
-      card.appendChild(t1);
-      card.appendChild(t2);
-      card.appendChild(t3);
-
-      notifArea.appendChild(card);
-
-      // أنميشن ظهور متدرج
-      setTimeout(()=>{
-        card.classList.add("show");
-      }, 100 * i);
+    notes.forEach(n=>{
+      html += `
+        <div class="note">
+          <div class="note-title">${n.title || "تبليغ"}</div>
+          <div class="note-date">${n.date || ""}</div>
+          <div class="note-text">${n.text || ""}</div>
+        </div>
+      `;
     });
-  });
+
+    box.innerHTML = html || "لا توجد تبليغات حالياً.";
+
+  }catch(err){
+    box.innerHTML = "⚠️ خطأ أثناء تحميل البيانات.";
+  }
 }
 
-// تنسيق الوقت
-function formatTime(ts){
-  const d = new Date(ts);
-  return d.toLocaleString("ar-IQ",{hour:"2-digit",minute:"2-digit",year:"numeric",month:"numeric",day:"numeric"});
+function logout(){
+  localStorage.clear();
+  window.location.href="index.html";
 }
 
-loadUser();
+window.onload = loadNotifications;
 </script>
 
 </body>
 </html>
-
