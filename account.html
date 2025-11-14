@@ -4,166 +4,245 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الحساب الشخصي</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
-body {
-  font-family: 'Cairo', sans-serif;
-  direction: rtl;
-  margin: 0;
-  padding: 0;
-  background: #f0f2f5;
+body{
+  margin:0;
+  font-family:'Cairo', sans-serif;
+  direction:rtl;
+  background:#f0f2f5;
 }
 
-.container {
-  max-width: 900px;
-  margin: 30px auto;
-  background: #fff;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+.container{
+  max-width:900px;
+  margin:20px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-button.logoutBtn {
-  background: #dc3545;
-  border: none;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: all 0.3s ease;
-  display: block;
-  margin: 20px auto;
-}
-button.logoutBtn:hover {
-  background: #c82333;
-  transform: scale(1.05);
+h3{
+  margin-top:0;
+  text-align:center;
+  color:#333;
+  font-size:20px;
 }
 
-h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  color: #333;
-  text-align: center;
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-bottom:20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 30px;
+td{
+  padding:10px;
+  border:1px solid #ccc;
+  font-size:14px;
 }
 
-table td {
-  padding: 10px;
-  border: 1px solid #ccc;
+td.label{
+  font-weight:bold;
+  background:#f7f7f7;
+  width:30%;
 }
 
-table td.label {
-  font-weight: bold;
-  background: #f8f9fa;
-  width: 30%;
+input.edit-input{
+  width:100%;
+  padding:8px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  font-family:inherit;
 }
 
-@media (max-width: 600px) {
-  table td {
-    display: block;
-    width: 100%;
-  }
-  table td.label {
-    width: 100%;
-  }
+/* زر الحفظ */
+.saveBtn {
+  background:#007bff;
+  color:#fff;
+  padding:10px 20px;
+  border:none;
+  font-size:14px;
+  border-radius:8px;
+  cursor:pointer;
+  display:block;
+  margin:10px auto;
+  transition:0.3s;
+}
+.saveBtn:hover{
+  background:#0069d9;
+  transform:scale(1.05);
+}
+
+/* تسجيل الخروج */
+.logoutBtn{
+  background:#dc3545;
+  color:#fff;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:15px;
+  display:block;
+  margin:20px auto;
+  transition:0.3s;
+}
+.logoutBtn:hover{
+  background:#c82333;
+  transform:scale(1.05);
+}
+
+/* شريط أسفل */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  height:60px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid #ccc;
+}
+.bottom-nav a{
+  text-decoration:none;
+  color:#777;
+  font-size:13px;
+  font-weight:bold;
+}
+.bottom-nav a.active{
+  color:#007bff;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
-  <h3>المعلومات العامة</h3>
+  <h3>المعلومات الشخصية</h3>
   <table id="generalInfo"></table>
-</div>
 
-<div class="container">
+  <button class="saveBtn" onclick="saveData()">💾 حفظ التغييرات</button>
   <button class="logoutBtn" onclick="logout()">تسجيل الخروج</button>
 </div>
 
-<div class="container">
-  <h3>المعلومات المالية</h3>
-  <table id="financialInfo"></table>
-</div>
+<!-- البار السفلي -->
+<nav class="bottom-nav">
+  <a href="account.html" class="active">الحساب</a>
+  <a href="grades.html">الدرجات</a>
+  <a href="chat.html">الدردشة</a>
+  <a href="notifications.html">التبليغات</a>
+</nav>
 
 <script>
-// رابط Google Apps Script النهائي
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+const SHEET_URL = "YOUR_SCRIPT_URL_HERE";  // ضع رابط السكربت
 
-// الحصول على المعلمات من الرابط (إن وُجدت)
-const urlParams = new URLSearchParams(window.location.search);
-const parentNumber = urlParams.get('parent') || "";
-const studentCode = urlParams.get('code') || "";
+const parentNumber = localStorage.getItem("parentNumber");
+const studentCode = localStorage.getItem("studentCode");
 
-// تحميل بيانات الطالب
-async function loadStudentData() {
-  try {
-    const query = `?action=getStudent&parent=${encodeURIComponent(parentNumber)}&code=${encodeURIComponent(studentCode)}`;
-    const response = await fetch(SHEET_URL + query);
-    const data = await response.json();
-
-    if (!data || !data.student) {
-      console.warn("⚠️ لم يتم العثور على بيانات الطالب، تحقق من Google Sheet أو الرابط.");
-      return;
-    }
-
-    const studentData = data.student;
-
-    // قسم المعلومات العامة
-    const generalFields = [
-      "id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر","رقم الخط",
-      "الملاحظات","الكتب","العنوان","اسم الام","المدرسة القادم منها","المعدل في الصف السابق"
-    ];
-    const generalTable = document.getElementById("generalInfo");
-    generalFields.forEach(field => {
-      const row = document.createElement("tr");
-      const label = document.createElement("td");
-      label.textContent = field;
-      label.className = "label";
-      const value = document.createElement("td");
-      value.textContent = studentData[field] || "";
-      row.appendChild(label);
-      row.appendChild(value);
-      generalTable.appendChild(row);
-    });
-
-    // قسم المعلومات المالية
-    const financialFields = [
-      "القسط 1","تاريخ 1","القسط 2","تاريخ 2","القسط 3","تاريخ 3",
-      "القسط 4","تاريخ 4","القسط 5","تاريخ 5","القسط 6","تاريخ 6",
-      "القسط 7","تاريخ 7","القسط 8","تاريخ 8",
-      "الباقي الكلي","المبلغ الكلي","الواصل الكلي","الكفالة","مبلغ الكفالة"
-    ];
-    const financialTable = document.getElementById("financialInfo");
-    financialFields.forEach(field => {
-      const row = document.createElement("tr");
-      const label = document.createElement("td");
-      label.textContent = field;
-      label.className = "label";
-      const value = document.createElement("td");
-      value.textContent = studentData[field] || "";
-      row.appendChild(label);
-      row.appendChild(value);
-      financialTable.appendChild(row);
-    });
-
-  } catch (error) {
-    console.error("حدث خطأ أثناء تحميل البيانات:", error);
-  }
-}
-
-// زر تسجيل الخروج (بدون مسح الجلسة)
-function logout() {
+if(!parentNumber || !studentCode){
   window.location.href = "index.html";
 }
 
-window.addEventListener("DOMContentLoaded", loadStudentData);
+let studentData = null;
+
+// تحميل بيانات الطالب
+async function loadStudent(){
+  const res = await fetch(SHEET_URL + "?action=getStudent&parent=" + parentNumber + "&code=" + studentCode);
+  const data = await res.json();
+
+  if(!data.student){
+    alert("خطأ: لم يتم العثور على بيانات.");
+    return;
+  }
+
+  studentData = data.student;
+
+  const fields = [
+    "id","اسم الطالب","الصف","القاعة","الجنس","رقم ولي الامر",
+    "رقم الخط","الملاحظات","كود الطالب","الكتب","العنوان",
+    "اسم الام","المدرسة القادم منها","المعدل في الصف السابق","رقم الطالب"
+  ];
+
+  const editable = ["رقم ولي الامر","رقم الخط","العنوان","المدرسة القادم منها","رقم الطالب"];
+
+  const table = document.getElementById("generalInfo");
+
+  fields.forEach(f=>{
+    const tr = document.createElement("tr");
+    const td1 = document.createElement("td");
+    td1.className = "label";
+    td1.textContent = f;
+
+    const td2 = document.createElement("td");
+
+    if(editable.includes(f)){
+      td2.innerHTML = `<input class="edit-input" id="edit_${f}" value="${studentData[f] || ""}">`;
+    } else {
+      td2.textContent = studentData[f] || "";
+    }
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    table.appendChild(tr);
+  });
+}
+
+loadStudent();
+
+// حفظ البيانات
+async function saveData(){
+  const newParent = document.getElementById("edit_رقم ولي الامر")?.value || "";
+  const newLine   = document.getElementById("edit_رقم الخط")?.value || "";
+  const newAddr   = document.getElementById("edit_العنوان")?.value || "";
+  const newSchool = document.getElementById("edit_المدرسة القادم منها")?.value || "";
+  const newNumber = document.getElementById("edit_رقم الطالب")?.value || "";
+
+  const body = new URLSearchParams({
+    action: "updateStudent",
+    parent: parentNumber,
+    code: studentCode,
+    newParent,
+    newLine,
+    newAddress: newAddr,
+    newSchoolFrom: newSchool,
+    newStudentNumber: newNumber
+  });
+
+  const res = await fetch(SHEET_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded" },
+    body: body.toString()
+  });
+
+  const result = await res.json();
+
+  if(result.success){
+    alert("✔ تم حفظ التعديلات بنجاح");
+  }else{
+    alert("⚠ حدث خطأ في الحفظ");
+  }
+}
+
+// تسجيل الخروج
+async function logout(){
+  const body = new URLSearchParams({
+    action:"logout",
+    parent: parentNumber,
+    code: studentCode
+  });
+
+  await fetch(SHEET_URL, {
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded"},
+    body: body.toString()
+  });
+
+  localStorage.clear();
+  window.location.href = "index.html";
+}
 </script>
 
 </body>
