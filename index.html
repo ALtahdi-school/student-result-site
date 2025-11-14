@@ -53,14 +53,6 @@ body {
   box-shadow: 0 0 8px rgba(0,123,255,0.3);
 }
 
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
 button {
   padding: 10px 20px;
   font-size: 14px;
@@ -68,12 +60,13 @@ button {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 10px;
 }
 
 #loginBtn {
   background: #28a745;
   color: #fff;
-  flex: 1;
 }
 
 #loginBtn:hover {
@@ -81,22 +74,9 @@ button {
   transform: scale(1.05);
 }
 
-#forgotBtn {
-  background: #ffc107;
-  color: #000;
-  flex: 1;
-}
-
-#forgotBtn:hover {
-  background: #e0a800;
-  transform: scale(1.05);
-}
-
 #whatsappBtn {
   background: #25D366;
   color: #fff;
-  width: 100%;
-  margin-top: 15px;
 }
 
 #whatsappBtn:hover {
@@ -111,9 +91,6 @@ button {
   min-height: 20px;
 }
 
-@media (max-width: 480px) {
-  .button-group { flex-direction: column; }
-}
 </style>
 </head>
 <body>
@@ -124,19 +101,16 @@ button {
     <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
     <input id="studentCode" placeholder="أدخل كود الطالب">
   </div>
-  <div class="button-group">
-    <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
-    <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
-  </div>
+  <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
   <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
   <div class="message" id="message"></div>
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+const SHEET_URL = "YOUR_SCRIPT_URL"; // ضع الرابط هنا
 
-function goToForgot() {
-  window.location.href = "forgot.html";
+function normalize(num){
+  return num.replace(/^0+/, "");
 }
 
 function openWhatsApp() {
@@ -144,49 +118,56 @@ function openWhatsApp() {
 }
 
 async function login() {
-  const parent = document.getElementById("parentNumber").value.trim();
-  const code = document.getElementById("studentCode").value.trim();
-  const msgEl = document.getElementById("message");
-  msgEl.textContent = "";
+  const rawParent = document.getElementById("parentNumber").value.trim();
+  const code      = document.getElementById("studentCode").value.trim();
+  const msg       = document.getElementById("message");
 
-  if (!parent || !code) {
-    msgEl.textContent = "⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
+  if (!rawParent || !code) {
+    msg.textContent = "⚠️ الرجاء إدخال جميع الحقول";
     return;
   }
 
-  msgEl.textContent = "⏳ جاري التحقق...";
+  const parent = normalize(rawParent);
+  msg.textContent = "⏳ جاري التحقق...";
+
+  const body = new URLSearchParams({
+    action: "check",
+    parent: parent,
+    code: code
+  });
 
   try {
-    const resp = await fetch(`${SHEET_URL}?action=check&parent=${encodeURIComponent(parent)}&code=${encodeURIComponent(code)}`);
-    const data = await resp.json();
+    const res = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: {"Content-Type":"application/x-www-form-urlencoded"},
+      body: body.toString()
+    });
+
+    const data = await res.json();
 
     if (data.valid) {
-      // حفظ تسجيل الدخول
-      localStorage.setItem("studentCode", code);
       localStorage.setItem("parentNumber", parent);
-      msgEl.style.color = "#28a745";
-      msgEl.textContent = "✅ تم تسجيل الدخول بنجاح. سيتم تحويلك...";
-      setTimeout(() => { window.location.href = "main.html"; }, 1500);
+      localStorage.setItem("studentCode", code);
+
+      msg.style.color = "#28a745";
+      msg.textContent = "✅ تسجيل الدخول ناجح";
+
+      setTimeout(()=>{ window.location.href = "main.html"; }, 1000);
+
     } else {
-      msgEl.style.color = "#dc3545";
-      msgEl.textContent = "❌ رقم ولي الأمر أو كود الطالب غير صحيح.";
+      msg.textContent = "❌ بيانات خاطئة";
     }
+
   } catch (err) {
-    console.error(err);
-    msgEl.style.color = "#dc3545";
-    msgEl.textContent = "❌ حدث خطأ أثناء التحقق. حاول لاحقًا.";
+    msg.textContent = "⚠️ خطأ أثناء الاتصال";
   }
 }
 
-// تحميل بيانات مسجلة سابقًا
-window.addEventListener("DOMContentLoaded", () => {
-  const savedCode = localStorage.getItem("studentCode");
-  const savedParent = localStorage.getItem("parentNumber");
-  if (savedCode && savedParent) {
-    document.getElementById("studentCode").value = savedCode;
-    document.getElementById("parentNumber").value = savedParent;
-  }
-});
+window.onload = ()=>{
+  const p = localStorage.getItem("parentNumber");
+  const c = localStorage.getItem("studentCode");
+  if (p && c) window.location.href = "main.html";
+};
 </script>
 
 </body>
