@@ -88,34 +88,29 @@ button {
   text-align: center;
   margin-top: 10px;
   color: #dc3545;
-  font-weight: bold;
   min-height: 20px;
 }
+
 </style>
 </head>
 <body>
 
 <div class="login-container">
   <h2>تسجيل دخول الطالب</h2>
-
   <div class="input-group">
     <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
     <input id="studentCode" placeholder="أدخل كود الطالب">
   </div>
-
   <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
   <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
-
   <div class="message" id="message"></div>
 </div>
 
 <script>
-/* رابط Google Script (Web App URL) */
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec"; // ضع الرابط هنا
 
-/* تنظيف رقم ولي الأمر – إزالة الصفر الأول والمسافات */
-function cleanNumber(num) {
-  return String(num).trim().replace(/\s+/g, "").replace(/^0+/, "");
+function normalize(num){
+  return num.replace(/^0+/, "");
 }
 
 function openWhatsApp() {
@@ -123,33 +118,28 @@ function openWhatsApp() {
 }
 
 async function login() {
-  const msg = document.getElementById("message");
+  const rawParent = document.getElementById("parentNumber").value.trim();
+  const code      = document.getElementById("studentCode").value.trim();
+  const msg       = document.getElementById("message");
 
-  let parent = document.getElementById("parentNumber").value.trim();
-  let code   = document.getElementById("studentCode").value.trim();
-
-  if (!parent || !code) {
+  if (!rawParent || !code) {
     msg.textContent = "⚠️ الرجاء إدخال جميع الحقول";
-    msg.style.color = "#dc3545";
     return;
   }
 
-  parent = cleanNumber(parent);  // ← حذف الصفر الأول
-  code   = code.trim();
-
+  const parent = normalize(rawParent);
   msg.textContent = "⏳ جاري التحقق...";
-  msg.style.color = "#333";
+
+  const body = new URLSearchParams({
+    action: "check",
+    parent: parent,
+    code: code
+  });
 
   try {
-    const body = new URLSearchParams({
-      action: "check",
-      parent,
-      code
-    });
-
     const res = await fetch(SHEET_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {"Content-Type":"application/x-www-form-urlencoded"},
       body: body.toString()
     });
 
@@ -162,24 +152,18 @@ async function login() {
       msg.style.color = "#28a745";
       msg.textContent = "✅ تسجيل الدخول ناجح";
 
-      setTimeout(() => {
-        window.location.href = "main.html";
-      }, 900);
+      setTimeout(()=>{ window.location.href = "main.html"; }, 1000);
 
     } else {
-      msg.style.color = "#dc3545";
       msg.textContent = "❌ بيانات خاطئة";
     }
 
   } catch (err) {
-    msg.style.color = "#dc3545";
     msg.textContent = "⚠️ خطأ أثناء الاتصال";
-    console.error(err);
   }
 }
 
-// تسجيل دخول تلقائي إذا توجد جلسة
-window.onload = () => {
+window.onload = ()=>{
   const p = localStorage.getItem("parentNumber");
   const c = localStorage.getItem("studentCode");
   if (p && c) window.location.href = "main.html";
