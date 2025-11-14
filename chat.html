@@ -4,49 +4,657 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الدردشة - ثانوية التحدي</title>
-<link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
-body { font-family:'Cairo',sans-serif; direction:rtl; margin:0; background: linear-gradient(180deg,#f7fbff,#ffffff);}
-.app { max-width: 980px; margin:24px auto 110px; padding:18px;}
-.app-header { text-align:center; margin-bottom:14px;}
-.app-header h1{margin:0; background:linear-gradient(90deg,#4f46e5,#0ea5e9); -webkit-background-clip:text; color:transparent; font-weight:800;}
-.app-header p { margin:8px 0 0 0; color:#6b7280; font-size:13px;}
-.card{background:#fff; border-radius:14px; padding:18px; box-shadow:0 12px 30px rgba(15,23,42,0.08); margin-bottom:14px; transform: translateY(18px); opacity:0; transition: transform .6s, opacity .6s;}
-.message-area { min-height:300px; display:flex; align-items:center; justify-content:center; color:#ef4444; font-weight:700; font-size:18px;}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:'Cairo',sans-serif;
+  direction:rtl;
+  background:#f3f4f6;
+  padding-bottom:60px;
+}
+.app{
+  max-width:960px;
+  margin:0 auto;
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* الهيدر */
+.app-header{
+  padding:10px 14px;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+  color:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.app-header h1{
+  margin:0;
+  font-size:18px;
+}
+.app-header .room-label{
+  font-size:12px;
+  opacity:0.9;
+}
+
+/* محتوى الدردشة */
+.chat-container{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:10px;
+}
+
+/* قائمة الغرف للإدارة */
+#adminRoomList{
+  margin-bottom:8px;
+  padding:8px;
+  background:#fff;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.05);
+  display:none;
+}
+#adminRoomList h3{
+  margin:0 0 6px;
+  font-size:14px;
+}
+#adminRoomsSelect{
+  width:100%;
+  padding:6px;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-family:inherit;
+}
+
+/* شريط الحالة */
+#statusBar{
+  font-size:11px;
+  text-align:center;
+  padding:4px 6px;
+  color:#6b7280;
+}
+
+/* منطقة الرسائل */
+.messages{
+  flex:1;
+  overflow-y:auto;
+  padding:8px 4px;
+}
+
+/* صف الرسالة */
+.message-row{
+  display:flex;
+  margin-bottom:8px;
+}
+.message-row.me{
+  justify-content:flex-end;
+}
+.message-row.other{
+  justify-content:flex-start;
+}
+.message-row.admin{
+  justify-content:center;
+}
+
+/* الأفاتار */
+.avatar{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  overflow:hidden;
+  background:#e5e7eb;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:16px;
+  margin:0 6px;
+}
+.message-row.me .avatar{ order:2; }
+.message-row.other .avatar{ order:0; }
+.message-row.admin .avatar{ order:0; }
+
+/* الفقاعة */
+.bubble-wrapper{
+  max-width:75%;
+  display:flex;
+  flex-direction:column;
+}
+.sender-name{
+  font-size:11px;
+  margin-bottom:2px;
+  color:#6b7280;
+}
+.bubble{
+  padding:8px 10px;
+  border-radius:14px;
+  font-size:13px;
+  position:relative;
+  word-wrap:break-word;
+}
+
+/* ألوان الفقاعات */
+.message-row.me .bubble{
+  background:linear-gradient(135deg,#3b82f6,#1d4ed8); /* يتغير في JS للبنات */
+  color:#fff;
+}
+.message-row.other .bubble{
+  background:#e5e7eb;
+  color:#111827;
+}
+.message-row.admin .bubble{
+  background:#facc15;
+  color:#111827;
+}
+
+/* الوقت والتفاعلات */
+.meta-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:10px;
+  margin-top:4px;
+}
+.time-text{
+  color:#6b7280;
+}
+.reactions{
+  display:flex;
+  gap:4px;
+}
+.reaction-pill{
+  font-size:11px;
+  padding:1px 5px;
+  border-radius:999px;
+  background:rgba(0,0,0,0.06);
+}
+
+/* زر الإيموجي */
+.react-btn{
+  position:absolute;
+  left:4px;
+  bottom:4px;
+  font-size:13px;
+  cursor:pointer;
+  opacity:0.7;
+}
+
+/* شريط الإيموجي */
+.emoji-picker{
+  display:none;
+  position:absolute;
+  bottom:100%;
+  left:0;
+  margin-bottom:4px;
+  background:#fff;
+  border-radius:999px;
+  padding:4px 6px;
+  box-shadow:0 6px 20px rgba(0,0,0,0.15);
+  font-size:16px;
+  gap:4px;
+  white-space:nowrap;
+}
+
+/* شريط الإدخال */
+.input-bar{
+  padding:8px;
+  background:#fff;
+  border-top:1px solid #e5e7eb;
+  display:flex;
+  gap:6px;
+}
+.input-bar input{
+  flex:1;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid #d1d5db;
+  font-family:inherit;
+  font-size:14px;
+}
+.input-bar button{
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+  font-size:14px;
+  cursor:pointer;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+  color:#fff;
+}
+
+/* البار السفلي */
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:56px;
+  background:#fff;
+  border-top:1px solid #e5e7eb;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+}
+.bottom-nav a{
+  text-decoration:none;
+  font-size:13px;
+  color:#6b7280;
+  font-weight:bold;
+}
+.bottom-nav a.active{
+  color:#4f46e5;
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
   <div class="app-header">
-    <h1>الدردشة</h1>
-    <p>تواصل مع الإدارة</p>
+    <div>
+      <h1>الدردشة</h1>
+      <div class="room-label" id="roomLabel">جاري تحميل الغرفة...</div>
+    </div>
   </div>
 
-  <div class="card" id="chatCard">
-    <div class="message-area" id="chatMessage">
-      ⚠️ الدردشة متوقفة حالياً للصيانة والتطوير
+  <div class="chat-container">
+    <!-- قائمة الغرف للإدارة -->
+    <div id="adminRoomList">
+      <h3>غرف الدردشة (الإدارة)</h3>
+      <select id="adminRoomsSelect"></select>
+    </div>
+
+    <div id="statusBar"></div>
+
+    <div id="messages" class="messages"></div>
+
+    <div class="input-bar">
+      <input id="chatInput" placeholder="اكتب رسالتك...">
+      <button id="sendBtn">إرسال</button>
     </div>
   </div>
 </div>
 
 <nav class="bottom-nav">
-  <a href="account.html">👤<span>الحساب</span></a>
-  <a href="grades.html">📚<span>الدرجات</span></a>
-  <a href="notifications.html">🔔<span>التبليغات</span></a>
-  <a href="chat.html" class="active">💬<span>الدردشة</span></a>
+  <a href="account.html">الحساب</a>
+  <a href="grades.html">الدرجات</a>
+  <a href="chat.html" class="active">الدردشة</a>
+  <a href="notifications.html">التبليغات</a>
 </nav>
 
+<!-- Firebase (Compat) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
 <script>
-const SHEET_API_URL = "YOUR_GOOGLE_SHEET_API_URL"; // ضع هنا رابط Google Apps Script
+// رابط السكربت (غيره إلى رابط Apps Script الحقيقي)
+const SHEET_URL = "YOUR_SCRIPT_URL_HERE";
 
-function getSession(){ return JSON.parse(sessionStorage.getItem('studentData')||'null'); }
-function requireLogin(){ if(!getSession()){ window.location.href='index.html'; return false;} return true; }
+// بيانات الدخول من localStorage
+const parentNumber = localStorage.getItem("parentNumber");
+const studentCode  = localStorage.getItem("studentCode");
 
-document.addEventListener('DOMContentLoaded', ()=>{
-  if(!requireLogin()) return;
-  gsap.to('#chatCard', {duration:0.7, opacity:1, y:0, ease:'power3.out'});
+if (!parentNumber || !studentCode) {
+  window.location.href = "index.html";
+}
+
+// إعداد Firebase (باستخدام بيانات مشروعك)
+const firebaseConfig = {
+  apiKey: "AIzaSyD0o9zko_GU4o81zwVZycWhybybrvvcvUA",
+  authDomain: "tahadi-school.firebaseapp.com",
+  databaseURL: "https://tahadi-school-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "tahadi-school",
+  storageBucket: "tahadi-school.firebasestorage.app",
+  messagingSenderId: "829722194594",
+  appId: "1:829722194594:web:4fe0401e1e872485259dfb"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// عناصر DOM
+const messagesEl        = document.getElementById("messages");
+const roomLabelEl       = document.getElementById("roomLabel");
+const statusBarEl       = document.getElementById("statusBar");
+const adminRoomListEl   = document.getElementById("adminRoomList");
+const adminRoomsSelectEl= document.getElementById("adminRoomsSelect");
+const inputEl           = document.getElementById("chatInput");
+const sendBtnEl         = document.getElementById("sendBtn");
+
+// متغيرات عامة
+let currentUser  = null;
+let currentRoomId= null;
+let currentRole  = "student"; // or "admin"
+let messagesRef  = null;
+let isMale       = true;
+
+// تنظيف نص لاستخدامه كمفتاح في Firebase
+function sanitizeKey(str){
+  if(!str) return "";
+  return String(str).trim()
+    .replace(/\s+/g,"-")
+    .replace(/[.#$/\[\]]/g,"_");
+}
+
+// بناء معرف الغرفة من الصف + الجنس + القاعة
+function buildRoomId(grade,gender,hall){
+  return sanitizeKey(grade)+"_"+sanitizeKey(gender)+"_"+sanitizeKey(hall);
+}
+
+// تحميل بيانات الطالب من Apps Script عبر POST
+async function loadCurrentUser(){
+  try{
+    statusBarEl.textContent = "جاري تحميل بيانات المستخدم...";
+    const body = new URLSearchParams({
+      action:"getStudent",
+      parent: parentNumber,
+      code:   studentCode
+    });
+
+    const res  = await fetch(SHEET_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body: body.toString()
+    });
+    const data = await res.json();
+
+    if(!data || !data.student){
+      statusBarEl.textContent = "⚠️ لم يتم العثور على بيانات الطالب.";
+      return;
+    }
+
+    currentUser = data.student;
+
+    const grade  = currentUser["الصف"]   || "";
+    const gender = currentUser["الجنس"] || "";
+    const hall   = currentUser["القاعة"]|| "";
+
+    isMale = (String(gender).trim() === "ذكر");
+
+    // إذا الصف = الادارة → هو إدارة
+    if(String(grade).trim() === "الادارة"){
+      currentRole = "admin";
+      setupAdminUI();
+    } else {
+      currentRole = "student";
+      const roomId = buildRoomId(grade,gender,hall);
+      joinRoom(roomId, `${grade} - ${gender} - ${hall}`);
+    }
+
+    statusBarEl.textContent = "";
+  }catch(e){
+    console.error(e);
+    statusBarEl.textContent = "⚠️ حدث خطأ أثناء تحميل البيانات.";
+  }
+}
+
+// إعداد واجهة الإدارة (قائمة الغرف)
+function setupAdminUI(){
+  adminRoomListEl.style.display = "block";
+  roomLabelEl.textContent = "الإدارة - اختر غرفة الدردشة";
+
+  const roomsRef = db.ref("chats");
+  roomsRef.on("value",snapshot=>{
+    const rooms = snapshot.val() || {};
+    adminRoomsSelectEl.innerHTML = "";
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "اختر غرفة...";
+    adminRoomsSelectEl.appendChild(placeholder);
+
+    Object.keys(rooms).forEach(roomId=>{
+      const opt = document.createElement("option");
+      opt.value = roomId;
+      opt.textContent = roomId.replace(/-/g," ").replace(/_/g," - ");
+      adminRoomsSelectEl.appendChild(opt);
+    });
+  });
+
+  adminRoomsSelectEl.addEventListener("change",()=>{
+    const roomId = adminRoomsSelectEl.value;
+    if(!roomId) return;
+    const labelText = adminRoomsSelectEl.options[adminRoomsSelectEl.selectedIndex].textContent;
+    joinRoom(roomId,labelText);
+  });
+}
+
+// الانضمام لغرفة
+function joinRoom(roomId,labelText){
+  if(messagesRef){
+    messagesRef.off();
+  }
+  currentRoomId = roomId;
+  roomLabelEl.textContent = labelText || "الدردشة مع طلاب الصف";
+  messagesEl.innerHTML = "";
+
+  const roomRef = db.ref("chats/"+currentRoomId);
+  roomRef.child("meta").update({ lastJoined: Date.now() });
+
+  messagesRef = roomRef.child("messages");
+  messagesRef.off();
+
+  messagesRef.on("child_added",snap=>{
+    const msgId = snap.key;
+    const msg   = snap.val();
+    renderMessage(msgId,msg);
+  });
+
+  messagesRef.on("child_changed",snap=>{
+    const msgId = snap.key;
+    const msg   = snap.val();
+    updateMessageReactions(msgId,msg);
+  });
+}
+
+// رسم رسالة واحدة
+function renderMessage(messageId,msg){
+  const senderId   = msg.senderId   || "";
+  const senderName = msg.senderName || "مجهول";
+  const text       = msg.text       || "";
+  const ts         = msg.time       || Date.now();
+  const role       = msg.role       || "student";
+  const gender     = msg.gender     || "";
+  const reactions  = msg.reactions  || {};
+
+  const isAdminMsg = (role === "admin");
+  const myId = currentUser ? String(currentUser["id"] || currentUser["ID"] || currentUser["رقم الطالب"] || "") : "";
+  const senderIdStr = String(senderId);
+
+  let rowType = "other";
+  if(isAdminMsg){
+    rowType = "admin";
+  } else if(myId && senderIdStr && myId === senderIdStr){
+    rowType = "me";
+  }
+
+  const row = document.createElement("div");
+  row.className = "message-row "+rowType;
+  row.dataset.id = messageId;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  let avatarText = "👤";
+  if(isAdminMsg){
+    avatarText = "👑";
+  } else if(gender === "ذكر"){
+    avatarText = "👦";
+  } else if(gender === "أنثى"){
+    avatarText = "👧";
+  }
+  avatar.textContent = avatarText;
+
+  const wrap = document.createElement("div");
+  wrap.className = "bubble-wrapper";
+
+  const nameEl = document.createElement("div");
+  nameEl.className = "sender-name";
+  nameEl.textContent = isAdminMsg ? "الإدارة" : senderName;
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+
+  if(rowType === "me" && !isAdminMsg){
+    if(isMale){
+      bubble.style.background = "linear-gradient(135deg,#3b82f6,#1d4ed8)";
+      bubble.style.color      = "#fff";
+    } else {
+      bubble.style.background = "linear-gradient(135deg,#ec4899,#db2777)";
+      bubble.style.color      = "#fff";
+    }
+  }
+
+  const textEl = document.createElement("div");
+  textEl.textContent = text;
+
+  const emojiPicker = document.createElement("div");
+  emojiPicker.className = "emoji-picker";
+  const emojis = [
+    { key:"like",    icon:"👍" },
+    { key:"heart",   icon:"❤️" },
+    { key:"laugh",   icon:"😂" },
+    { key:"wow",     icon:"😮" },
+    { key:"sad",     icon:"😢" },
+    { key:"dislike", icon:"👎" }
+  ];
+  emojis.forEach(e=>{
+    const span = document.createElement("span");
+    span.textContent = e.icon;
+    span.style.cursor = "pointer";
+    span.onclick = ev=>{
+      ev.stopPropagation();
+      addReaction(messageId,e.key);
+      emojiPicker.style.display = "none";
+    };
+    emojiPicker.appendChild(span);
+  });
+
+  const reactBtn = document.createElement("div");
+  reactBtn.className = "react-btn";
+  reactBtn.textContent = "😀";
+  reactBtn.onclick = ev=>{
+    ev.stopPropagation();
+    emojiPicker.style.display = (emojiPicker.style.display === "flex" ? "none" : "flex");
+    emojiPicker.style.display = "flex";
+  };
+
+  const metaLine = document.createElement("div");
+  metaLine.className = "meta-line";
+
+  const timeEl = document.createElement("span");
+  timeEl.className = "time-text";
+  timeEl.textContent = formatTime(ts);
+
+  const reactionsEl = document.createElement("div");
+  reactionsEl.className = "reactions";
+  reactionsEl.dataset.for = messageId;
+  fillReactions(reactionsEl,reactions);
+
+  metaLine.appendChild(timeEl);
+  metaLine.appendChild(reactionsEl);
+
+  bubble.appendChild(emojiPicker);
+  bubble.appendChild(textEl);
+  bubble.appendChild(reactBtn);
+  bubble.appendChild(metaLine);
+
+  wrap.appendChild(nameEl);
+  wrap.appendChild(bubble);
+
+  if(rowType === "me"){
+    row.appendChild(wrap);
+    row.appendChild(avatar);
+  } else {
+    row.appendChild(avatar);
+    row.appendChild(wrap);
+  }
+
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+// تحديث التفاعلات
+function updateMessageReactions(messageId,msg){
+  const reactions = msg.reactions || {};
+  const pillsContainer = messagesEl.querySelector('.reactions[data-for="'+messageId+'"]');
+  if(!pillsContainer) return;
+  fillReactions(pillsContainer,reactions);
+}
+
+// تعبئة التفاعلات
+function fillReactions(container,reactions){
+  container.innerHTML = "";
+  const emojiMap = {
+    like:"👍",
+    heart:"❤️",
+    laugh:"😂",
+    wow:"😮",
+    sad:"😢",
+    dislike:"👎"
+  };
+  Object.keys(emojiMap).forEach(key=>{
+    const count = reactions[key] || 0;
+    if(count > 0){
+      const pill = document.createElement("div");
+      pill.className = "reaction-pill";
+      pill.textContent = emojiMap[key]+" "+count;
+      container.appendChild(pill);
+    }
+  });
+}
+
+// إضافة تفاعل
+function addReaction(messageId,key){
+  if(!currentRoomId || !messagesRef) return;
+  const msgRef = messagesRef.child(messageId).child("reactions").child(key);
+  msgRef.transaction(current=> (current || 0) + 1 );
+}
+
+// إرسال رسالة
+function sendMessage(){
+  const text = inputEl.value.trim();
+  if(!text || !currentUser || !currentRoomId || !messagesRef) return;
+
+  const idVal   = String(currentUser["id"] || currentUser["ID"] || currentUser["رقم الطالب"] || "");
+  const name    = currentUser["اسم الطالب"] || "طالب";
+  const grade   = currentUser["الصف"]       || "";
+  const gender  = currentUser["الجنس"]     || "";
+
+  const msg = {
+    senderId:   idVal,
+    senderName: name,
+    role:       (currentRole === "admin" ? "admin" : "student"),
+    text:       text,
+    time:       Date.now(),
+    grade:      grade,
+    gender:     gender,
+    reactions:  {}
+  };
+
+  messagesRef.push(msg);
+  inputEl.value = "";
+}
+
+sendBtnEl.addEventListener("click",sendMessage);
+inputEl.addEventListener("keydown",e=>{
+  if(e.key === "Enter"){
+    e.preventDefault();
+    sendMessage();
+  }
 });
+
+// تنسيق الوقت
+function formatTime(ts){
+  const d = new Date(ts);
+  if(isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString("ar-IQ",{hour:"2-digit",minute:"2-digit"});
+}
+
+// بدء التحميل
+window.addEventListener("DOMContentLoaded",loadCurrentUser);
 </script>
+
 </body>
 </html>
