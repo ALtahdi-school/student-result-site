@@ -4,69 +4,77 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل دخول الطالب</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  margin:0;
-  padding:0;
-  background:linear-gradient(to bottom,#007bff,#6a0dad,#ffffff);
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+body {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to bottom, #007bff, #6a0dad, #ffffff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.login-container{
-  background:#fff;
-  padding:30px 25px;
-  border-radius:15px;
-  width:100%;
-  max-width:400px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+.login-container {
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
 }
 
-.login-container h2{
-  text-align:center;
-  margin-bottom:25px;
+.login-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
 }
 
-.input-group{
-  display:flex;
-  flex-direction:column;
-  gap:15px;
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.input-group input{
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #ccc;
+.input-group input {
+  padding: 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
-button{
-  padding:10px 20px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:10px;
-  font-size:14px;
+button {
+  padding: 10px 20px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
 }
 
-#loginBtn{background:#28a745;color:#fff;}
-#loginBtn:hover{background:#218838;}
+#loginBtn {
+  background: #28a745;
+  color: #fff;
+}
 
-#whatsappBtn{background:#25D366;color:#fff;}
-#whatsappBtn:hover{background:#1ebe57;}
+#loginBtn:hover {
+  background: #218838;
+}
 
-.message{
-  margin-top:10px;
-  min-height:20px;
-  text-align:center;
-  white-space:pre-line;
+.message {
+  text-align: center;
+  margin-top: 10px;
+  color: #dc3545;
+  min-height: 20px;
 }
 </style>
+
 </head>
 <body>
 
@@ -74,18 +82,17 @@ button{
   <h2>تسجيل دخول الطالب</h2>
 
   <div class="input-group">
-    <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
-    <input id="studentCode" placeholder="أدخل كود الطالب">
+    <input id="parentNumber" placeholder="رقم ولي الأمر">
+    <input id="studentCode" placeholder="كود الطالب">
   </div>
 
   <button id="loginBtn" onclick="login()">تسجيل الدخول</button>
-  <button id="whatsappBtn" onclick="openWhatsApp()">الدعم السريع واتساب</button>
 
   <div class="message" id="message"></div>
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec";
+const SHEET_URL = "YOUR_SCRIPT_URL_HERE";  // ضع رابط السكربت هنا
 
 function normalize(v){
   v = String(v||"").trim();
@@ -94,64 +101,64 @@ function normalize(v){
   return v;
 }
 
-function openWhatsApp(){
-  window.open("https://wsend.co/9647851521585","_blank");
-}
-
-async function login(){
+async function login() {
   const rawParent = document.getElementById("parentNumber").value.trim();
   const rawCode   = document.getElementById("studentCode").value.trim();
   const msg       = document.getElementById("message");
 
-  if(!rawParent || !rawCode){
-    msg.style.color="#dc3545";
-    msg.textContent="⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.";
+  if (!rawParent || !rawCode) {
+    msg.textContent = "⚠️ الرجاء ملء جميع الحقول.";
     return;
   }
 
   const parent = normalize(rawParent);
   const code   = normalize(rawCode);
 
-  msg.style.color="#333";
-  msg.textContent="⏳ جاري التحقق...";
+  msg.style.color = "#333";
+  msg.textContent = "⏳ جاري التحقق...";
 
   const body = new URLSearchParams({
-    action:"check",
-    parent:parent,
-    code:code
+    action: "check",
+    parent: parent,
+    code: code
   });
 
-  try{
-    const res = await fetch(SHEET_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded"},
-      body:body.toString()
+  try {
+    const res  = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type":"application/x-www-form-urlencoded" },
+      body: body.toString()
     });
 
     const data = await res.json();
-    console.log("SCRIPT RESPONSE:",data);
 
-    if(data.valid){
-      msg.style.color="#28a745";
-      msg.textContent="✅ تسجيل الدخول ناجح";
+    if (data.valid) {
+      msg.style.color = "#28a745";
+      msg.textContent = "✔ تسجيل الدخول ناجح";
 
-      localStorage.setItem("parentNumber",parent);
-      localStorage.setItem("studentCode",code);
+      // 🔥 تخزين البيانات بعد التطبيع
+      localStorage.setItem("parentNumber", parent);
+      localStorage.setItem("studentCode", code);
 
-      setTimeout(()=>{ window.location.href="main.html"; },1000);
+      setTimeout(()=>{ window.location.href="main.html"; },700);
 
-    }else{
+    } else {
       msg.style.color="#dc3545";
-      msg.textContent = data.message ? data.message : "❌ بيانات خاطئة";
+      msg.textContent = data.message || "❌ بيانات غير صحيحة";
     }
 
-  }catch(err){
+  } catch (err) {
     msg.style.color="#dc3545";
-    msg.textContent="⚠️ خطأ أثناء الاتصال بالسيرفر.";
+    msg.textContent = "⚠️ خطأ أثناء الاتصال بالسيرفر.";
+  }
+}
+
+window.onload = ()=>{
+  if(localStorage.getItem("parentNumber") && localStorage.getItem("studentCode")){
+    window.location.href="main.html";
   }
 }
 </script>
 
 </body>
 </html>
-
