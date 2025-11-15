@@ -3,81 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الصفحة الرئيسية - بيانات الطالب</title>
+<title>بيانات الطالب</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
-
 body{
   font-family:'Cairo',sans-serif;
   direction:rtl;
+  background:#f6f6f6;
   margin:0;
   padding:0;
-  background:#f2f2f2;
 }
 
 .header{
   background:#007bff;
-  color:#fff;
   padding:15px;
   text-align:center;
   font-size:22px;
+  color:#fff;
   font-weight:bold;
 }
 
 .container{
-  max-width:800px;
+  max-width:700px;
   margin:20px auto;
   background:#fff;
   padding:20px;
-  border-radius:12px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
-}
-
-.title{
-  text-align:center;
-  font-size:20px;
-  margin-bottom:15px;
-  color:#333;
-}
-
-#info{
-  font-size:16px;
-  line-height:1.8;
+  border-radius:15px;
+  box-shadow:0 5px 20px rgba(0,0,0,0.15);
 }
 
 .logout-btn{
   background:#dc3545;
   color:#fff;
-  padding:12px 20px;
+  padding:10px;
   border:none;
   border-radius:8px;
   width:100%;
-  font-size:16px;
-  margin-top:20px;
   cursor:pointer;
-}
-
-.logout-btn:hover{
-  background:#c82333;
+  font-size:16px;
 }
 </style>
+
 </head>
 <body>
 
 <div class="header">📘 بيانات الطالب</div>
 
 <div class="container">
-  <div class="title">معلومات الطالب</div>
   <div id="info">⏳ جاري تحميل البيانات...</div>
-
+  <br>
   <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
+const SHEET_URL = "YOUR_SCRIPT_URL_HERE";  // ضع رابط السكربت هنا
 
-// تطبيع الأرقام كما في index
 function normalize(v){
   v = String(v||"").trim();
   v = v.replace(/\s+/g,"");
@@ -88,12 +68,11 @@ function normalize(v){
 async function loadData(){
   const rawParent = localStorage.getItem("parentNumber");
   const rawCode   = localStorage.getItem("studentCode");
-
-  const info = document.getElementById("info");
+  const box       = document.getElementById("info");
 
   if(!rawParent || !rawCode){
-    info.textContent = "⛔ صلاحية الجلسة انتهت، سيتم تحويلك...";
-    setTimeout(()=>{ window.location.href="index.html"; },1000);
+    box.textContent="⛔ انتهت الجلسة. سيتم تحويلك...";
+    setTimeout(()=>{ window.location.href="index.html"; },1200);
     return;
   }
 
@@ -101,65 +80,43 @@ async function loadData(){
   const code   = normalize(rawCode);
 
   const body = new URLSearchParams({
-    action: "getStudent",
-    parent: parent,
-    code: code
+    action:"getStudent",
+    parent:parent,
+    code:code
   });
 
   try{
-    const res  = await fetch(SHEET_URL,{
+    const res = await fetch(SHEET_URL,{
       method:"POST",
       headers:{"Content-Type":"application/x-www-form-urlencoded"},
       body:body.toString()
     });
 
     const data = await res.json();
-    console.log("STUDENT DATA:", data);
 
     if(!data.student){
-      info.textContent = "⛔ لا يمكن التحقق من الحساب، سيتم تحويلك...";
+      box.textContent="⛔ لا يمكن التحقق من الحساب. سيتم تحويلك...";
       setTimeout(()=>{ window.location.href="index.html"; },1500);
       return;
     }
 
     const student = data.student;
-
-    // طريقة عرض البيانات (حر ترى تقدر تعدلها)
     let html = "";
-    for(const key in student){
-      html += `<b>${key}:</b> ${student[key]}<br>`;
+
+    for(let k in student){
+      html += `<b>${k}:</b> ${student[k]}<br>`;
     }
 
-    info.innerHTML = html;
+    box.innerHTML = html;
 
   }catch(err){
-    info.innerHTML = "⚠️ خطأ أثناء تحميل البيانات.";
+    box.textContent="⚠️ خطأ أثناء جلب البيانات.";
   }
 }
 
-async function logout(){
-  const rawParent = localStorage.getItem("parentNumber");
-  const rawCode   = localStorage.getItem("studentCode");
-
-  const parent = normalize(rawParent);
-  const code   = normalize(rawCode);
-
-  const body = new URLSearchParams({
-    action:"logout",
-    parent:parent,
-    code:code
-  });
-
-  try{
-    await fetch(SHEET_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded"},
-      body:body.toString()
-    });
-  }catch(e){}
-
+function logout(){
   localStorage.clear();
-  window.location.href = "index.html";
+  window.location.href="index.html";
 }
 
 window.onload = loadData;
