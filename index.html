@@ -86,7 +86,8 @@ th { background: #f3f3f3; }
 
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
+// رابط السكربت الجديد
+const API_URL = "https://script.google.com/macros/s/AKfycbyKSh1mgv3G3RGf1ZgGxLtRzXGk5qXiytLlG3gLAFVbiCCCkkmLLm2rW-pZQBCMI8Oa/exec";
 
 /**********************************************
    عند فتح الصفحة — استرجاع الجلسة
@@ -137,6 +138,7 @@ async function searchStudent(saveSession = true) {
           <div class="section">
             <h3>المعلومات العامة (قابلة للتعديل)</h3>
             <table>
+              ${editable("رقم الطالب", student["رقم الطالب"])}
               ${editable("رقم ولي الامر", student["رقم ولي الامر"])}
               ${editable("المدرسة القادم منها", student["المدرسة القادم منها"])}
               ${editable("اسم الام", student["اسم الام"])}
@@ -171,6 +173,7 @@ function editable(label, value) {
 **********************************************/
 async function saveChanges(code) {
     const data = {
+        "رقم الطالب": document.getElementById("رقم الطالب").value,
         "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
         "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
         "اسم الام": document.getElementById("اسم الام").value,
@@ -222,4 +225,3 @@ function logout() {
 
 </body>
 </html>
-
