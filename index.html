@@ -9,13 +9,12 @@
 body {
   font-family: 'Cairo', sans-serif;
   direction: rtl;
-  background: #f2f7ff;
-  margin: 0;
-  padding: 0;
+  background: #eef4ff;
+  margin: 0; padding: 0;
 }
 
 header {
-  background: #007bff;
+  background: #0066ff;
   color: white;
   padding: 20px;
   text-align: center;
@@ -23,61 +22,56 @@ header {
   font-weight: bold;
 }
 
-.container {
-  padding: 20px;
-}
+.container { padding: 20px; }
 
 input {
   width: 100%;
   padding: 10px;
-  margin: 8px 0;
+  margin: 5px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 14px;
 }
 
 button {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 12px;
   border: none;
   border-radius: 8px;
+  margin-top: 10px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 15px;
 }
 
-#searchBtn { background: #28a745; color: white; width: 100%; margin-top: 10px; }
-#logoutBtn { background: #dc3545; color: white; width: 100%; margin-top: 10px; display: none; }
-#saveBtn { background: #ffc107; color: black; width: 100%; margin-top: 10px; }
+#loginBtn { background: #28a745; color: white; }
+#logoutBtn { background: #dc3545; color: white; display: none; }
+#saveBtn { background: #ffc107; color: black; }
 
 .section {
   background: white;
   padding: 15px;
-  border-radius: 12px;
   margin-top: 20px;
-  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th, td {
-  padding: 8px;
   border: 1px solid #ddd;
+  padding: 8px;
 }
+th { background: #f7f7f7; }
 </style>
+
 </head>
 <body>
 
-<header>
-📘 نظام استعلام الطالب
-</header>
+<header>📘 نظام استعلام الطالب</header>
 
 <div class="container">
 
   <input id="studentCode" placeholder="أدخل كود الطالب">
 
-  <button id="searchBtn" onclick="searchStudent()">تسجيل الدخول</button>
+  <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
   <button id="logoutBtn" onclick="logout()">تسجيل خروج</button>
 
   <div id="output"></div>
@@ -85,25 +79,22 @@ th, td {
 </div>
 
 <script>
-/* -----------------------------
-   تحميل الجلسة عند فتح الصفحة
--------------------------------- */
+/************************************************
+   عند فتح الصفحة — استرجاع الجلسة إن وجدت
+************************************************/
 window.addEventListener("DOMContentLoaded", () => {
-  const logged = localStorage.getItem("loggedIn");
-
-  if (logged === "true") {
-    const savedCode = localStorage.getItem("studentCode");
-    if (savedCode) {
-      document.getElementById("studentCode").value = savedCode;
-      document.getElementById("logoutBtn").style.display = "block";
-      searchStudent(false);
-    }
+  if (localStorage.getItem("loggedIn") === "true") {
+    let savedCode = localStorage.getItem("studentCode");
+    document.getElementById("studentCode").value = savedCode;
+    document.getElementById("logoutBtn").style.display = "block";
+    searchStudent(false);
   }
 });
 
-/* -----------------------------
-    دالة البحث (تسجيل الدخول)
--------------------------------- */
+
+/************************************************
+    تسجيل الدخول وجلب بيانات الطالب
+************************************************/
 async function searchStudent(saveSession = true) {
   let code = document.getElementById("studentCode").value.trim();
   const output = document.getElementById("output");
@@ -115,29 +106,27 @@ async function searchStudent(saveSession = true) {
 
   output.innerHTML = "<p style='text-align:center'>⏳ جاري التحميل...</p>";
 
-  const apiURL = `https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec?code=${code}`;
+  const url = `https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec?code=${code}`;
 
   try {
-    const response = await fetch(apiURL);
-    const data = await response.json();
+    let res = await fetch(url);
+    let data = await res.json();
 
     if (data.status !== "success") {
-      output.innerHTML = "<p style='color:red;text-align:center'>❌ الطالب غير موجود</p>";
+      output.innerHTML = "<p style='color:red;text-align:center'>❌ بيانات الطالب غير موجودة</p>";
       return;
     }
 
-    const student = data.student;
+    let student = data.student;
 
-    // حفظ الجلسة
     if (saveSession) {
       localStorage.setItem("loggedIn", "true");
       localStorage.setItem("studentCode", code);
     }
 
-    // تسجيل دخول في الشيت
-    updateLoginState(code, "تم تسجيل الدخول");
-
     document.getElementById("logoutBtn").style.display = "block";
+
+    updateLoginState(code, "تم تسجيل الدخول");
 
     output.innerHTML = `
       <div class="section">
@@ -148,19 +137,21 @@ async function searchStudent(saveSession = true) {
           ${editableRow("اسم الام", student["اسم الام"])}
           ${editableRow("رقم الخط", student["رقم الخط"])}
           ${editableRow("العنوان", student["العنوان"])}
+          ${editableRow("المواليد", student["المواليد"])}
         </table>
         <button id="saveBtn" onclick="saveChanges('${code}')">💾 حفظ التعديلات</button>
       </div>
     `;
 
-  } catch (e) {
+  } catch (err) {
     output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال</p>";
   }
 }
 
-/* -----------------------------
-   صف قابل للتعديل
--------------------------------- */
+
+/************************************************
+    إنشاء صف قابل للتعديل
+************************************************/
 function editableRow(label, value) {
   return `
     <tr>
@@ -170,51 +161,43 @@ function editableRow(label, value) {
   `;
 }
 
-/* -----------------------------
-    حفظ التعديلات
--------------------------------- */
+
+/************************************************
+    حفظ التعديلات وإرسالها للسيرفر
+************************************************/
 async function saveChanges(code) {
   const fields = {
     "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
     "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
     "اسم الام": document.getElementById("اسم الام").value,
     "رقم الخط": document.getElementById("رقم الخط").value,
-    "العنوان": document.getElementById("العنوان").value
+    "العنوان": document.getElementById("العنوان").value,
+    "المواليد": document.getElementById("المواليد").value
   };
 
-  const url = "https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec";
-
-  await fetch(url, {
+  await fetch("https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec", {
     method: "POST",
-    body: JSON.stringify({
-      action: "update",
-      code: code,
-      data: fields
-    })
+    body: JSON.stringify({ action: "update", code: code, data: fields })
   });
 
-  alert("✔ تم حفظ التعديلات");
+  alert("✔ تم حفظ التعديلات بنجاح");
 }
 
-/* -----------------------------
-    تسجيل الدخول والخروج في الشيت
--------------------------------- */
+
+/************************************************
+    تحديث حالة الدخول والخروج في الشيت
+************************************************/
 async function updateLoginState(code, state) {
-  const url = "https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec";
-
-  await fetch(url, {
+  await fetch("https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec", {
     method: "POST",
-    body: JSON.stringify({
-      action: "update_state",
-      code: code,
-      state: state
-    })
+    body: JSON.stringify({ action: "update_state", code: code, state: state })
   });
 }
 
-/* -----------------------------
+
+/************************************************
     تسجيل الخروج ومسح الجلسة
--------------------------------- */
+************************************************/
 function logout() {
   const code = localStorage.getItem("studentCode");
 
@@ -225,7 +208,7 @@ function logout() {
 
   location.reload();
 }
-
 </script>
+
 </body>
 </html>
