@@ -15,7 +15,7 @@ body {
     background-size: 300% 300%;
     animation: bgMove 10s infinite;
     margin: 0;
-    padding: 0;
+    padding: 0 0 110px 0; /* مساحة تحت للبيانات حتى لا يغطيها البار السفلي */
     overflow-x: hidden;
 }
 
@@ -141,6 +141,18 @@ button {
     animation: pulseButton 3s infinite;
 }
 
+/* نص جاري التحميل */
+.loading-text {
+    text-align: center;
+    font-weight: bold;
+    animation: loadingFade 1s infinite;
+}
+
+@keyframes loadingFade {
+    0% { opacity: 0.3 }
+    100% { opacity: 1 }
+}
+
 /* ======================
         Error Shake
 ====================== */
@@ -173,6 +185,38 @@ button {
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+/* حاوية الأزرار أعلى الملف الشخصي */
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.profile-actions button {
+    flex: 1;
+}
+
+/* زر الخروج */
+.logout-btn {
+    background: #dc3545;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+}
+
+/* زر الحفظ */
+.save-btn {
+    background: #ffc107;
+    color: #333;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+    font-weight: bold;
+}
+
 .page { display: none; }
 
 table {
@@ -186,7 +230,7 @@ th, td {
 }
 
 /* ==============================
-     البار السفلي — iPhone Style
+     البار السفلي — Glass Style
 ============================== */
 #bottomBar {
     position: fixed;
@@ -198,12 +242,17 @@ th, td {
     display: none;
     padding: 10px 0;
     border-radius: 25px;
-    background: linear-gradient(45deg, #9b00ff, #ff0088);
+    background: linear-gradient(45deg,
+        rgba(155, 0, 255, 0.35),
+        rgba(255, 0, 136, 0.25));
     color: white;
     box-shadow: 0 5px 20px rgba(0,0,0,0.25);
     justify-content: space-around;
     align-items: center;
     transition: 0.8s ease;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.35);
 }
 
 #bottomBar.show-bar {
@@ -215,6 +264,9 @@ th, td {
     font-size: 15px;
     cursor: pointer;
     opacity: 0.75;
+    position: relative;   /* مهم للانفجار */
+    overflow: hidden;     /* حتى لا يخرج الانفجار خارج الزر */
+    padding: 0 5px;
 }
 
 .nav-item:hover,
@@ -223,14 +275,21 @@ th, td {
     font-weight: bold;
 }
 
-/* زر الخروج */
-.logout-btn {
-    background: #dc3545;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    width: 100%;
+/* دائرة الانفجار */
+.burst {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0);
+    animation: burstAnim 0.5s ease-out forwards;
+}
+
+@keyframes burstAnim {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.9; }
+    100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
 }
 
 /* =======================
@@ -269,7 +328,7 @@ th, td {
         Splash Screen
 ========================= -->
 <div id="splash">
-    <div class="splash-title">قسم الحوكمة  </div>
+    <div class="splash-title">قسم الحوكمة</div>
     <div class="splash-sub">ثانوية التحدي الأهلية</div>
     <div class="splash-year">العام الدراسي 2025 - 2026</div>
     <div class="splash-copy">جميع الحقوق محفوظة ©</div>
@@ -278,10 +337,8 @@ th, td {
 <header>📘 نظام استعلام الطالب</header>
 
 <div class="container">
-
     <input id="studentCode" placeholder="أدخل كود الطالب">
     <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
-
     <div id="output"></div>
 </div>
 
@@ -387,12 +444,41 @@ async function searchStudent(saveSession = true) {
 }
 
 /* =======================
+     حفظ التعديلات
+======================= */
+async function saveChanges(code) {
+    const data = {
+        "المواليد": document.getElementById("المواليد").value,
+        "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
+        "رقم الخط": document.getElementById("رقم الخط").value,
+        "رقم الطالب": document.getElementById("رقم الطالب").value,
+        "العنوان": document.getElementById("العنوان").value,
+        "اسم الام": document.getElementById("اسم الام").value,
+        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value
+    };
+
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: "update",
+            code: code,
+            data: data
+        })
+    });
+
+    alert("✔ تم حفظ التعديلات بنجاح");
+}
+
+/* =======================
      تحميل الملف الشخصي
 ======================= */
 function loadProfile(student) {
+    const code = student["كود الطالب"] || "";
     document.getElementById("profilePage").innerHTML = `
-    
-    <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
+    <div class="profile-actions">
+        <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
+        <button onclick="saveChanges('${code}')" class="save-btn">💾 حفظ التعديلات</button>
+    </div>
 
     <h3>📄 الملف الشخصي</h3>
 
@@ -429,7 +515,6 @@ function loadProfile(student) {
       <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
       <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
     </table>
-
     `;
     showPage("profilePage");
 }
@@ -445,17 +530,31 @@ function logout() {
 
 /* =======================
       التنقل بين الصفحات
+      + انفجار على الزر
 ======================= */
 function showPage(pageId, element = null) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(pageId).style.display = "block";
 
     document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-    if (element) element.classList.add("active");
+
+    if (element) {
+        element.classList.add("active");
+
+        // إنشاء دائرة انفجار في وسط الزر
+        const burst = document.createElement("span");
+        burst.classList.add("burst");
+        burst.style.left = "50%";
+        burst.style.top = "50%";
+        element.appendChild(burst);
+
+        setTimeout(() => {
+            burst.remove();
+        }, 500);
+    }
 }
 
 </script>
 
 </body>
 </html>
-
