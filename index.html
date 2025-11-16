@@ -45,8 +45,6 @@ button {
 }
 
 #loginBtn { background: #28a745; color: white; }
-#logoutBtn { background: #dc3545; color: white; display: none; }
-#saveBtn { background: #ffc107; color: black; }
 
 .section {
     background: white;
@@ -68,6 +66,36 @@ th, td {
 }
 
 th { background: #f3f3f3; }
+
+/* الشريط السفلي */
+#bottomBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.15);
+    display: none;
+    padding: 10px 0;
+}
+
+.nav-item {
+    width: 25%;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+    cursor: pointer;
+}
+
+.nav-item.active {
+    color: #0066ff;
+    font-weight: bold;
+}
+
+/* صفحات */
+.page {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -77,26 +105,36 @@ th { background: #f3f3f3; }
 <div class="container">
 
     <input id="studentCode" placeholder="أدخل كود الطالب">
-
     <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
-    <button id="logoutBtn" onclick="logout()">تسجيل خروج</button>
 
     <div id="output"></div>
 </div>
 
+<!-- الصفحات -->
+<div id="profilePage" class="page section"></div>
+<div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
+<div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
+<div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
+
+<!-- الشريط السفلي -->
+<div id="bottomBar">
+    <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
+    <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
+    <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
+    <div class="nav-item" onclick="showPage('chatPage', this)">الدردشة</div>
+</div>
 
 <script>
-// رابط السكربت الجديد
+// رابط السكربت
 const API_URL = "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
 /**********************************************
-   عند فتح الصفحة — استرجاع الجلسة
+   استرجاع الجلسة
 **********************************************/
 window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("loggedIn") === "true") {
         const code = localStorage.getItem("studentCode");
         document.getElementById("studentCode").value = code;
-        document.getElementById("logoutBtn").style.display = "block";
         searchStudent(false);
     }
 });
@@ -129,27 +167,18 @@ async function searchStudent(saveSession = true) {
         if (saveSession) {
             localStorage.setItem("loggedIn", "true");
             localStorage.setItem("studentCode", code);
+            updateLoginState(code, "تم تسجيل الدخول");
         }
 
-        document.getElementById("logoutBtn").style.display = "block";
-        updateLoginState(code, "تم تسجيل الدخول");
+        // إخفاء تسجيل الدخول
+        document.getElementById("studentCode").style.display = "none";
+        document.getElementById("loginBtn").style.display = "none";
 
-        output.innerHTML = `
-          <div class="section">
-            <h3>المعلومات العامة (قابلة للتعديل)</h3>
-            <table>
-              ${editable("رقم الطالب", student["رقم الطالب"])}
-              ${editable("رقم ولي الامر", student["رقم ولي الامر"])}
-              ${editable("المدرسة القادم منها", student["المدرسة القادم منها"])}
-              ${editable("اسم الام", student["اسم الام"])}
-              ${editable("رقم الخط", student["رقم الخط"])}
-              ${editable("العنوان", student["العنوان"])}
-              ${editable("المواليد", student["المواليد"])}
-            </table>
+        // إظهار الشريط السفلي
+        document.getElementById("bottomBar").style.display = "flex";
 
-            <button id="saveBtn" onclick="saveChanges('${code}')">💾 حفظ التعديلات</button>
-          </div>
-        `;
+        // فتح صفحة الملف الشخصي
+        loadProfile(student);
 
     } catch (err) {
         output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال بالخادم</p>";
@@ -157,15 +186,71 @@ async function searchStudent(saveSession = true) {
 }
 
 /**********************************************
-   صف قابل للتعديل
+   صفحة الملف الشخصي
 **********************************************/
-function editable(label, value) {
-    return `
-        <tr>
-            <th>${label}</th>
-            <td><input id="${label}" value="${value || ""}"></td>
-        </tr>
+function loadProfile(student) {
+    document.getElementById("profilePage").innerHTML = `
+    <button onclick="logout()" style="
+        background:#dc3545;color:white;
+        padding:10px 15px;border:none;
+        border-radius:8px;float:left;margin-bottom:10px;">
+        🔐 تسجيل الخروج
+    </button>
+
+    <h3 style="clear:both">📄 الملف الشخصي</h3>
+
+    <table>
+      <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
+      <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
+
+      <tr><th>المواليد</th>
+          <td><input id="المواليد" value="${student["المواليد"] || ""}"></td>
+      </tr>
+
+      <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
+      <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
+      <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
+
+      <tr><th>رقم ولي الأمر</th>
+          <td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td>
+      </tr>
+
+      <tr><th>رقم الخط</th>
+          <td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td>
+      </tr>
+
+      <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
+
+      <tr><th>رقم الطالب</th>
+          <td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td>
+      </tr>
+
+      <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
+
+      <tr><th>العنوان</th>
+          <td><input id="العنوان" value="${student["العنوان"] || ""}"></td>
+      </tr>
+
+      <tr><th>اسم الأم</th>
+          <td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td>
+      </tr>
+
+      <tr><th>المدرسة القادم منها</th>
+          <td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td>
+      </tr>
+
+      <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
+      <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
+    </table>
+
+    <button onclick="saveChanges('${student["كود الطالب"]}')" 
+            style="width:100%;padding:12px;margin-top:15px;
+            border:none;border-radius:8px;background:#ffc107;font-size:15px">
+        💾 حفظ التعديلات
+    </button>
     `;
+
+    showPage("profilePage");
 }
 
 /**********************************************
@@ -173,13 +258,13 @@ function editable(label, value) {
 **********************************************/
 async function saveChanges(code) {
     const data = {
-        "رقم الطالب": document.getElementById("رقم الطالب").value,
+        "المواليد": document.getElementById("المواليد").value,
         "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
-        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
-        "اسم الام": document.getElementById("اسم الام").value,
         "رقم الخط": document.getElementById("رقم الخط").value,
+        "رقم الطالب": document.getElementById("رقم الطالب").value,
         "العنوان": document.getElementById("العنوان").value,
-        "المواليد": document.getElementById("المواليد").value
+        "اسم الام": document.getElementById("اسم الام").value,
+        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value
     };
 
     await fetch(API_URL, {
@@ -191,11 +276,11 @@ async function saveChanges(code) {
         })
     });
 
-    alert("✔ تم حفظ التعديلات");
+    alert("✔ تم حفظ التعديلات بنجاح");
 }
 
 /**********************************************
-   تحديث حالة تسجيل الدخول / الخروج
+   تحديث حالة الطالب
 **********************************************/
 async function updateLoginState(code, state) {
     await fetch(API_URL, {
@@ -221,8 +306,18 @@ function logout() {
 
     location.reload();
 }
+
+/**********************************************
+   التنقل بين الصفحات
+**********************************************/
+function showPage(pageId, element = null) {
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+    document.getElementById(pageId).style.display = "block";
+
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+    if (element) element.classList.add("active");
+}
 </script>
 
 </body>
 </html>
-
