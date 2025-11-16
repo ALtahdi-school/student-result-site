@@ -3,141 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام استعلام عن الطالب</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
+<title>نظام استعلام الطالب</title>
 
+<style>
 body {
   font-family: 'Cairo', sans-serif;
   direction: rtl;
+  background: #f2f7ff;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #e0f0ff, #ffffff);
-  overflow-x: hidden;
 }
 
 header {
   background: #007bff;
-  color: #fff;
+  color: white;
+  padding: 20px;
   text-align: center;
-  padding: 25px 10px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
 }
 
-header span {
-  display: block;
-  font-size: 16px;
-  font-weight: normal;
-  margin-top: 5px;
-  opacity: 0.8;
+.container {
+  padding: 20px;
 }
 
-.input-group {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.input-group input {
-  flex: 0 0 160px;
+input {
+  width: 100%;
   padding: 10px;
-  font-size: 14px;
+  margin: 8px 0;
   border-radius: 8px;
   border: 1px solid #ccc;
-}
-
-.input-group input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0,123,255,0.3);
+  font-size: 14px;
 }
 
 button {
-  padding: 10px 25px;
-  font-size: 14px;
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
-  background: #28a745;
-  color: #fff;
   cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-button:hover {
-  background: #218838;
-  transform: scale(1.05);
-}
-
-#forgotBtn {
-  background: #ffc107;
-  color: #000;
-}
-
-#forgotBtn:hover {
-  background: #e0a800;
-  transform: scale(1.05);
-}
-
-.year-label {
-  text-align: center;
   font-size: 14px;
-  color: #555;
-  margin-bottom: 20px;
-  opacity: 0.8;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto 30px auto;
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
-  justify-items: center;
-}
+#searchBtn { background: #28a745; color: white; width: 100%; margin-top: 10px; }
+#logoutBtn { background: #dc3545; color: white; width: 100%; margin-top: 10px; display: none; }
+#saveBtn { background: #ffc107; color: black; width: 100%; margin-top: 10px; }
 
 .section {
-  width: 100%;
-  min-height: 350px;
-  background: #fff;
-  border-radius: 15px;
+  background: white;
   padding: 15px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-  font-size: 14px;
-  overflow-x: auto;
-}
-
-.section h3 {
-  text-align: center;
-  color: #fff;
-  font-size: 18px;
-  border-radius: 10px;
-  padding: 10px 0;
-  margin-bottom: 15px;
-}
-
-.info { background: #007bff; }
-.finance { background: #28a745; }
-.notes { background: #dc3545; }
-.grades { background: #ffc107; color: #000; }
-
-.governance {
+  border-radius: 12px;
   margin-top: 20px;
-  background: #343a40;
-  color: #fff;
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-}
-
-.version {
-  text-align: center;
-  margin-top: 10px;
-  font-size: 12px;
-  color: #555;
+  box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
 }
 
 table {
@@ -146,147 +62,170 @@ table {
 }
 
 th, td {
-  padding: 6px 4px;
-  text-align: right;
+  padding: 8px;
   border: 1px solid #ddd;
-  word-wrap: break-word;
-}
-
-tr:hover { background-color: rgba(0,123,255,0.1); }
-
-@media (max-width: 768px) {
-  .input-group input { flex: 0 0 140px; }
-  th, td { font-size: 10px; padding:2px; }
-  .container { grid-template-columns: 1fr; }
-  .section { min-height: auto; }
 }
 </style>
 </head>
 <body>
 
 <header>
-  🎓 ثانوية التحدي الأهلية
-  <span>العام الدراسي 2025-2026</span>
+📘 نظام استعلام الطالب
 </header>
 
-<div class="input-group">
-  <input id="parentNumber" placeholder="أدخل رقم ولي الأمر">
-  <input id="studentCode" placeholder="أدخل كود الطالب">
-  <button onclick="searchStudent()">بحث</button>
-  <button id="forgotBtn" onclick="goToForgot()">نسيت الكود؟</button>
-</div>
+<div class="container">
 
-<div class="year-label">العام الدراسي 2025-2026</div>
-<div class="container" id="output"></div>
-<div class="version">الإصدار V0.2.4</div>
-<div class="governance">
-  قسم الحوكمة: جميع الحقوق محفوظة © ثانوية التحدي الأهلية
+  <input id="studentCode" placeholder="أدخل كود الطالب">
+
+  <button id="searchBtn" onclick="searchStudent()">تسجيل الدخول</button>
+  <button id="logoutBtn" onclick="logout()">تسجيل خروج</button>
+
+  <div id="output"></div>
+
 </div>
 
 <script>
-function goToForgot(){
-  window.location.href = "forgot.html";
-}
+/* -----------------------------
+   تحميل الجلسة عند فتح الصفحة
+-------------------------------- */
+window.addEventListener("DOMContentLoaded", () => {
+  const logged = localStorage.getItem("loggedIn");
 
-async function searchStudent(saveToStorage=true){
+  if (logged === "true") {
+    const savedCode = localStorage.getItem("studentCode");
+    if (savedCode) {
+      document.getElementById("studentCode").value = savedCode;
+      document.getElementById("logoutBtn").style.display = "block";
+      searchStudent(false);
+    }
+  }
+});
+
+/* -----------------------------
+    دالة البحث (تسجيل الدخول)
+-------------------------------- */
+async function searchStudent(saveSession = true) {
   let code = document.getElementById("studentCode").value.trim();
-  let parent = document.getElementById("parentNumber").value.trim();
-  if(parent.startsWith("0")) parent = parent.substring(1);
-  if(code.startsWith("0")) code = code.substring(1);
-
   const output = document.getElementById("output");
-  if(!parent || !code){
-    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>⚠️ الرجاء إدخال رقم ولي الأمر وكود الطالب.</p>";
+
+  if (!code) {
+    output.innerHTML = "<p style='color:red;text-align:center'>⚠ أدخل كود الطالب</p>";
     return;
   }
 
-  if(saveToStorage){
-    localStorage.setItem("studentCode", code);
-    localStorage.setItem("parentNumber", parent);
-  }
+  output.innerHTML = "<p style='text-align:center'>⏳ جاري التحميل...</p>";
 
-  output.innerHTML = "<p style='text-align:center;'>⏳ جاري البحث...</p>";
+  const apiURL = `https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec?code=${code}`;
 
-  const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vReghaYoMk3f8ffSBLRHIwZieEWCfk5Yx8W6c843TXkC6wpA78Z0X5nw21RRpxMdQ/pub?gid=1229272896&single=true&output=csv";
+  try {
+    const response = await fetch(apiURL);
+    const data = await response.json();
 
-  try{
-    const resp = await fetch(sheetURL);
-    if(!resp.ok) throw new Error("فشل في جلب البيانات");
-    const text = await resp.text();
-    const rows = text.split("\n").map(r=>r.split(","));
-    const header = rows[0].map(h=>h.trim());
-    const dataRows = rows.slice(1);
-    const objects = dataRows.map(r=>{
-      const obj={};
-      for(let i=0;i<header.length;i++) obj[header[i]]=(r[i]||"").trim();
-      return obj;
-    });
-
-    const student = objects.find(o=>o["كود الطالب"]===code && o["رقم ولي الامر"]===parent);
-    if(!student){ output.innerHTML="<p style='color:#dc3545; text-align:center;'>❌ لم أجد بيانات تطابق البحث.</p>"; return; }
-
-    let html="";
-
-    // المعلومات العامة
-    html+=`<div class="section info"><h3>المعلومات العامة</h3><table>`;
-    const infoFields=["id","رقم الطالب","اسم الطالب","الجنس","الصف","القاعة","رقم ولي الامر","رقم الخط"];
-    for(let f of infoFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]}</td></tr>`; }
-    html+="</table></div>";
-
-    // المعلومات المالية
-    html+=`<div class="section finance"><h3>المعلومات المالية</h3><table>`;
-    const financeFields=header.filter(h=>h.includes("القسط") || h.includes("تاريخ") || h.includes("الباقي") || h.includes("المبلغ") || h.includes("الواصل") || h.includes("الكفالة"));
-    for(let f of financeFields){ html+=`<tr><th>${f}</th><td>${student[f]||""}</td></tr>`; }
-    html+="</table></div>";
-
-    // الدرجات التفصيلية لكل مادة
-    const subjectsColumns = {
-      "الاسلامية": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "عربي": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الانكليزي": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الرياضيات": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الكيمياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الفيزياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "الاحياء": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "اجتماعيات": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "حاسوب": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "رياضة": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "فنية": ["شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"],
-      "السلوك": ["سلوك شهر 1","شهر 2","فصل 1","نصف سنة","شهر 3","شهر 4","فصل 2","الامتحان النهائي","السعي","التقدير"]
-    };
-
-    for(let subject in subjectsColumns){
-      html+=`<div class="section grades"><h3>الدرجات - ${subject}</h3><table><tr>`;
-      subjectsColumns[subject].forEach(colName=>{ html+=`<th>${colName}</th>`; });
-      html+="</tr><tr>";
-      subjectsColumns[subject].forEach(colName=>{ html+=`<td>${student[colName]||""}</td>`; });
-      html+="</tr></table></div>";
+    if (data.status !== "success") {
+      output.innerHTML = "<p style='color:red;text-align:center'>❌ الطالب غير موجود</p>";
+      return;
     }
 
-    // الملاحظات
-    html+=`<div class="section notes"><h3>ملاحظات وغياب</h3><table>`;
-    const noteFields=["ملاحظات كرت","ملاحظات النتيجة","الغياب","اختلاق مشاكل داخل المدرسة"];
-    for(let f of noteFields){ if(header.includes(f)) html+=`<tr><th>${f}</th><td>${student[f]||""}</td></tr>`; }
-    html+="</table></div>";
+    const student = data.student;
 
-    output.innerHTML = html;
+    // حفظ الجلسة
+    if (saveSession) {
+      localStorage.setItem("loggedIn", "true");
+      localStorage.setItem("studentCode", code);
+    }
 
-  }catch(err){
-    console.error(err);
-    output.innerHTML = "<p style='color:#dc3545; text-align:center;'>❌ حدث خطأ أثناء جلب البيانات.</p>";
+    // تسجيل دخول في الشيت
+    updateLoginState(code, "تم تسجيل الدخول");
+
+    document.getElementById("logoutBtn").style.display = "block";
+
+    output.innerHTML = `
+      <div class="section">
+        <h3>المعلومات العامة (قابلة للتعديل)</h3>
+        <table>
+          ${editableRow("رقم ولي الامر", student["رقم ولي الامر"])}
+          ${editableRow("المدرسة القادم منها", student["المدرسة القادم منها"])}
+          ${editableRow("اسم الام", student["اسم الام"])}
+          ${editableRow("رقم الخط", student["رقم الخط"])}
+          ${editableRow("العنوان", student["العنوان"])}
+        </table>
+        <button id="saveBtn" onclick="saveChanges('${code}')">💾 حفظ التعديلات</button>
+      </div>
+    `;
+
+  } catch (e) {
+    output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال</p>";
   }
 }
 
-window.addEventListener("DOMContentLoaded", ()=>{
-  const savedCode = localStorage.getItem("studentCode");
-  const savedParent = localStorage.getItem("parentNumber");
-  if(savedCode && savedParent){
-    document.getElementById("studentCode").value = savedCode;
-    document.getElementById("parentNumber").value = savedParent;
-    searchStudent(false);
-  }
-});
-</script>
+/* -----------------------------
+   صف قابل للتعديل
+-------------------------------- */
+function editableRow(label, value) {
+  return `
+    <tr>
+      <th>${label}</th>
+      <td><input id="${label}" value="${value || ""}"></td>
+    </tr>
+  `;
+}
 
+/* -----------------------------
+    حفظ التعديلات
+-------------------------------- */
+async function saveChanges(code) {
+  const fields = {
+    "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
+    "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
+    "اسم الام": document.getElementById("اسم الام").value,
+    "رقم الخط": document.getElementById("رقم الخط").value,
+    "العنوان": document.getElementById("العنوان").value
+  };
+
+  const url = "https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec";
+
+  await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "update",
+      code: code,
+      data: fields
+    })
+  });
+
+  alert("✔ تم حفظ التعديلات");
+}
+
+/* -----------------------------
+    تسجيل الدخول والخروج في الشيت
+-------------------------------- */
+async function updateLoginState(code, state) {
+  const url = "https://script.google.com/macros/s/AKfycbyZA_OVj1eifCRo0elMDmD0cOtakEMx8DmzLSlTr8ptaBfMdGIsDjQkMxbW97PHTY9B/exec";
+
+  await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "update_state",
+      code: code,
+      state: state
+    })
+  });
+}
+
+/* -----------------------------
+    تسجيل الخروج ومسح الجلسة
+-------------------------------- */
+function logout() {
+  const code = localStorage.getItem("studentCode");
+
+  if (code) updateLoginState(code, "تم تسجيل الخروج");
+
+  localStorage.removeItem("loggedIn");
+  localStorage.removeItem("studentCode");
+
+  location.reload();
+}
+
+</script>
 </body>
 </html>
