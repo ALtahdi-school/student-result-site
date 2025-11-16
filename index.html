@@ -1,126 +1,224 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام استعلام الطالب</title>
+
+<style>
+body {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    background: #eef3ff;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #0066ff;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.container { padding: 20px; }
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+    font-size: 15px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#loginBtn { background: #28a745; color: white; }
+#logoutBtn { background: #dc3545; color: white; display: none; }
+#saveBtn { background: #ffc107; color: black; }
+
+.section {
+    background: white;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+th { background: #f3f3f3; }
+</style>
+</head>
+<body>
+
+<header>📘 نظام استعلام الطالب</header>
+
+<div class="container">
+
+    <input id="studentCode" placeholder="أدخل كود الطالب">
+
+    <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
+    <button id="logoutBtn" onclick="logout()">تسجيل خروج</button>
+
+    <div id="output"></div>
+</div>
+
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyKSh1mgv3G3RGf1ZgGxLtRzXGk5qXiytLlG3gLAFVbiCCCkkmLLm2rW-pZQBCMI8Oa/exec";
 
-/************************************************
+/**********************************************
    عند فتح الصفحة — استرجاع الجلسة
-************************************************/
+**********************************************/
 window.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("loggedIn") === "true") {
-    const savedCode = localStorage.getItem("studentCode");
-    document.getElementById("studentCode").value = savedCode;
-    document.getElementById("logoutBtn").style.display = "block";
-    searchStudent(false);
-  }
+    if (localStorage.getItem("loggedIn") === "true") {
+        const code = localStorage.getItem("studentCode");
+        document.getElementById("studentCode").value = code;
+        document.getElementById("logoutBtn").style.display = "block";
+        searchStudent(false);
+    }
 });
 
-/************************************************
+/**********************************************
    تسجيل الدخول
-************************************************/
+**********************************************/
 async function searchStudent(saveSession = true) {
-  let code = document.getElementById("studentCode").value.trim();
-  let output = document.getElementById("output");
+    let code = document.getElementById("studentCode").value.trim();
+    let output = document.getElementById("output");
 
-  if (!code) {
-    output.innerHTML = "<p style='color:red;text-align:center'>⚠️ أدخل الكود</p>";
-    return;
-  }
-
-  output.innerHTML = "<p style='text-align:center'>⏳ جاري التحميل...</p>";
-
-  try {
-    let res = await fetch(`${API_URL}?code=${code}`);
-    let data = await res.json();
-
-    if (data.status !== "success") {
-      output.innerHTML = `<p style='color:red;text-align:center'>❌ ${data.data}</p>`;
-      return;
+    if (!code) {
+        output.innerHTML = "<p style='color:red;text-align:center'>⚠️ يرجى إدخال الكود</p>";
+        return;
     }
 
-    let student = data.data;
+    output.innerHTML = "<p style='text-align:center'>⏳ جاري التحميل...</p>";
 
-    // حفظ الجلسة
-    if (saveSession) {
-      localStorage.setItem("loggedIn", "true");
-      localStorage.setItem("studentCode", code);
+    try {
+        let res = await fetch(`${API_URL}?code=${code}`);
+        let data = await res.json();
+
+        if (data.status !== "success") {
+            output.innerHTML = `<p style='color:red;text-align:center'>❌ ${data.data}</p>`;
+            return;
+        }
+
+        let student = data.data;
+
+        if (saveSession) {
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("studentCode", code);
+        }
+
+        document.getElementById("logoutBtn").style.display = "block";
+        updateLoginState(code, "تم تسجيل الدخول");
+
+        output.innerHTML = `
+          <div class="section">
+            <h3>المعلومات العامة (قابلة للتعديل)</h3>
+            <table>
+              ${editable("رقم ولي الامر", student["رقم ولي الامر"])}
+              ${editable("المدرسة القادم منها", student["المدرسة القادم منها"])}
+              ${editable("اسم الام", student["اسم الام"])}
+              ${editable("رقم الخط", student["رقم الخط"])}
+              ${editable("العنوان", student["العنوان"])}
+              ${editable("المواليد", student["المواليد"])}
+            </table>
+
+            <button id="saveBtn" onclick="saveChanges('${code}')">💾 حفظ التعديلات</button>
+          </div>
+        `;
+
+    } catch (err) {
+        output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال بالخادم</p>";
     }
+}
 
-    document.getElementById("logoutBtn").style.display = "block";
-    updateLoginState(code, "تم تسجيل الدخول");
-
-    // عرض البيانات
-    output.innerHTML = `
-      <div class="section">
-        <h3>المعلومات العامة (قابلة للتعديل)</h3>
-        <table>
-          ${editable("رقم ولي الامر", student["رقم ولي الامر"])}
-          ${editable("المدرسة القادم منها", student["المدرسة القادم منها"])}
-          ${editable("اسم الام", student["اسم الام"])}
-          ${editable("رقم الخط", student["رقم الخط"])}
-          ${editable("العنوان", student["العنوان"])}
-          ${editable("المواليد", student["المواليد"])}
-        </table>
-        <button onclick="saveChanges('${code}')">💾 حفظ التعديلات</button>
-      </div>
+/**********************************************
+   صف قابل للتعديل
+**********************************************/
+function editable(label, value) {
+    return `
+        <tr>
+            <th>${label}</th>
+            <td><input id="${label}" value="${value || ""}"></td>
+        </tr>
     `;
-
-  } catch {
-    output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال</p>";
-  }
 }
 
-/************************************************
-   إنشاء صف قابل للتعديل
-************************************************/
-function editable(name, value) {
-  return `<tr><th>${name}</th><td><input id="${name}" value="${value || ''}"></td></tr>`;
-}
-
-/************************************************
+/**********************************************
    حفظ التعديلات
-************************************************/
+**********************************************/
 async function saveChanges(code) {
-  const data = {
-    "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
-    "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
-    "اسم الام": document.getElementById("اسم الام").value,
-    "رقم الخط": document.getElementById("رقم الخط").value,
-    "العنوان": document.getElementById("العنوان").value,
-    "المواليد": document.getElementById("المواليد").value
-  };
+    const data = {
+        "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
+        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
+        "اسم الام": document.getElementById("اسم الام").value,
+        "رقم الخط": document.getElementById("رقم الخط").value,
+        "العنوان": document.getElementById("العنوان").value,
+        "المواليد": document.getElementById("المواليد").value
+    };
 
-  await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "update",
-      code: code,
-      data: data
-    })
-  });
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: "update",
+            code: code,
+            data: data
+        })
+    });
 
-  alert("✔ تم حفظ التعديلات");
+    alert("✔ تم حفظ التعديلات");
 }
 
-/************************************************
-   تحديث حالة الدخول والخروج
-************************************************/
+/**********************************************
+   تحديث حالة تسجيل الدخول / الخروج
+**********************************************/
 async function updateLoginState(code, state) {
-  await fetch(API_URL, {
-    method: "POST",
-    body: JSON.stringify({
-      action: "update_state",
-      code: code,
-      state: state
-    })
-  });
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: "update_state",
+            code: code,
+            state: state
+        })
+    });
 }
 
-/************************************************
-   تسجيل خروج
-************************************************/
+/**********************************************
+   تسجيل الخروج
+**********************************************/
 function logout() {
-  const code = localStorage.getItem("studentCode");
-  updateLoginState(code, "تم تسجيل الخروج");
-  localStorage.clear();
-  location.reload();
+    const code = localStorage.getItem("studentCode");
+
+    updateLoginState(code, "تم تسجيل الخروج");
+
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("studentCode");
+
+    location.reload();
 }
 </script>
+
+</body>
+</html>
