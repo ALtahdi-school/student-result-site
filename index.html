@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نظام استعلام الطالب</title>
 
-<!-- ربط ملف الستايل -->
 <link rel="stylesheet" href="style.css">
 
 </head>
@@ -28,7 +27,7 @@
 <div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
 <!-- الشريط السفلي -->
-<div id="bottomBar">
+<div id="bottomBar" class="slide-up">
     <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
     <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
     <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
@@ -36,12 +35,8 @@
 </div>
 
 <script>
-// رابط السكربت
 const API_URL = "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
-/**********************************************
-   استرجاع الجلسة
-**********************************************/
 window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("loggedIn") === "true") {
         const code = localStorage.getItem("studentCode");
@@ -50,26 +45,23 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/**********************************************
-   تسجيل الدخول
-**********************************************/
 async function searchStudent(saveSession = true) {
     let code = document.getElementById("studentCode").value.trim();
     let output = document.getElementById("output");
 
     if (!code) {
-        output.innerHTML = "<p style='color:red;text-align:center'>⚠️ يرجى إدخال الكود</p>";
+        output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
         return;
     }
 
-    output.innerHTML = "<p style='text-align:center'>⏳ جاري التحميل...</p>";
+    output.innerHTML = "<p class='loading-text'>⏳ جاري التحميل...</p>";
 
     try {
         let res = await fetch(`${API_URL}?code=${code}`);
         let data = await res.json();
 
         if (data.status !== "success") {
-            output.innerHTML = `<p style='color:red;text-align:center'>❌ ${data.data}</p>`;
+            output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
             return;
         }
 
@@ -78,146 +70,59 @@ async function searchStudent(saveSession = true) {
         if (saveSession) {
             localStorage.setItem("loggedIn", "true");
             localStorage.setItem("studentCode", code);
-            updateLoginState(code, "تم تسجيل الدخول");
         }
 
+        // إخفاء عناصر تسجيل الدخول والتحميل
         document.getElementById("studentCode").style.display = "none";
         document.getElementById("loginBtn").style.display = "none";
+        output.innerHTML = "";
 
-        document.getElementById("bottomBar").style.display = "flex";
+        // إظهار الشريط السفلي مع الأنميشن
+        let bar = document.getElementById("bottomBar");
+        bar.style.display = "flex";
+        bar.classList.add("show-bar");
 
         loadProfile(student);
 
     } catch (err) {
-        output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال بالخادم</p>";
+        output.innerHTML = "<p class='error'>❌ خطأ في الاتصال بالخادم</p>";
     }
 }
 
-/**********************************************
-   صفحة الملف الشخصي
-**********************************************/
 function loadProfile(student) {
     document.getElementById("profilePage").innerHTML = `
-    <button onclick="logout()" style="
-        background:#dc3545;color:white;
-        padding:10px 15px;border:none;
-        border-radius:8px;float:left;margin-bottom:10px;">
-        🔐 تسجيل الخروج
-    </button>
+    <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
 
-    <h3 style="clear:both">📄 الملف الشخصي</h3>
+    <h3>📄 الملف الشخصي</h3>
 
     <table>
       <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
       <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
-
-      <tr><th>المواليد</th>
-          <td><input id="المواليد" value="${student["المواليد"] || ""}"></td>
-      </tr>
-
+      <tr><th>المواليد</th><td><input id="المواليد" value="${student["المواليد"] || ""}"></td></tr>
       <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
       <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
       <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
-
-      <tr><th>رقم ولي الأمر</th>
-          <td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td>
-      </tr>
-
-      <tr><th>رقم الخط</th>
-          <td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td>
-      </tr>
-
+      <tr><th>رقم ولي الأمر</th><td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
+      <tr><th>رقم الخط</th><td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
       <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
-
-      <tr><th>رقم الطالب</th>
-          <td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td>
-      </tr>
-
+      <tr><th>رقم الطالب</th><td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
       <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
-
-      <tr><th>العنوان</th>
-          <td><input id="العنوان" value="${student["العنوان"] || ""}"></td>
-      </tr>
-
-      <tr><th>اسم الأم</th>
-          <td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td>
-      </tr>
-
-      <tr><th>المدرسة القادم منها</th>
-          <td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td>
-      </tr>
-
+      <tr><th>العنوان</th><td><input id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
+      <tr><th>اسم الأم</th><td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
+      <tr><th>المدرسة القادم منها</th><td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
       <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
       <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
     </table>
-
-    <button onclick="saveChanges('${student["كود الطالب"]}')" 
-            style="width:100%;padding:12px;margin-top:15px;
-            border:none;border-radius:8px;background:#ffc107;font-size:15px">
-        💾 حفظ التعديلات
-    </button>
     `;
-
     showPage("profilePage");
 }
 
-/**********************************************
-   حفظ التعديلات
-**********************************************/
-async function saveChanges(code) {
-    const data = {
-        "المواليد": document.getElementById("المواليد").value,
-        "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
-        "رقم الخط": document.getElementById("رقم الخط").value,
-        "رقم الطالب": document.getElementById("رقم الطالب").value,
-        "العنوان": document.getElementById("العنوان").value,
-        "اسم الام": document.getElementById("اسم الام").value,
-        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value
-    };
-
-    await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({
-            action: "update",
-            code: code,
-            data: data
-        })
-    });
-
-    alert("✔ تم حفظ التعديلات بنجاح");
-}
-
-/**********************************************
-   تحديث حالة الطالب
-**********************************************/
-async function updateLoginState(code, state) {
-    await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({
-            action: "update_state",
-            code: code,
-            state: state
-        })
-    });
-}
-
-/**********************************************
-   تسجيل الخروج
-**********************************************/
 function logout() {
-    const code = localStorage.getItem("studentCode");
-
-    updateLoginState(code, "تم تسجيل الخروج");
-
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("studentCode");
-
     location.reload();
 }
 
-/**********************************************
-   التنقل بين الصفحات
-**********************************************/
 function showPage(pageId, element = null) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(pageId).style.display = "block";
