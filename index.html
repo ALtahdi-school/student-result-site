@@ -5,10 +5,275 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نظام استعلام الطالب</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
 
+/* خلفية متدرجة متحركة */
+body {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    background: linear-gradient(135deg, #dfe9ff, #ffffff, #b6d4ff);
+    background-size: 300% 300%;
+    animation: bgMove 10s infinite;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 50% }
+    50% { background-position: 100% 50% }
+    100% { background-position: 0% 50% }
+}
+
+/* =========================
+      Splash Screen
+========================= */
+#splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: splashFadeOut 3.5s forwards;
+}
+
+@keyframes splashFadeOut {
+    0% { opacity: 1 }
+    80% { opacity: 1 }
+    100% { opacity: 0; visibility: hidden }
+}
+
+.splash-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #7a00ff;
+    margin-bottom: 10px;
+    animation: slideUp 1.3s;
+}
+
+.splash-sub {
+    font-size: 22px;
+    color: #333;
+    margin-bottom: 8px;
+    animation: slideUp 1.6s;
+}
+
+.splash-year {
+    font-size: 19px;
+    color: #555;
+    animation: slideUp 1.9s;
+}
+
+.splash-copy {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #444;
+    animation: fadeIn 2.2s;
+}
+
+@keyframes slideUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0 }
+    100% { opacity: 1 }
+}
+
+/* =========================
+      Fade-in Page
+========================= */
+header, .container {
+    opacity: 0;
+    animation: fadePage 2s 3.4s forwards;
+}
+
+@keyframes fadePage {
+    from { opacity: 0; transform: scale(0.97); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* =========================
+        Inputs & Buttons
+========================= */
+.container { padding: 20px; }
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+}
+
+/* زر الدخول */
+#loginBtn {
+    background: #28a745;
+    color: white;
+}
+
+/* تأثير حركة الأزرار */
+button:hover {
+    transform: scale(1.03);
+    transition: 0.2s;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* نبض مستمر */
+@keyframes pulseButton {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+button {
+    animation: pulseButton 3s infinite;
+}
+
+/* ======================
+        Error Shake
+====================== */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.45s ease;
+}
+
+.error {
+    color: red;
+    text-align: center;
+}
+
+/* ======================
+       Sections
+====================== */
+.section {
+    background: white;
+    padding: 15px;
+    margin: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.page { display: none; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+/* ==============================
+     البار السفلي — iPhone Style
+============================== */
+#bottomBar {
+    position: fixed;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: 92%;
+    height: 65px;
+    display: none;
+    padding: 10px 0;
+    border-radius: 25px;
+    background: linear-gradient(45deg, #9b00ff, #ff0088);
+    color: white;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    justify-content: space-around;
+    align-items: center;
+    transition: 0.8s ease;
+}
+
+#bottomBar.show-bar {
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-item {
+    text-align: center;
+    font-size: 15px;
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    opacity: 1;
+    font-weight: bold;
+}
+
+/* زر الخروج */
+.logout-btn {
+    background: #dc3545;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: 100%;
+}
+
+/* =======================
+   Welcome Animation
+======================= */
+#welcomeAnim {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.7);
+    background: white;
+    padding: 20px 30px;
+    border-radius: 20px;
+    font-size: 22px;
+    color: #7b00ff;
+    font-weight: bold;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    opacity: 0;
+    z-index: 99999;
+    animation: welcomeShow 2.5s forwards;
+}
+
+@keyframes welcomeShow {
+    0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
+    40% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+    70% { transform: translateX(-50%) scale(1); }
+    100% { opacity: 0; top: 10%; }
+}
+
+</style>
 </head>
+
 <body>
+
+<!-- =========================
+        Splash Screen
+========================= -->
+<div id="splash">
+    <div class="splash-title">الحوكمة</div>
+    <div class="splash-sub">ثانوية التحدي الأهلية</div>
+    <div class="splash-year">العام الدراسي 2025 - 2026</div>
+    <div class="splash-copy">جميع الحقوق محفوظة ©</div>
+</div>
 
 <header>📘 نظام استعلام الطالب</header>
 
@@ -21,13 +286,13 @@
 </div>
 
 <!-- الصفحات -->
-<div id="profilePage" class="page section"></div>
-<div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
-<div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
-<div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
+<div id="profilePage"   class="page section"></div>
+<div id="gradesPage"    class="page section">لا توجد درجات حالياً</div>
+<div id="notifyPage"    class="page section">لا توجد تبليغات حالياً</div>
+<div id="chatPage"      class="page section">لا توجد رسائل حالياً</div>
 
-<!-- الشريط السفلي -->
-<div id="bottomBar" class="slide-up">
+<!-- البار السفلي -->
+<div id="bottomBar">
     <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
     <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
     <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
@@ -35,22 +300,38 @@
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
+
+const API_URL =
+ "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
 window.addEventListener("DOMContentLoaded", () => {
     if (localStorage.getItem("loggedIn") === "true") {
-        const code = localStorage.getItem("studentCode");
-        document.getElementById("studentCode").value = code;
+        document.getElementById("studentCode").value =
+            localStorage.getItem("studentCode");
         searchStudent(false);
     }
 });
 
+/* =======================
+     البحث عن الطالب
+======================= */
 async function searchStudent(saveSession = true) {
+
     let code = document.getElementById("studentCode").value.trim();
     let output = document.getElementById("output");
+    let inputBox = document.getElementById("studentCode");
+    let container = document.querySelector(".container");
 
     if (!code) {
         output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
+        inputBox.classList.add("shake");
+        container.classList.add("shake");
+
+        setTimeout(() => {
+            inputBox.classList.remove("shake");
+            container.classList.remove("shake");
+        }, 450);
+
         return;
     }
 
@@ -61,7 +342,17 @@ async function searchStudent(saveSession = true) {
         let data = await res.json();
 
         if (data.status !== "success") {
+
             output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
+
+            inputBox.classList.add("shake");
+            container.classList.add("shake");
+
+            setTimeout(() => {
+                inputBox.classList.remove("shake");
+                container.classList.remove("shake");
+            }, 450);
+
             return;
         }
 
@@ -72,12 +363,18 @@ async function searchStudent(saveSession = true) {
             localStorage.setItem("studentCode", code);
         }
 
-        // إخفاء عناصر تسجيل الدخول والتحميل
+        /* إخفاء الدخول */
         document.getElementById("studentCode").style.display = "none";
         document.getElementById("loginBtn").style.display = "none";
         output.innerHTML = "";
 
-        // إظهار الشريط السفلي مع الأنميشن
+        /* انيميشن الترحيب */
+        let welcome = document.createElement("div");
+        welcome.id = "welcomeAnim";
+        welcome.innerText = "أهلاً بك في منصة التحدي";
+        document.body.appendChild(welcome);
+
+        /* إظهار البار */
         let bar = document.getElementById("bottomBar");
         bar.style.display = "flex";
         bar.classList.add("show-bar");
@@ -89,8 +386,12 @@ async function searchStudent(saveSession = true) {
     }
 }
 
+/* =======================
+     تحميل الملف الشخصي
+======================= */
 function loadProfile(student) {
     document.getElementById("profilePage").innerHTML = `
+    
     <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
 
     <h3>📄 الملف الشخصي</h3>
@@ -102,27 +403,49 @@ function loadProfile(student) {
       <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
       <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
       <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
-      <tr><th>رقم ولي الأمر</th><td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
-      <tr><th>رقم الخط</th><td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
+
+      <tr><th>رقم ولي الأمر</th>
+          <td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
+
+      <tr><th>رقم الخط</th>
+          <td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
+
       <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
-      <tr><th>رقم الطالب</th><td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
+
+      <tr><th>رقم الطالب</th>
+          <td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
+
       <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
-      <tr><th>العنوان</th><td><input id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
-      <tr><th>اسم الأم</th><td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
-      <tr><th>المدرسة القادم منها</th><td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
+
+      <tr><th>العنوان</th>
+          <td><input id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
+
+      <tr><th>اسم الأم</th>
+          <td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
+
+      <tr><th>المدرسة القادم منها</th>
+          <td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
+
       <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
       <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
     </table>
+
     `;
     showPage("profilePage");
 }
 
+/* =======================
+          خروج
+======================= */
 function logout() {
     localStorage.removeItem("loggedIn");
     localStorage.removeItem("studentCode");
     location.reload();
 }
 
+/* =======================
+      التنقل بين الصفحات
+======================= */
 function showPage(pageId, element = null) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(pageId).style.display = "block";
@@ -130,6 +453,7 @@ function showPage(pageId, element = null) {
     document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
     if (element) element.classList.add("active");
 }
+
 </script>
 
 </body>
