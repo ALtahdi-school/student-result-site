@@ -7,104 +7,24 @@
 
 <style>
 
-/* خلفية متدرجة متحركة */
 body {
     font-family: 'Cairo', sans-serif;
     direction: rtl;
-    background: linear-gradient(135deg, #dfe9ff, #ffffff, #b6d4ff);
-    background-size: 300% 300%;
-    animation: bgMove 10s infinite;
     margin: 0;
-    padding: 0 0 110px 0; /* مساحة تحت للبيانات حتى لا يغطيها البار السفلي */
-    overflow-x: hidden;
+    padding: 0;
+    background: linear-gradient(135deg, #d0e2ff, #ffffff, #7ab3ff);
+    background-size: cover;
+    background-attachment: fixed;
 }
 
-@keyframes bgMove {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
+/* حاوية المحتوى */
+.container {
+    padding: 20px;
+    max-width: 450px;
+    margin: auto;
 }
 
-/* =========================
-      Splash Screen
-========================= */
-#splash {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    animation: splashFadeOut 3.5s forwards;
-}
-
-@keyframes splashFadeOut {
-    0% { opacity: 1 }
-    80% { opacity: 1 }
-    100% { opacity: 0; visibility: hidden }
-}
-
-.splash-title {
-    font-size: 30px;
-    font-weight: bold;
-    color: #7a00ff;
-    margin-bottom: 10px;
-    animation: slideUp 1.3s;
-}
-
-.splash-sub {
-    font-size: 22px;
-    color: #333;
-    margin-bottom: 8px;
-    animation: slideUp 1.6s;
-}
-
-.splash-year {
-    font-size: 19px;
-    color: #555;
-    animation: slideUp 1.9s;
-}
-
-.splash-copy {
-    margin-top: 20px;
-    font-size: 14px;
-    color: #444;
-    animation: fadeIn 2.2s;
-}
-
-@keyframes slideUp {
-    0% { opacity: 0; transform: translateY(40px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-    0% { opacity: 0 }
-    100% { opacity: 1 }
-}
-
-/* =========================
-      Fade-in Page
-========================= */
-header, .container {
-    opacity: 0;
-    animation: fadePage 2s 3.4s forwards;
-}
-
-@keyframes fadePage {
-    from { opacity: 0; transform: scale(0.97); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-/* =========================
-        Inputs & Buttons
-========================= */
-.container { padding: 20px; }
-
+/* الحقول والأزرار */
 input, button {
     width: 100%;
     padding: 12px;
@@ -114,209 +34,28 @@ input, button {
     border: 1px solid #ccc;
 }
 
-/* زر الدخول */
+/* زر تسجيل الدخول */
 #loginBtn {
-    background: #28a745;
+    background: #007bff;
     color: white;
-}
-
-/* تأثير حركة الأزرار */
-button:hover {
-    transform: scale(1.03);
-    transition: 0.2s;
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-/* نبض مستمر */
-@keyframes pulseButton {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-    100% { transform: scale(1); }
-}
-
-button {
-    animation: pulseButton 3s infinite;
-}
-
-/* نص جاري التحميل */
-.loading-text {
-    text-align: center;
+    border: none;
     font-weight: bold;
-    animation: loadingFade 1s infinite;
 }
 
-@keyframes loadingFade {
-    0% { opacity: 0.3 }
-    100% { opacity: 1 }
-}
-
-/* ======================
-        Error Shake
-====================== */
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-    100% { transform: translateX(0); }
-}
-
-.shake {
-    animation: shake 0.45s ease;
-}
-
-.error {
-    color: red;
-    text-align: center;
-}
-
-/* ======================
-       Sections
-====================== */
+/* صناديق الصفحات */
 .section {
     background: white;
     padding: 15px;
     margin: 20px;
     border-radius: 15px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-/* حاوية الأزرار أعلى الملف الشخصي */
-.profile-actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.profile-actions button {
-    flex: 1;
-}
-
-/* زر الخروج */
-.logout-btn {
-    background: #dc3545;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    width: 100%;
-}
-
-/* زر الحفظ */
-.save-btn {
-    background: #ffc107;
-    color: #333;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    width: 100%;
-    font-weight: bold;
-}
-
-.page { display: none; }
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 10px;
-    border: 1px solid #ddd;
-}
-
-/* ==============================
-     البار السفلي — Glass Style
-============================== */
-#bottomBar {
-    position: fixed;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100%);
-    width: 92%;
-    height: 65px;
+.page {
     display: none;
-    padding: 10px 0;
-    border-radius: 25px;
-    background: linear-gradient(45deg,
-        rgba(155, 0, 255, 0.35),
-        rgba(255, 0, 136, 0.25));
-    color: white;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-    justify-content: space-around;
-    align-items: center;
-    transition: 0.8s ease;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid rgba(255,255,255,0.35);
-}
-
-#bottomBar.show-bar {
-    transform: translateX(-50%) translateY(0);
-}
-
-.nav-item {
-    text-align: center;
-    font-size: 15px;
-    cursor: pointer;
-    opacity: 0.75;
-    position: relative;   /* مهم للانفجار */
-    overflow: hidden;     /* حتى لا يخرج الانفجار خارج الزر */
-    padding: 0 5px;
-}
-
-.nav-item:hover,
-.nav-item.active {
-    opacity: 1;
-    font-weight: bold;
-}
-
-/* دائرة الانفجار */
-.burst {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    pointer-events: none;
-    transform: translate(-50%, -50%) scale(0);
-    animation: burstAnim 0.5s ease-out forwards;
-}
-
-@keyframes burstAnim {
-    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.9; }
-    100% { transform: translate(-50%, -50%) scale(12); opacity: 0; }
-}
-
-/* =======================
-   Welcome Animation
-======================= */
-#welcomeAnim {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translateX(-50%) scale(0.7);
-    background: white;
-    padding: 20px 30px;
-    border-radius: 20px;
-    font-size: 22px;
-    color: #7b00ff;
-    font-weight: bold;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-    opacity: 0;
-    z-index: 99999;
-    animation: welcomeShow 2.5s forwards;
-}
-
-@keyframes welcomeShow {
-    0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
-    40% { opacity: 1; transform: translateX(-50%) scale(1.05); }
-    70% { transform: translateX(-50%) scale(1); }
-    100% { opacity: 0; top: 10%; }
 }
 
 </style>
@@ -324,18 +63,18 @@ th, td {
 
 <body>
 
-<!-- =========================
-        Splash Screen
-========================= -->
-<div id="splash">
-    <div class="splash-title">قسم الحوكمة</div>
-    <div class="splash-sub">ثانوية التحدي الأهلية</div>
-    <div class="splash-year">العام الدراسي 2025 - 2026</div>
-    <div class="splash-copy">جميع الحقوق محفوظة ©</div>
+<!-- شاشة البداية -->
+<div style="text-align:center; padding:25px 10px;">
+    <div style="font-size:28px; font-weight:bold; color:#004a9f;">قسم الحوكمة</div>
+    <div style="font-size:20px; margin-top:5px; color:#333;">احمد عبد الرحمن احمد</div>
 </div>
 
-<header>📘 نظام استعلام الطالب</header>
+<!-- العنوان -->
+<header style="text-align: center; font-size: 22px; padding: 15px; font-weight: bold; color:#004a9f;">
+📘 نظام استعلام الطالب
+</header>
 
+<!-- منطقة تسجيل الدخول -->
 <div class="container">
     <input id="studentCode" placeholder="أدخل كود الطالب">
     <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
@@ -343,215 +82,83 @@ th, td {
 </div>
 
 <!-- الصفحات -->
-<div id="profilePage"   class="page section"></div>
-<div id="gradesPage"    class="page section">لا توجد درجات حالياً</div>
-<div id="notifyPage"    class="page section">لا توجد تبليغات حالياً</div>
-<div id="chatPage"      class="page section">لا توجد رسائل حالياً</div>
-
-<!-- البار السفلي -->
-<div id="bottomBar">
-    <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
-    <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
-    <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
-    <div class="nav-item" onclick="showPage('chatPage', this)">الدردشة</div>
-</div>
+<div id="profilePage" class="page section"></div>
+<div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
+<div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
+<div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
 <script>
 
-const API_URL =
- "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
-window.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("loggedIn") === "true") {
-        document.getElementById("studentCode").value =
-            localStorage.getItem("studentCode");
-        searchStudent(false);
-    }
-});
-
-/* =======================
-     البحث عن الطالب
-======================= */
-async function searchStudent(saveSession = true) {
-
+/* البحث عن الطالب */
+async function searchStudent() {
     let code = document.getElementById("studentCode").value.trim();
     let output = document.getElementById("output");
-    let inputBox = document.getElementById("studentCode");
-    let container = document.querySelector(".container");
 
     if (!code) {
-        output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
-        inputBox.classList.add("shake");
-        container.classList.add("shake");
-
-        setTimeout(() => {
-            inputBox.classList.remove("shake");
-            container.classList.remove("shake");
-        }, 450);
-
+        output.innerHTML = "<p style='color:red;text-align:center'>⚠️ يرجى إدخال الكود</p>";
         return;
     }
 
-    output.innerHTML = "<p class='loading-text'>⏳ جاري التحميل...</p>";
+    output.innerHTML = "<p style='text-align:center;font-weight:bold'>⏳ جاري التحميل...</p>";
 
     try {
         let res = await fetch(`${API_URL}?code=${code}`);
         let data = await res.json();
 
         if (data.status !== "success") {
-
-            output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
-
-            inputBox.classList.add("shake");
-            container.classList.add("shake");
-
-            setTimeout(() => {
-                inputBox.classList.remove("shake");
-                container.classList.remove("shake");
-            }, 450);
-
+            output.innerHTML = `<p style='color:red;text-align:center'>❌ ${data.data}</p>`;
             return;
         }
 
         let student = data.data;
 
-        if (saveSession) {
-            localStorage.setItem("loggedIn", "true");
-            localStorage.setItem("studentCode", code);
-        }
-
-        /* إخفاء الدخول */
+        // إخفاء عناصر الدخول
         document.getElementById("studentCode").style.display = "none";
         document.getElementById("loginBtn").style.display = "none";
         output.innerHTML = "";
 
-        /* انيميشن الترحيب */
-        let welcome = document.createElement("div");
-        welcome.id = "welcomeAnim";
-        welcome.innerText = "أهلاً بك في منصة التحدي";
-        document.body.appendChild(welcome);
-
-        /* إظهار البار */
-        let bar = document.getElementById("bottomBar");
-        bar.style.display = "flex";
-        bar.classList.add("show-bar");
+        // رسالة الترحيب
+        let welcomeMsg = document.createElement("div");
+        welcomeMsg.innerText = "مرحباً بك في منصة التحدي";
+        welcomeMsg.style.textAlign = "center";
+        welcomeMsg.style.fontSize = "18px";
+        welcomeMsg.style.marginTop = "10px";
+        welcomeMsg.style.fontWeight = "bold";
+        welcomeMsg.style.color = "#0050b3";
+        document.body.prepend(welcomeMsg);
 
         loadProfile(student);
 
     } catch (err) {
-        output.innerHTML = "<p class='error'>❌ خطأ في الاتصال بالخادم</p>";
+        output.innerHTML = "<p style='color:red;text-align:center'>❌ خطأ في الاتصال بالخادم</p>";
     }
 }
 
-/* =======================
-     حفظ التعديلات
-======================= */
-async function saveChanges(code) {
-    const data = {
-        "المواليد": document.getElementById("المواليد").value,
-        "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
-        "رقم الخط": document.getElementById("رقم الخط").value,
-        "رقم الطالب": document.getElementById("رقم الطالب").value,
-        "العنوان": document.getElementById("العنوان").value,
-        "اسم الام": document.getElementById("اسم الام").value,
-        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value
-    };
-
-    await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({
-            action: "update",
-            code: code,
-            data: data
-        })
-    });
-
-    alert("✔ تم حفظ التعديلات بنجاح");
-}
-
-/* =======================
-     تحميل الملف الشخصي
-======================= */
+/* تحميل الملف الشخصي */
 function loadProfile(student) {
-    const code = student["كود الطالب"] || "";
     document.getElementById("profilePage").innerHTML = `
-    <div class="profile-actions">
-        <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
-        <button onclick="saveChanges('${code}')" class="save-btn">💾 حفظ التعديلات</button>
-    </div>
-
-    <h3>📄 الملف الشخصي</h3>
-
-    <table>
-      <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
-      <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
-      <tr><th>المواليد</th><td><input id="المواليد" value="${student["المواليد"] || ""}"></td></tr>
-      <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
-      <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
-      <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
-
-      <tr><th>رقم ولي الأمر</th>
-          <td><input id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
-
-      <tr><th>رقم الخط</th>
-          <td><input id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
-
-      <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
-
-      <tr><th>رقم الطالب</th>
-          <td><input id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
-
-      <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
-
-      <tr><th>العنوان</th>
-          <td><input id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
-
-      <tr><th>اسم الأم</th>
-          <td><input id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
-
-      <tr><th>المدرسة القادم منها</th>
-          <td><input id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
-
-      <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
-      <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
-    </table>
+        <h3>📄 الملف الشخصي</h3>
+        <table style="width:100%; border-collapse:collapse;">
+            <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
+            <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
+            <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
+            <tr><th>القاعة</th><td>${student["القااعة"] || ""}</td></tr>
+            <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
+            <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
+            <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
+            <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
+        </table>
     `;
+
     showPage("profilePage");
 }
 
-/* =======================
-          خروج
-======================= */
-function logout() {
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("studentCode");
-    location.reload();
-}
-
-/* =======================
-      التنقل بين الصفحات
-      + انفجار على الزر
-======================= */
-function showPage(pageId, element = null) {
+/* عرض صفحة */
+function showPage(pageId) {
     document.querySelectorAll(".page").forEach(p => p.style.display = "none");
     document.getElementById(pageId).style.display = "block";
-
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-
-    if (element) {
-        element.classList.add("active");
-
-        // إنشاء دائرة انفجار في وسط الزر
-        const burst = document.createElement("span");
-        burst.classList.add("burst");
-        burst.style.left = "50%";
-        burst.style.top = "50%";
-        element.appendChild(burst);
-
-        setTimeout(() => {
-            burst.remove();
-        }, 500);
-    }
 }
 
 </script>
