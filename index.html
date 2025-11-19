@@ -303,6 +303,30 @@ window.addEventListener("DOMContentLoaded", () => {
 const API_URL =
  "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
+
+/* ====================================================
+   🔥 دالة إصلاح تاريخ المواليد وتعديله للعرض الصحيح
+   ==================================================== */
+function normalizeDate(dateStr) {
+    if (!dateStr) return "";
+
+    // تحويل الأرقام العربية إلى إنجليزية
+    dateStr = dateStr.replace(/[٠-٩]/g, d => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]);
+
+    // صيغة: 18/07/2004 أو 18-07-2004
+    if (dateStr.includes("/") || dateStr.includes("-")) {
+        let parts = dateStr.split(/[-\/]/);
+        if (parts.length === 3) {
+            let day = parts[0].padStart(2, "0");
+            let month = parts[1].padStart(2, "0");
+            let year = parts[2];
+            return `${year}-${month}-${day}`;
+        }
+    }
+
+    return dateStr;
+}
+
 /* =========================
        تسجيل الدخول
 ========================= */
@@ -379,7 +403,7 @@ function loadProfile(student) {
                   id="المواليد"
                   min="1960-01-01"
                   max="2027-12-31"
-                  value="${student["المواليد"] || ""}"
+                  value="${ normalizeDate(student["المواليد"]) }"
                   onchange="this.classList.add('hasDate')"
               >
           </td>
