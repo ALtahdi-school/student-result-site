@@ -3,182 +3,527 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إدارة حساب الطالب</title>
+<title>نظام استعلام الطالب</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap');
 
-body{
-  font-family:'Cairo',sans-serif;
-  direction:rtl;
-  margin:0;
-  padding:0;
-  background:#f6f6f6;
+/* =========================
+   خلفية — أزرق نيون (D)
+========================= */
+body {
+    font-family: 'Cairo', sans-serif;
+    direction: rtl;
+    background: linear-gradient(135deg, #00e1ff, #007bff);
+    background-size: 300% 300%;
+    animation: neonBg 8s infinite alternate ease-in-out;
+    margin: 0;
+    padding-bottom: 120px;
 }
 
-.header{
-  background:#007bff;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-  font-size:22px;
-  font-weight:bold;
+@keyframes neonBg {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
-.container{
-  max-width:550px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.1);
+/* =========================
+     Splash Screen
+========================= */
+#splash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    animation: splashFadeOut 3.4s forwards;
 }
 
-h2{
-  text-align:center;
-  margin-bottom:20px;
+@keyframes splashFadeOut {
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
 }
 
-label{
-  display:block;
-  margin-top:12px;
-  font-weight:bold;
+.splash-title {
+    font-size: 30px;
+    font-weight: bold;
+    color: #007bff;
 }
 
-input{
-  width:100%;
-  padding:12px;
-  margin-top:6px;
-  border:1px solid #ccc;
-  border-radius:8px;
+/* =========================
+       العنوان
+========================= */
+header {
+    text-align: center;
+    padding: 20px;
+    font-size: 22px;
+    color: white;
+    font-weight: bold;
+    opacity: 0;
+    animation: fadeIn 1.4s 3.2s forwards;
 }
 
-button{
-  width:100%;
-  padding:12px;
-  background:#28a745;
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  margin-top:20px;
-  cursor:pointer;
+@keyframes fadeIn {
+    to { opacity: 1; }
 }
 
-button:hover{
-  background:#218838;
+/* =========================
+   شاشة تسجيل الدخول
+========================= */
+.login-box {
+    width: 85%;
+    max-width: 340px;
+    margin: 140px auto 0;
+    text-align: center;
 }
 
-.logout{
-  background:#dc3545 !important;
+.login-box input,
+.login-box button {
+    width: 100%;
+    padding: 13px;
+    font-size: 17px;
+    border-radius: 14px;
+    border: none;
+    margin-top: 14px;
 }
 
-.msg{
-  margin-top:15px;
-  white-space:pre-line;
-  text-align:center;
-  min-height:25px;
+/* حقل إدخال الكود */
+.login-box input {
+    background: white;
+    color: #0060c9;
+    font-weight: bold;
 }
+
+.login-box input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #00e1ff;
+}
+
+/* زر الدخول */
+.login-box button {
+    background: linear-gradient(135deg, #00b8ff, #006aff);
+    color: white;
+    font-weight: bold;
+    transition: 0.25s;
+}
+
+.login-box button:hover {
+    transform: scale(1.04);
+}
+
+.login-box button:active {
+    transform: scale(0.92);
+}
+
+/* رسالة الخطأ */
+.error {
+    color: yellow;
+    font-weight: bold;
+}
+
+/* =========================
+    صفحات البيانات
+========================= */
+.page {
+    display: none;
+}
+
+.section {
+    padding: 15px;
+    margin: 20px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(16px);
+    color: #004a99;
+    font-weight: bold;
+}
+
+/* =========================
+     جدول الملف الشخصي
+========================= */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+td, th {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+}
+
+/* الحقول داخل الجدول */
+.table-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.75);
+    color: #004a99;
+}
+
+/* عند اختيار تاريخ */
+.table-input.hasDate {
+    color: #002855 !important;
+    font-weight: bold;
+}
+
+/* حقل المواليد */
+.table-input[type="date"] {
+    font-size: 16px;
+}
+
+/* =========================
+  أزرار الحفظ والخروج
+========================= */
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.logout-btn,
+.save-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-weight: bold;
+    color: white;
+}
+
+.logout-btn {
+    background: #ff1744;
+}
+
+.save-btn {
+    background: #ffd600;
+    color: black;
+}
+
+/* =========================
+    البار السفلي الزجاجي
+========================= */
+#bottomBar {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100%);
+    width: 92%;
+    height: 70px;
+    display: none;
+    justify-content: space-around;
+    align-items: center;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    transition: 0.8s;
+    color: #004a99;
+}
+
+#bottomBar.show-bar {
+    transform: translateX(-50%) translateY(0);
+}
+
+/* انفجار عند الضغط */
+.nav-item {
+    cursor: pointer;
+    opacity: 0.7;
+    font-weight: bold;
+    position: relative;
+}
+
+.nav-item:hover { opacity: 1; }
+
+.burst {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    animation: burstAnim .5s forwards;
+}
+
+@keyframes burstAnim {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(15); opacity: 0; }
+}
+
 </style>
 </head>
+
 <body>
 
-<div class="header">👤 حساب الطالب</div>
+<!-- Splash Screen -->
+<div id="splash">
+    <div class="splash-title">قسم الحوكمة</div>
+    <div class="splash-sub">ثانوية التحدي الأهلية</div>
+    <div class="splash-year">العام الدراسي 2025 - 2026</div>
+</div>
 
-<div class="container">
+<header>📘 نظام استعلام الطالب</header>
 
-  <h2>تعديل معلومات الحساب</h2>
+<!-- تسجيل الدخول -->
+<div class="login-box" id="loginBox">
+    <input id="studentCode" placeholder="أدخل كود الطالب">
+    <button onclick="searchStudent()">تسجيل الدخول</button>
+    <div id="output"></div>
+</div>
 
-  <label>رقم ولي الأمر</label>
-  <input id="newParent" placeholder="رقم ولي الأمر الجديد">
+<!-- الصفحات -->
+<div id="profilePage" class="page section"></div>
+<div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
+<div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
+<div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
-  <label>رقم الخط</label>
-  <input id="newLine" placeholder="رقم الخط الجديد">
-
-  <label>العنوان</label>
-  <input id="newAddress" placeholder="عنوان الطالب">
-
-  <label>رقم الطالب</label>
-  <input id="newStudentNumber" placeholder="الرقم المدرسي للطالب">
-
-  <label>المدرسة القادم منها</label>
-  <input id="newSchoolFrom" placeholder="اكتب اسم المدرسة">
-
-  <button onclick="updateData()">حفظ التعديلات</button>
-  <button class="logout" onclick="logout()">تسجيل الخروج</button>
-
-  <div class="msg" id="msg"></div>
+<!-- البار -->
+<div id="bottomBar">
+    <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
+    <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
+    <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
+    <div class="nav-item" onclick="showPage('chatPage', this)">الدردشة</div>
 </div>
 
 <script>
-const SHEET_URL = "https://script.google.com/macros/s/AKfycbwimKjV1uHCxq1DLUQ_hJguMjB4Xi6hw9OGxrlMWheHGhNRzCDLySvnIFBX9-2bQCXo/exec";
 
-function normalize(v){
-  v = String(v||"").trim();
-  v = v.replace(/\s+/g,"");
-  if(v.startsWith("0")) v = v.substring(1);
-  return v;
-}
+/* =========================
+     تسجيل الدخول التلقائي
+========================= */
+window.addEventListener("DOMContentLoaded", () => {
+    if (localStorage.getItem("loggedIn") === "true") {
+        document.getElementById("studentCode").value =
+            localStorage.getItem("studentCode");
+        searchStudent(false);
+    }
+});
 
-// تحديث البيانات
-async function updateData(){
-  const msg = document.getElementById("msg");
+const API_URL =
+ "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
-  const rawParent = localStorage.getItem("parentNumber");
-  const rawCode   = localStorage.getItem("studentCode");
 
-  if(!rawParent || !rawCode){
-    msg.style.color="#dc3545";
-    msg.textContent="⛔ انتهت الجلسة. سيتم الرجوع...";
-    setTimeout(()=>{ window.location.href="index.html"; },1000);
-    return;
-  }
+/* ====================================================
+   🔥 دالة إصلاح تاريخ المواليد وتعديله للعرض الصحيح
+   ==================================================== */
+function normalizeDate(dateStr) {
+    if (!dateStr) return "";
 
-  const parent = normalize(rawParent);
-  const code   = normalize(rawCode);
+    // تحويل الأرقام العربية إلى إنجليزية
+    dateStr = dateStr.replace(/[٠-٩]/g, d => "0123456789"["٠١٢٣٤٥٦٧٨٩".indexOf(d)]);
 
-  const body = new URLSearchParams({
-    action:"updateStudent",
-    parent: parent,
-    code: code,
-    newParent: document.getElementById("newParent").value.trim(),
-    newLine: document.getElementById("newLine").value.trim(),
-    newAddress: document.getElementById("newAddress").value.trim(),
-    newStudentNumber: document.getElementById("newStudentNumber").value.trim(),
-    newSchoolFrom: document.getElementById("newSchoolFrom").value.trim()
-  });
-
-  msg.style.color="#333";
-  msg.textContent="⏳ جاري تحديث البيانات...";
-
-  try{
-    const res = await fetch(SHEET_URL,{
-      method:"POST",
-      headers:{"Content-Type":"application/x-www-form-urlencoded"},
-      body:body.toString()
-    });
-
-    const data = await res.json();
-    console.log(data);
-
-    if(data.success){
-      msg.style.color="#28a745";
-      msg.textContent="✔ تم تحديث البيانات بنجاح.";
-    } else {
-      msg.style.color="#dc3545";
-      msg.textContent = data.message || "❌ لم يتم تحديث البيانات.";
+    // صيغة: 18/07/2004 أو 18-07-2004
+    if (dateStr.includes("/") || dateStr.includes("-")) {
+        let parts = dateStr.split(/[-\/]/);
+        if (parts.length === 3) {
+            let day = parts[0].padStart(2, "0");
+            let month = parts[1].padStart(2, "0");
+            let year = parts[2];
+            return `${year}-${month}-${day}`;
+        }
     }
 
-  }catch(err){
-    msg.style.color="#dc3545";
-    msg.textContent="⚠️ خطأ أثناء الاتصال بالسيرفر.";
-  }
+    return dateStr;
 }
 
-async function logout(){
-  localStorage.clear();
-  window.location.href="index.html";
+/* =========================
+       تسجيل الدخول
+========================= */
+async function searchStudent(saveSession = true) {
+
+    let code = document.getElementById("studentCode").value.trim();
+    let output = document.getElementById("output");
+
+    if (!code) {
+        output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
+        return;
+    }
+
+    output.innerHTML = "<p style='color:white'>⏳ جاري التحميل...</p>";
+
+    try {
+        let res = await fetch(`${API_URL}?code=${code}`);
+        let data = await res.json();
+
+        if (data.status !== "success") {
+            output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
+            return;
+        }
+
+        let student = data.data;
+
+        if (saveSession) {
+            localStorage.setItem("loggedIn", "true");
+            localStorage.setItem("studentCode", code);
+        }
+
+        document.getElementById("loginBox").style.display = "none";
+
+        let bar = document.getElementById("bottomBar");
+        bar.style.display = "flex";
+        bar.classList.add("show-bar");
+
+        loadProfile(student);
+
+    } catch (err) {
+        output.innerHTML = "<p class='error'>❌ خطأ في الاتصال</p>";
+    }
 }
+
+/* =========================
+     الملف الشخصي
+========================= */
+function loadProfile(student) {
+
+    const code = student["كود الطالب"] || "";
+
+    document.getElementById("profilePage").innerHTML = `
+
+    <div class="profile-actions">
+        <button onclick="logout()" class="logout-btn">🔐 خروج</button>
+        <button onclick="saveChanges('${code}')" class="save-btn">💾 حفظ</button>
+    </div>
+
+    <h3>📄 الملف الشخصي</h3>
+
+    <table>
+
+      <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
+
+      <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
+
+      <!-- 🔥 المواليد — أسفل اسم الطالب -->
+      <tr>
+          <th>المواليد</th>
+          <td>
+              <input 
+                  type="date" 
+                  class="table-input" 
+                  id="المواليد"
+                  min="1960-01-01"
+                  max="2027-12-31"
+                  value="${ normalizeDate(student["المواليد"]) }"
+                  onchange="this.classList.add('hasDate')"
+              >
+          </td>
+      </tr>
+
+      <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
+      <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
+      <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
+
+      <tr>
+          <th>رقم ولي الأمر</th>
+          <td><input class="table-input" id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td>
+      </tr>
+
+      <tr>
+          <th>رقم الخط</th>
+          <td><input class="table-input" id="رقم الخط" value="${student["رقم الخط"] || ""}"></td>
+      </tr>
+
+      <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
+
+      <tr>
+          <th>رقم الطالب</th>
+          <td><input class="table-input" id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td>
+      </tr>
+
+      <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
+
+      <tr>
+          <th>العنوان</th>
+          <td><input class="table-input" id="العنوان" value="${student["العنوان"] || ""}"></td>
+      </tr>
+
+      <tr>
+          <th>اسم الأم</th>
+          <td><input class="table-input" id="اسم الام" value="${student["اسم الام"] || ""}"></td>
+      </tr>
+
+      <tr>
+          <th>المدرسة القادم منها</th>
+          <td><input class="table-input" id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td>
+      </tr>
+
+      <tr><th>المعدل</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
+
+      <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
+
+      <tr>
+          <th>الرمز</th>
+          <td><input class="table-input" id="الرمز" value="${student["الرمز"] || ""}"></td>
+      </tr>
+
+    </table>
+    `;
+
+    showPage("profilePage");
+}
+
+/* =========================
+     حفظ التعديلات
+========================= */
+async function saveChanges(code) {
+
+    const data = {
+        "المواليد": document.getElementById("المواليد").value,
+        "رقم ولي الامر": document.getElementById("رقم ولي الامر").value,
+        "رقم الخط": document.getElementById("رقم الخط").value,
+        "رقم الطالب": document.getElementById("رقم الطالب").value,
+        "العنوان": document.getElementById("العنوان").value,
+        "اسم الام": document.getElementById("اسم الام").value,
+        "المدرسة القادم منها": document.getElementById("المدرسة القادم منها").value,
+        "الرمز": document.getElementById("الرمز").value
+    };
+
+    await fetch(API_URL, {
+        method: "POST",
+        body: JSON.stringify({
+            action: "update",
+            code: code,
+            data: data
+        })
+    });
+
+    alert("✔ تم حفظ التعديلات");
+}
+
+/* =========================
+     تسجيل الخروج
+========================= */
+function logout() {
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("studentCode");
+    location.reload();
+}
+
+/* =========================
+     التنقل + انفجار
+========================= */
+function showPage(pageId, element = null) {
+
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+
+    document.getElementById(pageId).style.display = "block";
+
+    document.querySelectorAll(".nav-item")
+        .forEach(n => n.classList.remove("active"));
+
+    if (element) {
+        element.classList.add("active");
+
+        let burst = document.createElement("span");
+        burst.classList.add("burst");
+        burst.style.left = "50%";
+        burst.style.top = "50%";
+        element.appendChild(burst);
+
+        setTimeout(() => burst.remove(), 500);
+    }
+}
+
 </script>
 
 </body>
