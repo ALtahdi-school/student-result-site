@@ -70,16 +70,26 @@ header {
     border: none;
     margin-top: 14px;
 }
+
+/* حقل الإدخال */
 .login-box input {
     background: white;
     color: #0060c9;
     font-weight: bold;
 }
+
+/* زر تسجيل الدخول (أخضر وبنفس الحجم) */
 .login-box button {
-    background: linear-gradient(135deg, #00b8ff, #006aff);
+    background: linear-gradient(135deg, #19e05a, #0a9b32);
     color: white;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(10,155,50,0.35);
+    transition: 0.25s;
+}
+.login-box button:hover {
+    transform: scale(1.04);
+    box-shadow: 0 6px 16px rgba(10,155,50,0.45);
 }
 .error { color: yellow; font-weight: bold; }
 
@@ -99,7 +109,7 @@ header {
 }
 
 /* =========================
-   Tables (الملف الشخصي)
+   Tables
 ========================= */
 table { width: 100%; border-collapse: collapse; }
 td, th {
@@ -120,7 +130,7 @@ td, th {
 }
 
 /* =========================
-   Action Buttons (الملف الشخصي)
+   Action Buttons (profile)
 ========================= */
 .profile-actions {
     display: flex;
@@ -180,7 +190,7 @@ td, th {
 }
 
 /* =========================
-   بطاقات الدرجات
+   بطاقات الدرجات (خضراء)
 ========================= */
 .grade-card {
     background: linear-gradient(135deg, #00c853, #009624);
@@ -205,9 +215,8 @@ td, th {
     border-bottom: 1px solid rgba(255,255,255,0.35);
     color: #f5f5f5;
 }
-.grade-row:last-child {
-    border-bottom: none;
-}
+.grade-row:last-child { border-bottom: none; }
+
 .objection-btn {
     width: 100%;
     padding: 10px;
@@ -220,7 +229,7 @@ td, th {
     cursor: pointer;
 }
 
-/* بطاقة معلومات الغياب والملاحظات أسفل المواد */
+/* بطاقة معلومات الغياب والملاحظات */
 .grades-info-card {
     margin-top: 20px;
     background: rgba(255,255,255,0.9);
@@ -230,9 +239,7 @@ td, th {
     font-size: 14px;
     color: #003f7d;
 }
-.grades-info-card p {
-    margin: 4px 0;
-}
+.grades-info-card p { margin: 4px 0; }
 
 </style>
 </head>
@@ -275,20 +282,20 @@ td, th {
 const API_URL = "https://script.google.com/macros/s/AKfycbxn5f4smL2SYZ8BkFKdOZzRoZdugC4fHycSO7VEJi4JLAD8X1-pOCZneYLqGL3GuVFf/exec";
 
 /* =========================
-   حفظ الجلسة بعد التحديث
+   الدخول التلقائي بعد إعادة فتح الصفحة
 ========================= */
 window.addEventListener("DOMContentLoaded", () => {
-    const saved = localStorage.getItem("loggedIn");
-    const code = localStorage.getItem("studentCode");
-    if (saved === "true" && code) {
-        document.getElementById("studentCode").value = code;
-        // لا نسجل الحالة مرة أخرى
-        searchStudent(false);
+    let savedCode = localStorage.getItem("studentCode");
+    let isLoggedIn = localStorage.getItem("loggedIn");
+
+    if (isLoggedIn === "true" && savedCode) {
+        document.getElementById("studentCode").value = savedCode;
+        searchStudent(false); // لا يعيد حفظ الجلسة ولا يحدّث الحالة
     }
 });
 
 /* =========================
-   دالة إصلاح أي تاريخ قادم من الشيت
+   إصلاح التاريخ القادم من الشيت
 ========================= */
 function fixDate(dateStr) {
     if (!dateStr) return "";
@@ -302,13 +309,6 @@ function fixDate(dateStr) {
         let mm = String(d.getMonth()+1).padStart(2,'0');
         let dd = String(d.getDate()).padStart(2,'0');
         return `${yyyy}-${mm}-${dd}`;
-    }
-
-    if (dateStr.includes("/") || dateStr.includes("-")) {
-        let p = dateStr.split(/[-\/]/);
-        if (p.length === 3) {
-            return `${p[2]}-${p[1].padStart(2,'0')}-${p[0].padStart(2,'0')}`;
-        }
     }
 
     return "";
@@ -477,7 +477,7 @@ async function saveChanges(code) {
 }
 
 /* =========================
-   دالة تحديد عمود الاعتراض حسب المادة
+   تحديد عمود الاعتراض حسب المادة
 ========================= */
 function getObjectionColumn(subject) {
     const map = {
@@ -507,7 +507,7 @@ async function sendObjection(code, column, subjectName) {
         return;
     }
 
-    const value = subjectName; // يكتب فقط اسم المادة في عمود الاعتراض
+    const value = subjectName; // يكتب فقط اسم المادة
 
     await fetch(API_URL, {
         method: "POST",
