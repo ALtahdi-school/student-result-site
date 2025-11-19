@@ -8,30 +8,26 @@
 <style>
 
 /* =========================
-   خلفية نيون قوية
+   خلفية — أزرق نيون (D)
 ========================= */
 body {
     font-family: 'Cairo', sans-serif;
     direction: rtl;
-    background: linear-gradient(135deg,
-        #0011ff,
-        #8a00ff,
-        #ff0077);
-    background-size: 400% 400%;
-    animation: neonMove 10s infinite ease-in-out;
+    background: linear-gradient(135deg, #00e1ff, #007bff);
+    background-size: 300% 300%;
+    animation: neonBg 8s infinite alternate ease-in-out;
     margin: 0;
     padding: 0 0 120px 0;
     overflow-x: hidden;
 }
 
-@keyframes neonMove {
-    0% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
-    100% { background-position: 0% 50% }
+@keyframes neonBg {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
 }
 
 /* =========================
-   Splash Screen
+      Splash Screen
 ========================= */
 #splash {
     position: fixed;
@@ -50,135 +46,105 @@ body {
 
 @keyframes splashFadeOut {
     0% { opacity: 1 }
-    80% { opacity: 1 }
+    60% { opacity: 1 }
     100% { opacity: 0; visibility: hidden }
 }
 
 .splash-title {
     font-size: 30px;
+    color: #007bff;
     font-weight: bold;
-    color: #7a00ff;
 }
 
-.splash-sub, .splash-year, .splash-copy {
-    color: #222;
-    margin-top: 8px;
+.splash-sub,
+.splash-year {
+    font-size: 20px;
+    color: #005fcc;
 }
 
 /* =========================
-   Fade Page
+      العنوان
 ========================= */
-header, .container {
-    opacity: 0;
-    animation: fadePage 2s 3.4s forwards;
-}
-
-@keyframes fadePage {
-    from { opacity: 0; transform: scale(0.96); }
-    to { opacity: 1; transform: scale(1); }
-}
-
 header {
-    background: rgba(255,255,255,0.2);
-    backdrop-filter: blur(10px);
+    opacity: 0;
+    animation: fadeIn 2s 3.5s forwards;
+    text-align: center;
     padding: 20px;
     font-size: 22px;
-    text-align: center;
     color: white;
     font-weight: bold;
 }
 
-/* =========================
-    إدخال البيانات
-========================= */
-.container {
-    padding: 20px;
+@keyframes fadeIn {
+    to { opacity: 1; }
 }
 
-input, button {
+/* =========================
+     شاشة تسجيل الدخول
+========================= */
+.login-box {
+    width: 80%;
+    max-width: 320px;
+    margin: 140px auto 0;
+    text-align: center;
+}
+
+.login-box input {
     width: 100%;
-    padding: 14px;
+    padding: 12px;
     font-size: 17px;
     border-radius: 12px;
-    margin-top: 10px;
     border: none;
+    background: white;
+    color: #005fcc;
 }
 
-input {
-    background: rgba(255,255,255,0.35);
-    backdrop-filter: blur(8px);
-    color: #000;
-}
-
-input:focus {
+.login-box input:focus {
     outline: none;
-    box-shadow: 0 0 8px #ff00c8;
+    box-shadow: 0 0 10px #00e1ff;
 }
 
-button {
-    background: #00d17d;
+.login-box button {
+    width: 100%;
+    padding: 12px;
+    font-size: 17px;
+    margin-top: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #007bff;
     color: white;
     font-weight: bold;
-    animation: pulseButton 3s infinite;
+    transition: 0.2s;
 }
 
-button:hover { transform: scale(1.04); }
-button:active { transform: scale(0.94); }
-
-@keyframes pulseButton {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.03); }
-    100% { transform: scale(1); }
+.login-box button:hover {
+    transform: scale(1.04);
 }
 
-/* =========================
-     Error Shake
-========================= */
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-7px); }
-    40% { transform: translateX(7px); }
-    60% { transform: translateX(-7px); }
-    80% { transform: translateX(7px); }
-    100% { transform: translateX(0); }
+.login-box button:active {
+    transform: scale(0.92);
 }
 
-.shake { animation: shake 0.45s ease; }
-
+/* رسائل */
 .error {
     color: yellow;
     font-weight: bold;
-    text-align: center;
 }
 
 /* =========================
-    صفحة الملف الشخصي
+     صفحات البيانات
 ========================= */
+.page {
+    display: none;
+}
+
 .section {
-    background: rgba(255,255,255,0.3);
-    backdrop-filter: blur(12px);
     padding: 15px;
     margin: 20px;
     border-radius: 18px;
-    color: black;
-}
-
-/* أزرار الحفظ والخروج */
-.profile-actions {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
-}
-
-.logout-btn {
-    background: #ff1744;
-    color: white;
-    font-weight: bold;
-}
-
-.save-btn {
-    background: #ffca28;
-    color: black;
+    background: rgba(255,255,255,0.4);
+    backdrop-filter: blur(15px);
+    color: #004a99;
     font-weight: bold;
 }
 
@@ -190,19 +156,48 @@ table {
 
 td, th {
     padding: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.4);
+    border-bottom: 1px solid rgba(255,255,255,0.5);
 }
 
-input.table-input {
+.table-input {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
     border: none;
-    background: rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.7);
 }
 
 /* =========================
-   البار السفلي — زجاجي Neon
+     أزرار (خروج + حفظ)
+========================= */
+.profile-actions {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.logout-btn {
+    flex: 1;
+    background: #ff1744;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    border: none;
+}
+
+.save-btn {
+    flex: 1;
+    background: #ffeb3b;
+    color: black;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: bold;
+    border: none;
+}
+
+/* =========================
+    البار السفلي — أزرق زجاجي
 ========================= */
 #bottomBar {
     position: fixed;
@@ -211,17 +206,17 @@ input.table-input {
     transform: translateX(-50%) translateY(100%);
     width: 92%;
     height: 70px;
-    border-radius: 30px;
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255,255,255,0.4);
-    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
     display: none;
     justify-content: space-around;
     align-items: center;
-    color: white;
-    transition: 0.8s ease;
+    border-radius: 30px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+    transition: 0.8s;
+    color: #004a99;
+    font-weight: bold;
 }
 
 #bottomBar.show-bar {
@@ -229,56 +224,30 @@ input.table-input {
 }
 
 .nav-item {
-    font-size: 15px;
     cursor: pointer;
-    opacity: 0.75;
+    opacity: 0.7;
     position: relative;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
-.nav-item:hover { opacity: 1; }
+.nav-item:hover {
+    opacity: 1;
+}
 
 /* انفجار */
 .burst {
     position: absolute;
     width: 12px;
     height: 12px;
-    background: white;
+    background: #ffffff;
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(0);
-    pointer-events: none;
     animation: burstAnim 0.5s forwards;
 }
 
 @keyframes burstAnim {
-    0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(14); opacity: 0; }
-}
-
-/* =========================
-   رسالة الترحيب
-========================= */
-#welcomeAnim {
-    position: fixed;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%) scale(0.7);
-    background: white;
-    padding: 20px 30px;
-    border-radius: 20px;
-    font-size: 22px;
-    color: #7b00ff;
-    font-weight: bold;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.25);
-    opacity: 0;
-    animation: welcomeShow 2.5s forwards;
-}
-
-@keyframes welcomeShow {
-    0% { opacity: 0; transform: translateX(-50%) scale(0.6); }
-    40% { opacity: 1; transform: translateX(-50%) scale(1.1); }
-    70% { transform: translateX(-50%) scale(1); }
-    100% { opacity: 0; top: 10%; }
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(15); opacity: 0; }
 }
 
 </style>
@@ -291,24 +260,24 @@ input.table-input {
     <div class="splash-title">قسم الحوكمة</div>
     <div class="splash-sub">ثانوية التحدي الأهلية</div>
     <div class="splash-year">العام الدراسي 2025 - 2026</div>
-    <div class="splash-copy">جميع الحقوق محفوظة ©</div>
 </div>
 
 <header>📘 نظام استعلام الطالب</header>
 
-<div class="container">
+<!-- شاشة تسجيل الدخول -->
+<div class="login-box" id="loginBox">
     <input id="studentCode" placeholder="أدخل كود الطالب">
-    <button id="loginBtn" onclick="searchStudent()">تسجيل الدخول</button>
+    <button onclick="searchStudent()" id="loginBtn">تسجيل الدخول</button>
     <div id="output"></div>
 </div>
 
-<!-- صفحات -->
+<!-- الصفحات -->
 <div id="profilePage" class="page section"></div>
 <div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
 <div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
 <div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
-<!-- البار -->
+<!-- البار السفلي -->
 <div id="bottomBar">
     <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
     <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
@@ -318,7 +287,7 @@ input.table-input {
 
 <script>
 
-const API_URL = 
+const API_URL =
  "https://script.google.com/macros/s/AKfycbxQZfPQU_fM6lFEyygG59MsjgUduv974XsO_EkBXLVbzX7rtaJIH_oe9HwMfN-1hyxa/exec";
 
 
@@ -331,23 +300,18 @@ window.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-/* البحث عن الطالب */
-async function searchStudent(saveSession = true) {
 
+/* تسجيل الدخول */
+async function searchStudent(saveSession = true) {
     let code = document.getElementById("studentCode").value.trim();
     let output = document.getElementById("output");
-    let inputBox = document.getElementById("studentCode");
-    let container = document.querySelector(".container");
 
     if (!code) {
         output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
-        inputBox.classList.add("shake");
-        container.classList.add("shake");
-        setTimeout(()=>{inputBox.classList.remove("shake");container.classList.remove("shake");},450);
         return;
     }
 
-    output.innerHTML = "<p class='loading-text'>⏳ جاري التحميل...</p>";
+    output.innerHTML = "<p style='color:white'>⏳ جاري التحميل...</p>";
 
     try {
         let res = await fetch(`${API_URL}?code=${code}`);
@@ -355,9 +319,6 @@ async function searchStudent(saveSession = true) {
 
         if (data.status !== "success") {
             output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
-            inputBox.classList.add("shake");
-            container.classList.add("shake");
-            setTimeout(()=>{inputBox.classList.remove("shake");container.classList.remove("shake");},450);
             return;
         }
 
@@ -368,14 +329,7 @@ async function searchStudent(saveSession = true) {
             localStorage.setItem("studentCode", code);
         }
 
-        document.getElementById("studentCode").style.display = "none";
-        document.getElementById("loginBtn").style.display = "none";
-        output.innerHTML = "";
-
-        let welcome = document.createElement("div");
-        welcome.id = "welcomeAnim";
-        welcome.innerText = "أهلاً بك في منصة التحدي";
-        document.body.appendChild(welcome);
+        document.getElementById("loginBox").style.display = "none";
 
         let bar = document.getElementById("bottomBar");
         bar.style.display = "flex";
@@ -384,13 +338,72 @@ async function searchStudent(saveSession = true) {
         loadProfile(student);
 
     } catch (err) {
-        output.innerHTML = "<p class='error'>❌ خطأ في الاتصال بالخادم</p>";
+        output.innerHTML = "<p class='error'>❌ خطأ في الاتصال</p>";
     }
 }
 
 
+/* تحميل الملف الشخصي */
+function loadProfile(student) {
+    const code = student["كود الطالب"] || "";
 
-/* حفظ البيانات */
+    document.getElementById("profilePage").innerHTML = `
+    <div class="profile-actions">
+        <button onclick="logout()" class="logout-btn">🔐 خروج</button>
+        <button onclick="saveChanges('${code}')" class="save-btn">💾 حفظ</button>
+    </div>
+
+    <h3>📄 الملف الشخصي</h3>
+    <table>
+
+      <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
+      <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
+
+      <tr><th>المواليد</th>
+      <td><input class="table-input" id="المواليد" value="${student["المواليد"] || ""}"></td></tr>
+
+      <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
+      <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
+      <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
+
+      <tr><th>رقم ولي الأمر</th>
+      <td><input class="table-input" id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
+
+      <tr><th>رقم الخط</th>
+      <td><input class="table-input" id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
+
+      <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
+
+      <tr><th>رقم الطالب</th>
+      <td><input class="table-input" id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
+
+      <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
+
+      <tr><th>العنوان</th>
+      <td><input class="table-input" id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
+
+      <tr><th>اسم الأم</th>
+      <td><input class="table-input" id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
+
+      <tr><th>المدرسة القادم منها</th>
+      <td><input class="table-input" id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
+
+      <tr><th>المعدل</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
+
+      <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
+
+      <!-- الخانة الجديدة -->
+      <tr><th>الرمز</th>
+      <td><input class="table-input" id="الرمز" value="${student["الرمز"] || ""}"></td></tr>
+
+    </table>
+    `;
+
+    showPage("profilePage");
+}
+
+
+/* حفظ التعديلات */
 async function saveChanges(code) {
 
     const data = {
@@ -413,69 +426,8 @@ async function saveChanges(code) {
         })
     });
 
-    alert("✔ تم حفظ التعديلات بنجاح");
+    alert("✔ تم حفظ التعديلات");
 }
-
-
-
-/* تحميل الصفحة الشخصية */
-function loadProfile(student) {
-
-    const code = student["كود الطالب"] || "";
-
-    document.getElementById("profilePage").innerHTML = `
-    
-    <div class="profile-actions">
-        <button onclick="logout()" class="logout-btn">🔐 تسجيل الخروج</button>
-        <button onclick="saveChanges('${code}')" class="save-btn">💾 حفظ التعديلات</button>
-    </div>
-
-    <h3>📄 الملف الشخصي</h3>
-
-    <table>
-      <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
-      <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
-      <tr><th>المواليد</th><td><input class="table-input" id="المواليد" value="${student["المواليد"] || ""}"></td></tr>
-      <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
-      <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
-      <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
-
-      <tr><th>رقم ولي الأمر</th>
-          <td><input class="table-input" id="رقم ولي الامر" value="${student["رقم ولي الامر"] || ""}"></td></tr>
-
-      <tr><th>رقم الخط</th>
-          <td><input class="table-input" id="رقم الخط" value="${student["رقم الخط"] || ""}"></td></tr>
-
-      <tr><th>كود الطالب</th><td>${student["كود الطالب"] || ""}</td></tr>
-
-      <tr><th>رقم الطالب</th>
-          <td><input class="table-input" id="رقم الطالب" value="${student["رقم الطالب"] || ""}"></td></tr>
-
-      <tr><th>الكتب</th><td>${student["الكتب"] || ""}</td></tr>
-
-      <tr><th>العنوان</th>
-          <td><input class="table-input" id="العنوان" value="${student["العنوان"] || ""}"></td></tr>
-
-      <tr><th>اسم الأم</th>
-          <td><input class="table-input" id="اسم الام" value="${student["اسم الام"] || ""}"></td></tr>
-
-      <tr><th>المدرسة القادم منها</th>
-          <td><input class="table-input" id="المدرسة القادم منها" value="${student["المدرسة القادم منها"] || ""}"></td></tr>
-
-      <tr><th>المعدل في الصف السابق</th><td>${student["المعدل في الصف السابق"] || ""}</td></tr>
-
-      <tr><th>الملاحظات</th><td>${student["الملاحظات"] || ""}</td></tr>
-
-      <!-- الخانة الجديدة -->
-      <tr><th>الرمز</th>
-          <td><input class="table-input" id="الرمز" value="${student["الرمز"] || ""}"></td></tr>
-
-    </table>
-    `;
-
-    showPage("profilePage");
-}
-
 
 
 /* تسجيل الخروج */
@@ -484,7 +436,6 @@ function logout() {
     localStorage.removeItem("studentCode");
     location.reload();
 }
-
 
 
 /* تغيير الصفحات + الانفجار */
