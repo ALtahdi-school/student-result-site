@@ -17,8 +17,7 @@ body {
     background-size: 300% 300%;
     animation: neonBg 8s infinite alternate ease-in-out;
     margin: 0;
-    padding: 0 0 120px 0;
-    overflow-x: hidden;
+    padding-bottom: 120px;
 }
 
 @keyframes neonBg {
@@ -27,52 +26,42 @@ body {
 }
 
 /* =========================
-      Splash Screen
+     Splash Screen
 ========================= */
 #splash {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background: white;
-    z-index: 99999;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    animation: splashFadeOut 3.5s forwards;
+    animation: splashFadeOut 3.4s forwards;
 }
 
 @keyframes splashFadeOut {
-    0% { opacity: 1 }
-    60% { opacity: 1 }
-    100% { opacity: 0; visibility: hidden }
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
 }
 
 .splash-title {
     font-size: 30px;
-    color: #007bff;
     font-weight: bold;
-}
-
-.splash-sub,
-.splash-year {
-    font-size: 20px;
-    color: #005fcc;
+    color: #007bff;
 }
 
 /* =========================
-      العنوان
+       العنوان
 ========================= */
 header {
-    opacity: 0;
-    animation: fadeIn 2s 3.5s forwards;
     text-align: center;
     padding: 20px;
     font-size: 22px;
     color: white;
     font-weight: bold;
+    opacity: 0;
+    animation: fadeIn 1.4s 3.2s forwards;
 }
 
 @keyframes fadeIn {
@@ -80,23 +69,31 @@ header {
 }
 
 /* =========================
-     شاشة تسجيل الدخول
+   شاشة تسجيل الدخول
 ========================= */
 .login-box {
-    width: 80%;
-    max-width: 320px;
+    width: 85%;
+    max-width: 340px;
     margin: 140px auto 0;
     text-align: center;
 }
 
-.login-box input {
+/* نفس حجم الزر */
+.login-box input,
+.login-box button {
     width: 100%;
-    padding: 12px;
+    padding: 13px;
     font-size: 17px;
-    border-radius: 12px;
+    border-radius: 14px;
     border: none;
+    margin-top: 14px;
+}
+
+/* حقل إدخال الكود — أبيض */
+.login-box input {
     background: white;
-    color: #005fcc;
+    color: #0060c9;
+    font-weight: bold;
 }
 
 .login-box input:focus {
@@ -104,17 +101,12 @@ header {
     box-shadow: 0 0 10px #00e1ff;
 }
 
+/* زر الدخول — أزرق متدرج */
 .login-box button {
-    width: 100%;
-    padding: 12px;
-    font-size: 17px;
-    margin-top: 12px;
-    border-radius: 12px;
-    border: none;
-    background: #007bff;
+    background: linear-gradient(135deg, #00b8ff, #006aff);
     color: white;
     font-weight: bold;
-    transition: 0.2s;
+    transition: 0.25s;
 }
 
 .login-box button:hover {
@@ -125,14 +117,14 @@ header {
     transform: scale(0.92);
 }
 
-/* رسائل */
+/* رسالة الخطأ */
 .error {
     color: yellow;
     font-weight: bold;
 }
 
 /* =========================
-     صفحات البيانات
+    صفحات البيانات
 ========================= */
 .page {
     display: none;
@@ -143,12 +135,14 @@ header {
     margin: 20px;
     border-radius: 18px;
     background: rgba(255,255,255,0.4);
-    backdrop-filter: blur(15px);
+    backdrop-filter: blur(16px);
     color: #004a99;
     font-weight: bold;
 }
 
-/* جدول البيانات */
+/* =========================
+     جدول الملف الشخصي
+========================= */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -156,19 +150,26 @@ table {
 
 td, th {
     padding: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+    border-bottom: 1px solid rgba(255,255,255,0.4);
 }
 
+/* الحقول داخل الجدول */
 .table-input {
     width: 100%;
     padding: 10px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: none;
-    background: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.75);
+    color: #004a99;
+}
+
+/* حقل المواليد كـ Date Picker */
+.table-input[type="date"] {
+    font-size: 16px;
 }
 
 /* =========================
-     أزرار (خروج + حفظ)
+  أزرار الحفظ والخروج
 ========================= */
 .profile-actions {
     display: flex;
@@ -176,28 +177,27 @@ td, th {
     margin-bottom: 15px;
 }
 
-.logout-btn {
+.logout-btn,
+.save-btn {
     flex: 1;
-    background: #ff1744;
-    color: white;
     padding: 12px;
     border-radius: 12px;
-    font-weight: bold;
     border: none;
+    font-weight: bold;
+    color: white;
+}
+
+.logout-btn {
+    background: #ff1744;
 }
 
 .save-btn {
-    flex: 1;
-    background: #ffeb3b;
+    background: #ffd600;
     color: black;
-    padding: 12px;
-    border-radius: 12px;
-    font-weight: bold;
-    border: none;
 }
 
 /* =========================
-    البار السفلي — أزرق زجاجي
+    البار السفلي الزجاجي
 ========================= */
 #bottomBar {
     position: fixed;
@@ -211,35 +211,34 @@ td, th {
     align-items: center;
     border-radius: 30px;
     background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255,255,255,0.35);
     box-shadow: 0 5px 20px rgba(0,0,0,0.25);
     transition: 0.8s;
     color: #004a99;
-    font-weight: bold;
 }
 
 #bottomBar.show-bar {
     transform: translateX(-50%) translateY(0);
 }
 
+/* أزرار البار */
 .nav-item {
     cursor: pointer;
     opacity: 0.7;
+    font-weight: bold;
     position: relative;
     overflow: hidden;
 }
 
-.nav-item:hover {
-    opacity: 1;
-}
+.nav-item:hover { opacity: 1; }
 
-/* انفجار */
+/* انفجار عند الضغط */
 .burst {
     position: absolute;
     width: 12px;
     height: 12px;
-    background: #ffffff;
+    background: white;
     border-radius: 50%;
     transform: translate(-50%, -50%) scale(0);
     animation: burstAnim 0.5s forwards;
@@ -255,7 +254,7 @@ td, th {
 
 <body>
 
-<!-- Splash -->
+<!-- Splash Screen -->
 <div id="splash">
     <div class="splash-title">قسم الحوكمة</div>
     <div class="splash-sub">ثانوية التحدي الأهلية</div>
@@ -264,10 +263,10 @@ td, th {
 
 <header>📘 نظام استعلام الطالب</header>
 
-<!-- شاشة تسجيل الدخول -->
+<!-- تسجيل الدخول -->
 <div class="login-box" id="loginBox">
     <input id="studentCode" placeholder="أدخل كود الطالب">
-    <button onclick="searchStudent()" id="loginBtn">تسجيل الدخول</button>
+    <button onclick="searchStudent()">تسجيل الدخول</button>
     <div id="output"></div>
 </div>
 
@@ -277,7 +276,7 @@ td, th {
 <div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
 <div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
-<!-- البار السفلي -->
+<!-- البار -->
 <div id="bottomBar">
     <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
     <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
@@ -303,6 +302,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
 /* تسجيل الدخول */
 async function searchStudent(saveSession = true) {
+
     let code = document.getElementById("studentCode").value.trim();
     let output = document.getElementById("output");
 
@@ -342,9 +342,9 @@ async function searchStudent(saveSession = true) {
     }
 }
 
-
 /* تحميل الملف الشخصي */
 function loadProfile(student) {
+
     const code = student["كود الطالب"] || "";
 
     document.getElementById("profilePage").innerHTML = `
@@ -354,13 +354,15 @@ function loadProfile(student) {
     </div>
 
     <h3>📄 الملف الشخصي</h3>
+
     <table>
 
       <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
       <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
 
       <tr><th>المواليد</th>
-      <td><input class="table-input" id="المواليد" value="${student["المواليد"] || ""}"></td></tr>
+      <td><input type="date" class="table-input" id="المواليد" 
+      value="${student["المواليد"] || ""}"></td></tr>
 
       <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
       <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
@@ -402,7 +404,6 @@ function loadProfile(student) {
     showPage("profilePage");
 }
 
-
 /* حفظ التعديلات */
 async function saveChanges(code) {
 
@@ -429,7 +430,6 @@ async function saveChanges(code) {
     alert("✔ تم حفظ التعديلات");
 }
 
-
 /* تسجيل الخروج */
 function logout() {
     localStorage.removeItem("loggedIn");
@@ -437,12 +437,10 @@ function logout() {
     location.reload();
 }
 
-
-/* تغيير الصفحات + الانفجار */
+/* التنقل بين الصفحات + انفجار */
 function showPage(pageId, element = null) {
 
-    document.querySelectorAll(".page")
-        .forEach(p => p.style.display = "none");
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
 
     document.getElementById(pageId).style.display = "block";
 
