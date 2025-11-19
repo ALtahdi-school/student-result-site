@@ -360,14 +360,18 @@ function loadProfile(student) {
       <tr><th>ID</th><td>${student["id"] || ""}</td></tr>
       <tr><th>اسم الطالب</th><td>${student["اسم الطالب"] || ""}</td></tr>
 
-     <input 
-    type="date" 
-    class="table-input" 
-    id="المواليد" 
-    value="${student["المواليد"] || ""}"
-    min="1960-01-01"
-    max="2027-12-31">
-
+     <tr>
+      <th>المواليد</th>
+      <td>
+          <input 
+              type="date" 
+              class="table-input" 
+              id="المواليد"
+              min="1960-01-01"
+              max="2027-12-31"
+              value="${student["المواليد"] || ""}">
+      </td>
+  </tr>
       <tr><th>الصف</th><td>${student["الصف"] || ""}</td></tr>
       <tr><th>القاعة</th><td>${student["القاعة"] || ""}</td></tr>
       <tr><th>الجنس</th><td>${student["الجنس"] || ""}</td></tr>
@@ -468,4 +472,5 @@ function showPage(pageId, element = null) {
 
 </body>
 </html>
+
 
