@@ -832,7 +832,11 @@ async function openTeacherClass(className) {
 function renderTeacherGrades(info) {
     const page = document.getElementById("teacherGradesPage");
 
-    const subject = info.subject || (currentTeacher && (currentTeacher["اسم المادة "] || "")) || "";
+    const subject =
+        info.subject ||
+        (currentTeacher && (currentTeacher["اسم المادة "] || currentTeacher["اسم المادة"])) ||
+        "";
+
     const className = info.className || currentTeacherClassName || "";
     const students = info.students || [];
 
@@ -852,7 +856,10 @@ function renderTeacherGrades(info) {
     `;
 
     if (!students.length) {
-        html += `<p style="color:#c62828;font-weight:bold;">لا يوجد طلاب لهذا الصف</p>`;
+        html += `
+            <p style="color:#c62828;font-weight:bold;">
+                ⚠ لا يوجد طلاب لهذا الصف
+            </p>`;
         page.innerHTML = html;
         return;
     }
@@ -871,7 +878,7 @@ function renderTeacherGrades(info) {
                         <th>شهر 3</th>
                         <th>شهر 4</th>
                         <th>فصل 2</th>
-                        <th>الامتحان النهائي</th>
+                        <th>النهائي</th>
                         <th>السعي</th>
                         <th>التقدير</th>
                     </tr>
@@ -879,25 +886,25 @@ function renderTeacherGrades(info) {
                 <tbody>
     `;
 
-    students.forEach((st, index) => {
+    students.forEach((st, idx) => {
+        const seq = idx + 1;
         const g = st.grades || {};
-        const seq = index + 1;
 
-        const vMonth1 = (g.month1 != null ? g.month1 : "");
-        const vMonth2 = (g.month2 != null ? g.month2 : "");
-        const vTerm1  = (g.term1  != null ? g.term1  : "");
-        const vMid    = (g.mid    != null ? g.mid    : "");
-        const vMonth3 = (g.month3 != null ? g.month3 : "");
-        const vMonth4 = (g.month4 != null ? g.month4 : "");
-        const vTerm2  = (g.term2  != null ? g.term2  : "");
-        const vFinal  = (g.final  != null ? g.final  : "");
-        const vSaay   = (g.saay   != null ? g.saay   : "");
-        const vGrade  = (g.grade  != null ? g.grade  : "");
+        const vMonth1 = g.month1 ?? "";
+        const vMonth2 = g.month2 ?? "";
+        const vTerm1  = g.term1  ?? "";
+        const vMid    = g.mid    ?? "";
+        const vMonth3 = g.month3 ?? "";
+        const vMonth4 = g.month4 ?? "";
+        const vTerm2  = g.term2  ?? "";
+        const vFinal  = g.final  ?? "";
+        const vSaay   = g.saay   ?? "";
+        const vGrade  = g.grade  ?? "";
 
         html += `
             <tr data-row="${st.row}">
                 <td>${seq}</td>
-                <td>${st.name || ""}</td>
+                <td>${st.name || "-"}</td>
 
                 <td><input type="number" class="teacher-grade-input" data-key="month1" value="${vMonth1}"></td>
                 <td><input type="number" class="teacher-grade-input" data-key="month2" value="${vMonth2}"></td>
@@ -928,6 +935,7 @@ function renderTeacherGrades(info) {
     page.innerHTML = html;
 }
 
+
 /* =========================
    حفظ درجات الأستاذ
 ========================= */
@@ -941,30 +949,40 @@ async function saveTeacherGrades() {
         return;
     }
 
-    const subject = currentTeacherSubject || currentTeacher["اسم المادة "] || "";
-    const className = currentTeacherClassName;
+    // أهم نقطة: اسم المادة الصحيح
+    const subject =
+        currentTeacherSubject ||
+        currentTeacher["اسم المادة "] ||
+        currentTeacher["اسم المادة"] ||
+        "";
 
+    if (!subject.trim()) {
+        showToast("⚠ خطأ: لم يتم العثور على اسم المادة", true);
+        return;
+    }
+
+    const className = currentTeacherClassName;
     const rows = document.querySelectorAll("#teacherGradesTable tbody tr");
     const grades = [];
 
     rows.forEach(tr => {
         const rowNumber = parseInt(tr.getAttribute("data-row"), 10);
-        if (!rowNumber || rowNumber <= 1) return;
+
+        // السماح لجميع الصفوف بالحفظ دون استثناء
+        if (!rowNumber) return;
 
         const obj = { row: rowNumber };
 
         ["month1", "month2", "month3", "month4", "final"].forEach(key => {
-            const inp = tr.querySelector(`input[data-key="${key}"]`);
-            if (inp) {
-                obj[key] = inp.value;
-            }
+            const input = tr.querySelector(`input[data-key="${key}"]`);
+            obj[key] = input ? input.value : "";
         });
 
         grades.push(obj);
     });
 
-    if (!grades.length) {
-        showToast("لا توجد درجات لحفظها", true);
+    if (grades.length === 0) {
+        showToast("لا توجد درجات للحفظ", true);
         return;
     }
 
@@ -984,11 +1002,12 @@ async function saveTeacherGrades() {
         if (data.status === "success") {
             showToast("✔ تم حفظ الدرجات بنجاح");
         } else {
-            showToast("❌ لم يتم الحفظ: " + (data.data || ""), true);
+            showToast("❌ فشل الحفظ: " + data.data, true);
         }
 
     } catch (err) {
-        showToast("❌ خطأ في الاتصال أثناء حفظ الدرجات", true);
+        showToast("❌ خطأ في الاتصال بالحفظ", true);
+        console.log(err);
     }
 }
 
@@ -1300,3 +1319,4 @@ function loadGrades(st) {
 
 </body>
 </html>
+
