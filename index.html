@@ -519,7 +519,7 @@ async function loginAsTeacher(email, outputElement) {
 
         currentTeacher = data.data.teacher || {};
         currentTeacherClasses = data.data.classes || [];
-        currentTeacherSubject = currentTeacher["المادة"] || "";
+        currentTeacherSubject = currentTeacher["اسم المادة "] || "";
         currentTeacherClassName = "";
 
         document.getElementById("loginBox").style.display = "none";
@@ -545,7 +545,7 @@ function loadTeacherClasses() {
     }
 
     const teacherName = currentTeacher["اسم الاستاذ"] || currentTeacher["اسم الأستاذ"] || "";
-    const subject = currentTeacher["المادة"] || "";
+    const subject = currentTeacher["اسم المادة "] || "";
     const email = currentTeacher["الايميل"] || currentTeacher["الإيميل"] || "";
 
     let html = `
@@ -555,7 +555,7 @@ function loadTeacherClasses() {
         <div class="teacher-header">👨‍🏫 لوحة الأستاذ</div>
         <div class="teacher-sub">
             <div>الاسم: <b>${teacherName || "-"}</b></div>
-            <div>المادة: <b>${subject || "-"}</b></div>
+            <div>اسم المادة : <b>${subject || "-"}</b></div>
             <div style="font-size:12px; opacity:0.9;">الإيميل: ${email || "-"}</div>
         </div>
         <div>📚 اختر الصف لملء الدرجات:</div>
@@ -592,7 +592,7 @@ async function openTeacherClass(className) {
         return;
     }
 
-    const subject = currentTeacherSubject || currentTeacher["المادة"] || "";
+    const subject = currentTeacherSubject || currentTeacher["اسم المادة "] || "";
 
     page.innerHTML = `<p style="color:#004a99;font-weight:bold;">⏳ جاري تحميل بيانات الصف...</p>`;
     showPage("teacherGradesPage");
@@ -628,7 +628,7 @@ async function openTeacherClass(className) {
 function renderTeacherGrades(info) {
     const page = document.getElementById("teacherGradesPage");
 
-    const subject = info.subject || (currentTeacher && (currentTeacher["المادة"] || "")) || "";
+    const subject = info.subject || (currentTeacher && (currentTeacher["اسم المادة "] || "")) || "";
     const className = info.className || currentTeacherClassName || "";
     const students = info.students || [];
 
@@ -640,7 +640,7 @@ function renderTeacherGrades(info) {
         <div class="teacher-header">📊 درجات الأستاذ</div>
         <div class="teacher-sub">
             <div>الأستاذ: <b>${teacherName || "-"}</b></div>
-            <div>المادة: <b>${subject || "-"}</b></div>
+            <div>اسم المادة : <b>${subject || "-"}</b></div>
             <div>الصف: <b>${className || "-"}</b></div>
         </div>
     `;
@@ -746,7 +746,7 @@ async function saveTeacherGrades() {
         return;
     }
 
-    const subject = currentTeacherSubject || currentTeacher["المادة"] || "";
+    const subject = currentTeacherSubject || currentTeacher["اسم  "] || "";
     const className = currentTeacherClassName;
 
     const rows = document.querySelectorAll("#teacherGradesTable tbody tr");
@@ -1116,4 +1116,5 @@ function loadGrades(st) {
 
 </body>
 </html>
+
 
