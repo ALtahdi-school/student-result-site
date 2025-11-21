@@ -150,7 +150,7 @@ td, th {
 .save-btn { background:#ffd600; color:black; }
 
 /* =========================
-   Bottom Navigation
+   Bottom Navigation (طلاب)
 ========================= */
 #bottomBar {
     position: fixed;
@@ -190,7 +190,7 @@ td, th {
 }
 
 /* =========================
-   بطاقات الدرجات (خضراء)
+   بطاقات الدرجات (خضراء) للطالب
 ========================= */
 .grade-card {
     background: linear-gradient(135deg, #00c853, #009624);
@@ -241,6 +241,111 @@ td, th {
 }
 .grades-info-card p { margin: 4px 0; }
 
+/* =========================
+   واجهة الأستاذ - ستايلات إضافية
+========================= */
+
+.teacher-header {
+    font-size: 20px;
+    margin-bottom: 8px;
+    color: #004a99;
+}
+.teacher-sub {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #004a99;
+}
+.teacher-classes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.teacher-class-btn {
+    flex: 1 1 45%;
+    padding: 12px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #00e1ff, #007bff);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    transition: 0.25s;
+}
+.teacher-class-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+}
+
+.teacher-back-btn {
+    padding: 8px 14px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255,255,255,0.85);
+    color: #004a99;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.teacher-table-wrapper {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+#teacherGradesTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+#teacherGradesTable th,
+#teacherGradesTable td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    font-size: 13px;
+}
+#teacherGradesTable th {
+    background: rgba(255,255,255,0.35);
+    color: #003f7d;
+}
+
+.teacher-grade-input {
+    width: 60px;
+    max-width: 100%;
+    padding: 6px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.95);
+    text-align: center;
+    font-weight: bold;
+    color: #004a99;
+}
+.teacher-grade-static {
+    display: inline-block;
+    min-width: 40px;
+    text-align: center;
+    color: #002855;
+    font-weight: bold;
+}
+
+.teacher-save-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #19e05a, #0a9b32);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(10,155,50,0.35);
+    transition: 0.25s;
+}
+.teacher-save-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 16px rgba(10,155,50,0.45);
+}
+
 </style>
 </head>
 
@@ -255,20 +360,24 @@ td, th {
 
 <header>📘 نظام استعلام الطالب</header>
 
-<!-- Login -->
+<!-- Login (طالب / أستاذ) -->
 <div class="login-box" id="loginBox">
-    <input id="studentCode" placeholder="أدخل كود الطالب">
+    <input id="studentCode" placeholder="أدخل كود الطالب أو إيميل الأستاذ">
     <button onclick="searchStudent()">تسجيل الدخول</button>
     <div id="output"></div>
 </div>
 
-<!-- Pages -->
+<!-- Pages الطالب -->
 <div id="profilePage" class="page section"></div>
 <div id="gradesPage" class="page section">لا توجد درجات حالياً</div>
 <div id="notifyPage" class="page section">لا توجد تبليغات حالياً</div>
 <div id="chatPage" class="page section">لا توجد رسائل حالياً</div>
 
-<!-- Bottom Bar -->
+<!-- Pages الأستاذ -->
+<div id="teacherClassesPage" class="page section"></div>
+<div id="teacherGradesPage" class="page section"></div>
+
+<!-- Bottom Bar (طالب) -->
 <div id="bottomBar">
     <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
     <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
@@ -281,8 +390,14 @@ td, th {
 /* رابط API */
 const API_URL = "https://script.google.com/macros/s/AKfycbxn5f4smL2SYZ8BkFKdOZzRoZdugC4fHycSO7VEJi4JLAD8X1-pOCZneYLqGL3GuVFf/exec";
 
+/* متغيرات خاصة بنظام الأستاذ */
+let currentTeacher = null;
+let currentTeacherClasses = [];
+let currentTeacherSubject = "";
+let currentTeacherClassName = "";
+
 /* =========================
-   الدخول التلقائي بعد إعادة فتح الصفحة
+   الدخول التلقائي بعد إعادة فتح الصفحة (طالب فقط)
 ========================= */
 window.addEventListener("DOMContentLoaded", () => {
     let savedCode = localStorage.getItem("studentCode");
@@ -329,7 +444,7 @@ async function updateState(code, state) {
 }
 
 /* =========================
-   تسجيل الدخول
+   تسجيل الدخول (طالب أو أستاذ)
 ========================= */
 async function searchStudent(saveSession = true) {
 
@@ -337,43 +452,407 @@ async function searchStudent(saveSession = true) {
     let output = document.getElementById("output");
 
     if (!code) {
-        output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود</p>";
+        output.innerHTML = "<p class='error'>⚠️ يرجى إدخال الكود أو الإيميل</p>";
         return;
     }
 
-    output.innerHTML = `<p style="color:white">⏳ جاري التحميل...</p>`;
+    output.innerHTML = `<p style="color:white">⏳ جاري التحقق...</p>`;
 
+    // أولاً: نحاول كطالب (كود الطالب)
     try {
         let res = await fetch(`${API_URL}?code=${code}`);
         let data = await res.json();
 
-        if (data.status !== "success") {
+        if (data.status === "success") {
+            // طالب
+            let student = data.data;
+
+            if (saveSession) {
+                localStorage.setItem("loggedIn", "true");
+                localStorage.setItem("studentCode", code);
+                updateState(code, "تم التسجيل");
+            }
+
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("bottomBar").style.display = "flex";
+            document.getElementById("bottomBar").classList.add("show-bar");
+
+            loadProfile(student);
+            loadGrades(student);
+            return;
+        } else if (data.status === "no_match") {
+            // لم يُوجد كطالب → نجرب كأستاذ
+            await loginAsTeacher(code, output);
+            return;
+        } else {
             output.innerHTML = `<p class='error'>❌ ${data.data}</p>`;
             return;
         }
 
-        let student = data.data;
-
-        if (saveSession) {
-            localStorage.setItem("loggedIn", "true");
-            localStorage.setItem("studentCode", code);
-            updateState(code, "تم التسجيل");
-        }
-
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("bottomBar").style.display = "flex";
-        document.getElementById("bottomBar").classList.add("show-bar");
-
-        loadProfile(student);
-        loadGrades(student);
-
     } catch (err) {
-        output.innerHTML = `<p class="error">❌ خطأ في الاتصال</p>`;
+        // لو حصل خطأ أثناء محاولة الطالب، نجرب كأستاذ
+        await loginAsTeacher(code, output);
     }
 }
 
 /* =========================
-   الملف الشخصي
+   تسجيل الدخول كأستاذ (Sh2)
+========================= */
+async function loginAsTeacher(email, outputElement) {
+    try {
+        outputElement.innerHTML = `<p style="color:white">⏳ جاري التحقق كأستاذ...</p>`;
+
+        let res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "get_teacher_info",
+                email: email
+            })
+        });
+
+        let data = await res.json();
+
+        if (data.status !== "success") {
+            outputElement.innerHTML = `<p class='error'>❌ لم يتم العثور على طالب أو أستاذ بهذه البيانات</p>`;
+            return;
+        }
+
+        currentTeacher = data.data.teacher || {};
+        currentTeacherClasses = data.data.classes || [];
+        currentTeacherSubject = currentTeacher["المادة"] || "";
+        currentTeacherClassName = "";
+
+        document.getElementById("loginBox").style.display = "none";
+        // لا نعرض شريط الطالب للأساتذة
+
+        loadTeacherClasses();
+
+    } catch (err) {
+        outputElement.innerHTML = `<p class="error">❌ خطأ في الاتصال</p>`;
+    }
+}
+
+/* =========================
+   شاشة الأستاذ: اختيار الصفوف
+========================= */
+function loadTeacherClasses() {
+    const page = document.getElementById("teacherClassesPage");
+
+    if (!currentTeacher) {
+        page.innerHTML = `<p class="error">❌ لم يتم العثور على بيانات الأستاذ</p>`;
+        showPage("teacherClassesPage");
+        return;
+    }
+
+    const teacherName = currentTeacher["اسم الاستاذ"] || currentTeacher["اسم الأستاذ"] || "";
+    const subject = currentTeacher["المادة"] || "";
+    const email = currentTeacher["الايميل"] || currentTeacher["الإيميل"] || "";
+
+    let html = `
+        <div class="profile-actions">
+            <button onclick="teacherLogout()" class="logout-btn">🔐 خروج</button>
+        </div>
+        <div class="teacher-header">👨‍🏫 لوحة الأستاذ</div>
+        <div class="teacher-sub">
+            <div>الاسم: <b>${teacherName || "-"}</b></div>
+            <div>المادة: <b>${subject || "-"}</b></div>
+            <div style="font-size:12px; opacity:0.9;">الإيميل: ${email || "-"}</div>
+        </div>
+        <div>📚 اختر الصف لملء الدرجات:</div>
+        <div class="teacher-classes-grid">
+    `;
+
+    if (!currentTeacherClasses || currentTeacherClasses.length === 0) {
+        html += `<p style="margin-top:10px;color:#c62828;font-weight:bold;">لا توجد صفوف مسندة لهذا الأستاذ في Sh2</p>`;
+    } else {
+        currentTeacherClasses.forEach(cls => {
+            const safeClass = cls.toString().replace(/'/g, "\\'");
+            html += `
+                <button class="teacher-class-btn" onclick="openTeacherClass('${safeClass}')">
+                    ${cls}
+                </button>
+            `;
+        });
+    }
+
+    html += `</div>`;
+
+    page.innerHTML = html;
+    showPage("teacherClassesPage");
+}
+
+/* =========================
+   فتح صفحة درجات صف معيّن للأستاذ
+========================= */
+async function openTeacherClass(className) {
+    const page = document.getElementById("teacherGradesPage");
+
+    if (!currentTeacher) {
+        alert("لم يتم تسجيل دخول الأستاذ");
+        return;
+    }
+
+    const subject = currentTeacherSubject || currentTeacher["المادة"] || "";
+
+    page.innerHTML = `<p style="color:#004a99;font-weight:bold;">⏳ جاري تحميل بيانات الصف...</p>`;
+    showPage("teacherGradesPage");
+
+    try {
+        let res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "get_class_grades",
+                className: className,
+                subject: subject
+            })
+        });
+
+        let data = await res.json();
+
+        if (data.status !== "success") {
+            page.innerHTML = `<p class="error">❌ ${data.data}</p>`;
+            return;
+        }
+
+        currentTeacherClassName = className;
+        renderTeacherGrades(data.data);
+
+    } catch (err) {
+        page.innerHTML = `<p class="error">❌ خطأ في الاتصال</p>`;
+    }
+}
+
+/* =========================
+   رسم جدول درجات الأستاذ
+========================= */
+function renderTeacherGrades(info) {
+    const page = document.getElementById("teacherGradesPage");
+
+    const subject = info.subject || (currentTeacher && (currentTeacher["المادة"] || "")) || "";
+    const className = info.className || currentTeacherClassName || "";
+    const students = info.students || [];
+
+    const teacherName = currentTeacher ? (currentTeacher["اسم الاستاذ"] || currentTeacher["اسم الأستاذ"] || "") : "";
+
+    let html = `
+        <button class="teacher-back-btn" onclick="loadTeacherClasses()">⬅ رجوع إلى قائمة الصفوف</button>
+
+        <div class="teacher-header">📊 درجات الأستاذ</div>
+        <div class="teacher-sub">
+            <div>الأستاذ: <b>${teacherName || "-"}</b></div>
+            <div>المادة: <b>${subject || "-"}</b></div>
+            <div>الصف: <b>${className || "-"}</b></div>
+        </div>
+    `;
+
+    if (!students.length) {
+        html += `<p style="color:#c62828;font-weight:bold;">لا يوجد طلاب لهذا الصف في Sh1</p>`;
+        page.innerHTML = html;
+        return;
+    }
+
+    html += `
+        <div class="teacher-table-wrapper">
+            <table id="teacherGradesTable">
+                <thead>
+                    <tr>
+                        <th>التسلسل</th>
+                        <th>اسم الطالب</th>
+                        <th>شهر 1</th>
+                        <th>شهر 2</th>
+                        <th>فصل 1</th>
+                        <th>نصف السنة</th>
+                        <th>شهر 3</th>
+                        <th>شهر 4</th>
+                        <th>فصل 2</th>
+                        <th>الامتحان النهائي</th>
+                        <th>السعي</th>
+                        <th>التقدير</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    students.forEach((st, index) => {
+        const g = st.grades || {};
+        const seq = index + 1;
+
+        const vMonth1 = (g.month1 != null ? g.month1 : "");
+        const vMonth2 = (g.month2 != null ? g.month2 : "");
+        const vTerm1  = (g.term1  != null ? g.term1  : "");
+        const vMid    = (g.mid    != null ? g.mid    : "");
+        const vMonth3 = (g.month3 != null ? g.month3 : "");
+        const vMonth4 = (g.month4 != null ? g.month4 : "");
+        const vTerm2  = (g.term2  != null ? g.term2  : "");
+        const vFinal  = (g.final  != null ? g.final  : "");
+        const vSaay   = (g.saay   != null ? g.saay   : "");
+        const vGrade  = (g.grade  != null ? g.grade  : "");
+
+        html += `
+            <tr data-row="${st.row}">
+                <td>${seq}</td>
+                <td>${st.name || ""}</td>
+
+                <td>
+                    <input type="number" class="teacher-grade-input" data-key="month1" value="${vMonth1}">
+                </td>
+                <td>
+                    <input type="number" class="teacher-grade-input" data-key="month2" value="${vMonth2}">
+                </td>
+
+                <td><span class="teacher-grade-static">${vTerm1}</span></td>
+                <td><span class="teacher-grade-static">${vMid}</span></td>
+
+                <td>
+                    <input type="number" class="teacher-grade-input" data-key="month3" value="${vMonth3}">
+                </td>
+                <td>
+                    <input type="number" class="teacher-grade-input" data-key="month4" value="${vMonth4}">
+                </td>
+
+                <td><span class="teacher-grade-static">${vTerm2}</span></td>
+
+                <td>
+                    <input type="number" class="teacher-grade-input" data-key="final" value="${vFinal}">
+                </td>
+
+                <td><span class="teacher-grade-static">${vSaay}</span></td>
+                <td><span class="teacher-grade-static">${vGrade}</span></td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+        </div>
+
+        <button class="teacher-save-btn" onclick="saveTeacherGrades()">💾 حفظ الدرجات</button>
+    `;
+
+    page.innerHTML = html;
+}
+
+/* =========================
+   حفظ درجات الأستاذ في Sh1
+========================= */
+async function saveTeacherGrades() {
+    if (!currentTeacher) {
+        alert("لم يتم تسجيل دخول الأستاذ");
+        return;
+    }
+    if (!currentTeacherClassName) {
+        alert("الرجاء اختيار صف أولاً");
+        return;
+    }
+
+    const subject = currentTeacherSubject || currentTeacher["المادة"] || "";
+    const className = currentTeacherClassName;
+
+    const rows = document.querySelectorAll("#teacherGradesTable tbody tr");
+    const grades = [];
+
+    rows.forEach(tr => {
+        const rowNumber = parseInt(tr.getAttribute("data-row"), 10);
+        if (!rowNumber || rowNumber <= 1) return;
+
+        const obj = { row: rowNumber };
+
+        ["month1", "month2", "month3", "month4", "final"].forEach(key => {
+            const inp = tr.querySelector(`input[data-key="${key}"]`);
+            if (inp) {
+                obj[key] = inp.value;
+            }
+        });
+
+        grades.push(obj);
+    });
+
+    if (!grades.length) {
+        alert("لا توجد درجات لحفظها");
+        return;
+    }
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "save_grades",
+                subject: subject,
+                className: className,
+                grades: grades
+            })
+        });
+
+        const data = await res.json();
+
+        if (data.status === "success") {
+            alert("✔ تم حفظ الدرجات بنجاح");
+        } else {
+            alert("❌ لم يتم الحفظ: " + (data.data || ""));
+        }
+
+    } catch (err) {
+        alert("❌ خطأ في الاتصال أثناء حفظ الدرجات");
+    }
+}
+
+/* =========================
+   تسجيل الخروج (طالب)
+========================= */
+function logout() {
+
+    const code = localStorage.getItem("studentCode");
+
+    if (code) {
+        updateState(code, "خرج");
+    }
+
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("studentCode");
+    location.reload();
+}
+
+/* =========================
+   تسجيل خروج الأستاذ
+========================= */
+function teacherLogout() {
+    currentTeacher = null;
+    currentTeacherClasses = [];
+    currentTeacherSubject = "";
+    currentTeacherClassName = "";
+    location.reload();
+}
+
+/* =========================
+   Navigation + Animation
+========================= */
+function showPage(pageId, element = null) {
+
+    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
+
+    const page = document.getElementById(pageId);
+    if (page) {
+        page.style.display = "block";
+    }
+
+    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+
+    if (element) {
+        element.classList.add("active");
+
+        let burst = document.createElement("span");
+        burst.classList.add("burst");
+        burst.style.left = "50%";
+        burst.style.top = "50%";
+        element.appendChild(burst);
+
+        setTimeout(() => burst.remove(), 500);
+    }
+}
+
+/* =========================
+   الملف الشخصي (طالب)
 ========================= */
 function loadProfile(student) {
 
@@ -449,7 +928,7 @@ function loadProfile(student) {
 }
 
 /* =========================
-   حفظ التعديلات
+   حفظ التعديلات (طالب)
 ========================= */
 async function saveChanges(code) {
 
@@ -522,7 +1001,7 @@ async function sendObjection(code, column, subjectName) {
 }
 
 /* =========================
-   صفحة الدرجات
+   صفحة الدرجات (طالب)
 ========================= */
 function loadGrades(st) {
 
@@ -631,46 +1110,6 @@ function loadGrades(st) {
     `;
 
     document.getElementById("gradesPage").innerHTML = html;
-}
-
-/* =========================
-   تسجيل الخروج
-========================= */
-function logout() {
-
-    const code = localStorage.getItem("studentCode");
-
-    if (code) {
-        updateState(code, "خرج");
-    }
-
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("studentCode");
-    location.reload();
-}
-
-/* =========================
-   Navigation + Animation
-========================= */
-function showPage(pageId, element = null) {
-
-    document.querySelectorAll(".page").forEach(p => p.style.display = "none");
-
-    document.getElementById(pageId).style.display = "block";
-
-    document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-
-    if (element) {
-        element.classList.add("active");
-
-        let burst = document.createElement("span");
-        burst.classList.add("burst");
-        burst.style.left = "50%";
-        burst.style.top = "50%";
-        element.appendChild(burst);
-
-        setTimeout(() => burst.remove(), 500);
-    }
 }
 
 </script>
