@@ -31,6 +31,7 @@ body::before {
   filter: blur(40px);
   animation: bgMove 18s infinite alternate ease-in-out;
   z-index: -2;
+  pointer-events: none; /* ✅ تمنع تداخل اللمس */
 }
 
 /* طبقة فوقية لإضافة نعومة ودمج الألوان */
@@ -40,6 +41,7 @@ body::after {
   inset: 0;
   background: linear-gradient(135deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));
   z-index: -3;
+  pointer-events: none; /* ✅ تمنع تداخل اللمس */
 }
 
 @keyframes bgMove {
@@ -97,6 +99,7 @@ header {
   border-radius: 22px;
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   border: 1px solid rgba(255,255,255,0.4);
   box-shadow: 0 15px 40px rgba(0,0,0,0.45);
   animation: slideIn 1.4s ease-out;
@@ -172,6 +175,7 @@ header {
   border-radius: 18px;
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   font-weight: bold;
   box-shadow: 0 8px 22px rgba(0,0,0,0.25);
   color: white;
@@ -179,12 +183,13 @@ header {
 
 /* =============================
    ⚙️ Bottom Navigation (طالب)
+   ✅ حل شامل: إظهار/إخفاء بالـ opacity بدل transform العمودي (أكثر توافقًا)
    ============================= */
 #bottomBar {
   position: fixed;
   bottom: 20px;
   left: 50%;
-  transform: translateX(-50%) translateY(120%);
+  transform: translateX(-50%); /* ✅ لا translateY لتجنب مشاكل اللمس */
   width: 92%;
   height: 72px;
   display: none;
@@ -193,13 +198,25 @@ header {
   border-radius: 28px;
   background: rgba(255,255,255,0.2);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255,255,255,0.3);
-  transition: .8s;
+  transition: opacity .35s ease;
   box-shadow: 0 10px 24px rgba(0,0,0,0.3);
   color: white;
+
+  /* ✅ الافتراضي: مخفي وغير قابل للنقر */
+  opacity: 0;
+  pointer-events: none;
+
+  /* ✅ أولوية بالطبقات ولمس ثابت */
+  z-index: 2000;
+  will-change: opacity;
+  isolation: isolate;
 }
+
 #bottomBar.show-bar {
-  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .nav-item {
@@ -207,6 +224,10 @@ header {
   opacity: .7;
   font-size: 14px;
   position: relative;
+  z-index: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 .nav-item:hover { opacity:1; }
 .nav-item.active { opacity:1; }
@@ -219,38 +240,11 @@ header {
   border-radius:50%;
   transform:translate(-50%,-50%) scale(0);
   animation:burstAnim .5s forwards;
+  pointer-events: none;
 }
 @keyframes burstAnim {
   0% { transform: scale(0); opacity:1; }
   100% { transform: scale(18); opacity:0; }
-}
-
-/* =============================
-   ✅ إصلاح مشكلة الضغط ببعض الأجهزة (بدون حذف ميزات)
-   ============================= */
-
-/* الخلفيات pseudo لا تتدخل باللمس */
-body::before,
-body::after {
-  pointer-events: none;
-}
-
-/* Toast: وهو مخفي لا يلتقط لمس */
-#toast { pointer-events: none; }
-#toast.show { pointer-events: auto; }
-
-/* تثبيت شريط الأسفل للـ iOS/Safari وبعض الأجهزة */
-#bottomBar{
-  z-index: 2000;
-  pointer-events: auto;
-  -webkit-backdrop-filter: blur(18px);
-  will-change: transform;
-  isolation: isolate;
-}
-.nav-item{
-  z-index: 1;
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
 }
 </style>
 </head>
@@ -286,10 +280,10 @@ body::after {
 
 <!-- شريط الطالب السفلي -->
 <div id="bottomBar">
-  <div class="nav-item" onclick="showPage('profilePage', this)">الملف الشخصي</div>
-  <div class="nav-item" onclick="showPage('gradesPage', this)">الدرجات</div>
-  <div class="nav-item" onclick="showPage('notifyPage', this)">التبليغات</div>
-  <div class="nav-item" onclick="showPage('chatPage', this)">الدردشة</div>
+  <div class="nav-item" data-page="profilePage" onclick="showPage('profilePage', this)">الملف الشخصي</div>
+  <div class="nav-item" data-page="gradesPage"  onclick="showPage('gradesPage', this)">الدرجات</div>
+  <div class="nav-item" data-page="notifyPage"  onclick="showPage('notifyPage', this)">التبليغات</div>
+  <div class="nav-item" data-page="chatPage"    onclick="showPage('chatPage', this)">الدردشة</div>
 </div>
 
 <!-- Toast -->
@@ -544,10 +538,14 @@ th { text-align: right; }
   opacity: 0;
   transition: .5s;
   z-index: 9999;
+
+  /* ✅ حل: ما يلتقط لمس وهو مخفي */
+  pointer-events: none;
 }
 #toast.show {
   bottom: 26px;
   opacity: 1;
+  pointer-events: auto;
 }
 
 /* استجابة للشاشات الصغيرة */
@@ -582,13 +580,25 @@ function showToast(msg, error=false) {
   setTimeout(() => t.classList.remove("show"), 2600);
 }
 
-/* ✅ دعم لمس قوي لكل الأجهزة لشريط الأسفل (يحل "ما يضغط" ببعض الأجهزة) */
+/* ✅ دعم لمس قوي + Delegation لضمان عمل الأزرار بكل الأجهزة */
 document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("#bottomBar .nav-item").forEach(item => {
-    item.addEventListener("touchend", (e) => {
-      e.preventDefault();
-      item.click();
-    }, { passive: false });
+  const bar = document.getElementById("bottomBar");
+  if (!bar) return;
+
+  // touch support
+  bar.addEventListener("touchend", (e) => {
+    const item = e.target.closest(".nav-item");
+    if (!item) return;
+    e.preventDefault();
+    item.click();
+  }, { passive: false });
+
+  // click delegation (احتياط لو onclick ما اشتغل)
+  bar.addEventListener("click", (e) => {
+    const item = e.target.closest(".nav-item");
+    if (!item) return;
+    const page = item.getAttribute("data-page");
+    if (page) showPage(page, item);
   });
 });
 
@@ -636,13 +646,18 @@ async function searchStudent(saveSession = true) {
         localStorage.setItem("studentCode", code);
         updateState(code, "تم التسجيل");
       }
+
       document.getElementById("loginBox").style.display = "none";
       document.getElementById("bottomBar").style.display = "flex";
       document.getElementById("bottomBar").classList.add("show-bar");
 
       loadProfile(student);
       loadGrades(student);
-      showPage('profilePage');
+
+      // ✅ افتح الملف الشخصي وبنفس الوقت فعل زرّه
+      const first = document.querySelector('#bottomBar .nav-item[data-page="profilePage"]');
+      showPage('profilePage', first);
+
       output.innerHTML = "";
       return;
     }
@@ -1079,7 +1094,6 @@ function fixDate(dateStr) {
    تحميل درجات الطالب
    ============================ */
 function loadGrades(st) {
-  const code = st["كود الطالب"];
   let html = ``;
 
   const subjects = {
@@ -1092,44 +1106,44 @@ function loadGrades(st) {
                 "العربي السعي","العربي التقدير"],
 
     "الانكليزي": ["الانكليزي شهر 1","الانكليزي شهر 2","الانكليزي فصل 1","الانكليزي نصف سنة",
-                    "الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي",
-                    "الانكليزي السعي","الانكليزي التقدير"],
+                  "الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي",
+                  "الانكليزي السعي","الانكليزي التقدير"],
 
     "الرياضيات": ["الرياضيات شهر 1","الرياضيات شهر 2","الرياضيات فصل 1","الرياضيات نصف سنة",
-                    "الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي",
-                    "الرياضيات السعي","الرياضيات التقدير"],
+                  "الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي",
+                  "الرياضيات السعي","الرياضيات التقدير"],
 
     "الكيمياء": ["الكيمياء شهر 1","الكيمياء شهر 2","الكيمياء فصل 1","الكيمياء نصف سنة",
-                  "الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي",
-                  "الكيمياء السعي","الكيمياء التقدير"],
+                "الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي",
+                "الكيمياء السعي","الكيمياء التقدير"],
 
     "الفيزياء": ["الفيزياء شهر 1","الفيزياء شهر 2","الفيزياء فصل 1","الفيزياء نصف سنة",
-                  "الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي",
-                  "الفيزياء السعي","الفيزياء التقدير"],
+                "الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي",
+                "الفيزياء السعي","الفيزياء التقدير"],
 
     "الاحياء": ["الاحياء شهر 1","الاحياء شهر 2","الاحياء فصل 1","الاحياء نصف سنة",
-                 "الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي",
-                 "الاحياء السعي","الاحياء التقدير"],
+               "الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي",
+               "الاحياء السعي","الاحياء التقدير"],
 
     "الاجتماعيات": ["الاجتماعيات شهر 1","الاجتماعيات شهر 2","الاجتماعيات فصل 1","الاجتماعيات نصف سنة",
-                     "الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي",
-                     "الاجتماعيات السعي","الاجتماعيات التقدير"],
+                    "الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي",
+                    "الاجتماعيات السعي","الاجتماعيات التقدير"],
 
     "الحاسوب": ["الحاسوب شهر 1","الحاسوب شهر 2","الحاسوب فصل 1","الحاسوب نصف سنة",
-                 "الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي",
-                 "الحاسوب السعي","الحاسوب التقدير"],
+               "الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي",
+               "الحاسوب السعي","الحاسوب التقدير"],
 
     "رياضة": ["رياضة شهر 1","رياضة شهر 2","رياضة فصل 1","رياضة نصف سنة",
-               "رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي",
-               "رياضة السعي","رياضة التقدير"],
+              "رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي",
+              "رياضة السعي","رياضة التقدير"],
 
     "الفنية": ["الفنية شهر 1","الفنية شهر 2","الفنية فصل 1","الفنية نصف سنة",
-               "الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي",
-               "الفنية السعي","الفنية التقدير"],
+              "الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي",
+              "الفنية السعي","الفنية التقدير"],
 
     "السلوك": ["السلوك شهر 1","السلوك شهر 2","السلوك فصل 1","السلوك نصف سنة",
-               "السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي",
-               "السلوك السعي","السلوك التقدير"]
+              "السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي",
+              "السلوك السعي","السلوك التقدير"]
   };
 
   for (let sub in subjects) {
