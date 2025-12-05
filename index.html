@@ -366,7 +366,7 @@ th { text-align: right; }
 }
 
 .teacher-table-wrapper { margin-top: 12px; overflow-x: auto; }
-#teacherGradesTable { width: 1000px; max-width: 100%; border-collapse: collapse; }
+#teacherGradesTable { width: 1100px; max-width: 100%; border-collapse: collapse; }
 #teacherGradesTable th, #teacherGradesTable td {
   padding: 7px;
   border-bottom: 1px solid rgba(255,255,255,0.35);
@@ -385,14 +385,20 @@ th { text-align: right; }
   text-align: center;
   font-weight: bold;
   color: #004a99;
+  outline: none;
 }
+
 .teacher-grade-static {
-  display: inline-block;
+  display: block;
   min-width: 45px;
+  margin-top: 4px;
   text-align: center;
   font-weight: bold;
   color: #ffeb3b;
+  opacity: .95;
+  font-size: 12px;
 }
+
 .objection-cell { color: #ffcdd2; font-size: 12px; max-width: 160px; white-space: normal; }
 
 .teacher-actions { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
@@ -546,7 +552,7 @@ th { text-align: right; }
 
 <script>
 /* رابط API */
-const API_URL = "https://script.google.com/macros/s/AKfycbxajjCtDBxUC6qaPWwoHtPFZ4gzNT9ukKVhWHiJS24bKrVMcqRDSZAk89c5VzJuwqLg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwE1JjuhpnhfkltV0xnPFhddr15c2o22yGIARpubLUqwJDKTaxDSaM3ORXcHaXCBP64/exec";
 
 /* بيانات الأستاذ */
 let currentTeacher = null;
@@ -668,6 +674,7 @@ async function loginAsTeacher(email, outputElement, saveSession = true) {
   try {
     let res = await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "get_teacher_info", email })
     });
 
@@ -752,6 +759,7 @@ async function openTeacherClass(className) {
   try {
     let res = await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         action: "get_class_grades",
         subject: currentTeacherSubject,
@@ -772,30 +780,45 @@ async function openTeacherClass(className) {
 }
 
 /* ============================
-   حساب الدرجات تلقائيًا للأستاذ
+   ✅ حساب الدرجات (مشروط حسب طلبك)
+   - ما يحسب فصل1 إلا إذا الأستاذ كاتب فصل1 + شهر1 + شهر2
+   - ما يحسب فصل2 إلا إذا الأستاذ كاتب فصل2 + شهر3 + شهر4
+   - ما يحسب السعي إلا إذا الأستاذ كاتب السعي + (فصل1 المحسوب) + نصف السنة + (فصل2 المحسوب) + النهائي
+   - ما يحسب التقدير إلا إذا الأستاذ كاتب التقدير + السعي المحسوب
    ============================ */
-function toNum(v) {
-  const n = parseFloat(v);
-  return isNaN(n) ? 0 : n;
+function isFilled(v) {
+  return v !== null && v !== undefined && String(v).trim() !== "";
 }
-function calcTerm(a, b) {
-  const aa = (a ?? "").toString().trim();
-  const bb = (b ?? "").toString().trim();
-  if (!aa && !bb) return "";
-  return ((toNum(aa) + toNum(bb)) / 2).toFixed(2);
+function toNumStrict(v) {
+  const n = parseFloat(String(v).trim());
+  return isNaN(n) ? null : n;
 }
-function calcSaay(term1, mid, term2, fin) {
-  const t1 = (term1 ?? "").toString().trim();
-  const m  = (mid   ?? "").toString().trim();
-  const t2 = (term2 ?? "").toString().trim();
-  const f  = (fin   ?? "").toString().trim();
-  if (!t1 && !m && !t2 && !f) return "";
-  return ((toNum(t1) + toNum(m) + toNum(t2) + toNum(f)) / 4).toFixed(2);
+function calcTerm1Conditional(m1, m2, term1Input) {
+  if (!isFilled(term1Input)) return "";
+  if (!isFilled(m1) || !isFilled(m2)) return "";
+  const a = toNumStrict(m1), b = toNumStrict(m2);
+  if (a === null || b === null) return "";
+  return ((a + b) / 2).toFixed(2);
 }
-function calcGrade(saay) {
-  const s = parseFloat(saay);
-  if (isNaN(s)) return "";
-  if (s < 50) return "مكمل";      // ✅ حسب طلبك
+function calcTerm2Conditional(m3, m4, term2Input) {
+  if (!isFilled(term2Input)) return "";
+  if (!isFilled(m3) || !isFilled(m4)) return "";
+  const a = toNumStrict(m3), b = toNumStrict(m4);
+  if (a === null || b === null) return "";
+  return ((a + b) / 2).toFixed(2);
+}
+function calcSaayConditional(term1, mid, term2, fin, saayInput) {
+  if (!isFilled(saayInput)) return "";
+  if (!isFilled(term1) || !isFilled(mid) || !isFilled(term2) || !isFilled(fin)) return "";
+  const t1 = toNumStrict(term1), m = toNumStrict(mid), t2 = toNumStrict(term2), f = toNumStrict(fin);
+  if ([t1, m, t2, f].some(x => x === null)) return "";
+  return ((t1 + m + t2 + f) / 4).toFixed(2);
+}
+function calcGradeConditional(saay, gradeInput) {
+  if (!isFilled(gradeInput)) return "";
+  const s = toNumStrict(saay);
+  if (s === null) return "";
+  if (s < 50) return "مكمل";
   if (s >= 90) return "ممتاز";
   if (s >= 80) return "جيد جداً";
   if (s >= 70) return "جيد";
@@ -806,25 +829,33 @@ function calcGrade(saay) {
 function recalcRow(tr) {
   const m1  = tr.querySelector('input[data-key="month1"]')?.value ?? "";
   const m2  = tr.querySelector('input[data-key="month2"]')?.value ?? "";
+  const term1Input = tr.querySelector('input[data-key="term1"]')?.value ?? "";
+
   const mid = tr.querySelector('input[data-key="mid"]')?.value ?? "";
+
   const m3  = tr.querySelector('input[data-key="month3"]')?.value ?? "";
   const m4  = tr.querySelector('input[data-key="month4"]')?.value ?? "";
+  const term2Input = tr.querySelector('input[data-key="term2"]')?.value ?? "";
+
   const fin = tr.querySelector('input[data-key="final"]')?.value ?? "";
 
-  const term1 = calcTerm(m1, m2);
-  const term2 = calcTerm(m3, m4);
-  const saay  = calcSaay(term1, mid, term2, fin);
-  const grade = calcGrade(saay);
+  const saayInput  = tr.querySelector('input[data-key="saay"]')?.value ?? "";
+  const gradeInput = tr.querySelector('input[data-key="grade"]')?.value ?? "";
 
-  const s1 = tr.querySelector('[data-static="term1"]');
-  const s2 = tr.querySelector('[data-static="term2"]');
-  const ss = tr.querySelector('[data-static="saay"]');
-  const sg = tr.querySelector('[data-static="grade"]');
+  const term1Calc = calcTerm1Conditional(m1, m2, term1Input);
+  const term2Calc = calcTerm2Conditional(m3, m4, term2Input);
+  const saayCalc  = calcSaayConditional(term1Calc, mid, term2Calc, fin, saayInput);
+  const gradeCalc = calcGradeConditional(saayCalc, gradeInput);
 
-  if (s1) s1.innerText = term1;
-  if (s2) s2.innerText = term2;
-  if (ss) ss.innerText = saay;
-  if (sg) sg.innerText = grade;
+  const s1 = tr.querySelector('[data-static="term1calc"]');
+  const s2 = tr.querySelector('[data-static="term2calc"]');
+  const ss = tr.querySelector('[data-static="saaycalc"]');
+  const sg = tr.querySelector('[data-static="gradecalc"]');
+
+  if (s1) s1.innerText = term1Calc;
+  if (s2) s2.innerText = term2Calc;
+  if (ss) ss.innerText = saayCalc;
+  if (sg) sg.innerText = gradeCalc;
 }
 
 function bindAutoCalc() {
@@ -832,9 +863,7 @@ function bindAutoCalc() {
   if (!table) return;
 
   table.querySelectorAll("tbody tr").forEach(tr => {
-    // احسب أول مرة
     recalcRow(tr);
-
     tr.querySelectorAll("input.teacher-grade-input").forEach(inp => {
       inp.addEventListener("input", () => recalcRow(tr));
       inp.addEventListener("change", () => recalcRow(tr));
@@ -844,6 +873,8 @@ function bindAutoCalc() {
 
 /* ============================
    عرض جدول الدرجات للأستاذ
+   - ✅ فصل1/فصل2/السعي/التقدير صارت إدخال (حتى ما يطلع شي مبكر)
+   - ✅ تحت كل إدخال يظهر "النتيجة المحسوبة" فقط كإرشاد
    ============================ */
 function renderTeacherGrades(info) {
   const page = document.getElementById("teacherGradesPage");
@@ -889,7 +920,7 @@ function renderTeacherGrades(info) {
   `;
 
   students.forEach((st, i) => {
-    const g = st.grades;
+    const g = st.grades || {};
     const objection = st.objection || "";
 
     html += `
@@ -900,19 +931,32 @@ function renderTeacherGrades(info) {
         <td><input type="number" inputmode="decimal" data-key="month1" class="teacher-grade-input" value="${g.month1 ?? ""}"></td>
         <td><input type="number" inputmode="decimal" data-key="month2" class="teacher-grade-input" value="${g.month2 ?? ""}"></td>
 
-        <td><span class="teacher-grade-static" data-static="term1">${g.term1 ?? ""}</span></td>
+        <td>
+          <input type="number" inputmode="decimal" data-key="term1" class="teacher-grade-input" value="${g.term1 ?? ""}">
+          <span class="teacher-grade-static" data-static="term1calc"></span>
+        </td>
 
         <td><input type="number" inputmode="decimal" data-key="mid" class="teacher-grade-input" value="${g.mid ?? ""}"></td>
 
         <td><input type="number" inputmode="decimal" data-key="month3" class="teacher-grade-input" value="${g.month3 ?? ""}"></td>
         <td><input type="number" inputmode="decimal" data-key="month4" class="teacher-grade-input" value="${g.month4 ?? ""}"></td>
 
-        <td><span class="teacher-grade-static" data-static="term2">${g.term2 ?? ""}</span></td>
+        <td>
+          <input type="number" inputmode="decimal" data-key="term2" class="teacher-grade-input" value="${g.term2 ?? ""}">
+          <span class="teacher-grade-static" data-static="term2calc"></span>
+        </td>
 
         <td><input type="number" inputmode="decimal" data-key="final" class="teacher-grade-input" value="${g.final ?? ""}"></td>
 
-        <td><span class="teacher-grade-static" data-static="saay">${g.saay ?? ""}</span></td>
-        <td><span class="teacher-grade-static" data-static="grade">${g.grade ?? ""}</span></td>
+        <td>
+          <input type="number" inputmode="decimal" data-key="saay" class="teacher-grade-input" value="${g.saay ?? ""}">
+          <span class="teacher-grade-static" data-static="saaycalc"></span>
+        </td>
+
+        <td>
+          <input type="text" data-key="grade" class="teacher-grade-input" value="${g.grade ?? ""}">
+          <span class="teacher-grade-static" data-static="gradecalc"></span>
+        </td>
 
         <td><span class="objection-cell">${objection}</span></td>
       </tr>
@@ -932,13 +976,11 @@ function renderTeacherGrades(info) {
   `;
 
   page.innerHTML = html;
-
-  // ✅ تشغيل الحسابات التلقائية
   bindAutoCalc();
 }
 
 /* ============================
-   حفظ الدرجات (يرسل أيضاً فصل1/فصل2/السعي/التقدير)
+   حفظ الدرجات (يرسل كل إدخالات الأستاذ كما هي)
    ============================ */
 async function saveTeacherGrades() {
   let rows = document.querySelectorAll("#teacherGradesTable tbody tr");
@@ -952,18 +994,13 @@ async function saveTeacherGrades() {
       obj[inp.dataset.key] = inp.value;
     });
 
-    // ✅ الحسابات المحسوبة
-    obj.term1 = tr.querySelector('[data-static="term1"]')?.innerText ?? "";
-    obj.term2 = tr.querySelector('[data-static="term2"]')?.innerText ?? "";
-    obj.saay  = tr.querySelector('[data-static="saay"]')?.innerText ?? "";
-    obj.grade = tr.querySelector('[data-static="grade"]')?.innerText ?? "";
-
     grades.push(obj);
   });
 
   try {
     let res = await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         action: "save_grades",
         subject: currentTeacherSubject,
@@ -987,6 +1024,7 @@ async function clearObjections() {
   try {
     let res = await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         action: "clear_objections",
         subject: currentTeacherSubject,
@@ -1008,8 +1046,8 @@ async function clearObjections() {
 }
 
 /* ============================
-   تحميل PDF (تأكيد نعم/لا + تحميل على كل الأجهزة)
-   - يعتمد أن الـ API يرجّع JSON: {status:"success", b64:"...", filename:"..."}
+   ✅ تحميل PDF (تأكيد نعم/لا + منع خطأ اتصال)
+   - يعتمد أن السكربت يرجّع JSON: {status:"success", b64:"...", filename:"..."}
    ============================ */
 async function downloadPDF() {
   const ok = confirm("هل تود تحميل قائمة الصف كـ PDF لك يا استاذ؟");
@@ -1018,19 +1056,31 @@ async function downloadPDF() {
   const teacherName = currentTeacher?.["اسم الاستاذ"] || currentTeacher?.["اسم الأستاذ"] || "-";
 
   try {
+    const payload = {
+      action: "download_grades_pdf",
+      subject: currentTeacherSubject,
+      className: currentTeacherClassName,
+      teacherName
+    };
+
     const res = await fetch(API_URL, {
       method: "POST",
-      body: JSON.stringify({
-        action: "download_grades_pdf",
-        subject: currentTeacherSubject,
-        className: currentTeacherClassName,
-        teacherName: teacherName
-      })
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // ✅ يمنع preflight
+      body: JSON.stringify(payload),
+      redirect: "follow"
     });
+
+    if (!res.ok) {
+      const txt = await res.text().catch(() => "");
+      console.error("HTTP error:", res.status, txt);
+      showToast("❌ خطأ اتصال (HTTP " + res.status + ")", true);
+      return;
+    }
 
     const data = await res.json();
 
     if (data.status !== "success" || !data.b64) {
+      console.error("API error:", data);
       showToast("❌ فشل إنشاء PDF", true);
       return;
     }
@@ -1052,6 +1102,7 @@ async function downloadPDF() {
 
     showToast("✔ بدأ التحميل");
   } catch (e) {
+    console.error("Fetch failed:", e);
     showToast("❌ خطأ اتصال", true);
   }
 }
@@ -1063,6 +1114,7 @@ async function updateState(code, state) {
   try {
     await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action: "update_state", code, state })
     });
   } catch (e) {}
@@ -1101,7 +1153,7 @@ function showPage(id, element=null) {
 
 /* ============================
    تحميل الملف الشخصي (طالب)
-   ✅ تغيير اسم الحقل إلى "رقم الخط" حسب Sh1
+   ✅ حقل "رقم الخط"
    ============================ */
 function loadProfile(st) {
   const code = st["كود الطالب"];
@@ -1176,11 +1228,11 @@ async function saveChanges(code) {
   try {
     await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({ action:"update", code, data })
     });
 
     showToast("✔ تم حفظ التعديلات");
-    // تحديث البيانات الحالية للطالب (حتى يثبت بالواجهة)
     await searchStudent(false);
   } catch (e) {
     showToast("❌ خطأ اتصال", true);
@@ -1202,8 +1254,7 @@ function fixDate(dateStr) {
 }
 
 /* ============================
-   اعتراض: فتح/إغلاق/إرسال (بدون prompt)
-   المستخدم يكتب داخل نافذة الاعتراض
+   اعتراض: فتح/إغلاق/إرسال
    ============================ */
 function openObjectionModal(subjectName) {
   currentObjectionSubject = subjectName;
@@ -1214,7 +1265,6 @@ function openObjectionModal(subjectName) {
 }
 
 function closeObjectionModal(fromOverlay) {
-  // fromOverlay: إذا ضغط خارج النافذة
   document.getElementById("objectionModal").style.display = "none";
   currentObjectionSubject = "";
 }
@@ -1234,6 +1284,7 @@ async function sendObjection() {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify({
         action: "submit_objection",
         code,
@@ -1247,7 +1298,6 @@ async function sendObjection() {
       showToast("✔ تم إرسال الاعتراض");
       closeObjectionModal(false);
 
-      // إعادة جلب الطالب حتى يظهر الاعتراض (إن كنت تعرضه من الشيت)
       await searchStudent(false);
       const gradesTab = document.querySelector('#bottomBar .nav-item[data-page="gradesPage"]');
       showPage("gradesPage", gradesTab);
