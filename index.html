@@ -512,7 +512,7 @@ th { text-align: right; }
 
 <!-- تسجيل الدخول -->
 <div class="login-box" id="loginBox">
-  <input id="studentCode" placeholder="أدخل كود الطالب هنا أو إيميل الأستاذ">
+  <input id="studentCode" placeholder=" أدخل كود الطالب ">
   <button onclick="searchStudent()">تسجيل الدخول</button>
   <div id="output"></div>
 </div>
@@ -1200,11 +1200,10 @@ function loadProfile(st) {
       <tr><th>الملاحظات</th><td>${st["الملاحظات"] || ""}</td></tr>
 
       <tr><th>الرمز</th>
-        <td><input id="الرمز" class="table-input" value="${st["الرمز"] || ""}"></td>
+ <td><input id="الرمز" class="table-input" inputmode="numeric" placeholder=" رمز خاص بك لا احد غيرك يستطيع التحدث بالدردشة باسمك " value="${st["الرمز "] || ""}"></td>
       </tr>
-
       <tr><th>رقم الخط</th>
-        <td><input id="رقم الخط" class="table-input" inputmode="numeric" placeholder="مثال: 0770xxxxxxx" value="${st["رقم الخط"] || ""}"></td>
+        <td><input id="رقم الخط" class="table-input" inputmode="numeric" placeholder="رقم خط النقل الخاص بالطالب " value="${st["رقم الخط"] || ""}"></td>
       </tr>
     </table>
   `;
