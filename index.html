@@ -528,7 +528,7 @@ th { text-align: right; }
 
 <script>
 /* ✅ غيّر هذا الرابط فقط بعد نشر الـWeb App */
-const API_URL = "PUT_YOUR_SCRIPT_WEBAPP_URL_HERE";
+const API_URL = "https://script.google.com/macros/s/AKfycbwqxC0Xe5DtNwJ5v-UiyfZPym96GJxHvR0nTWU2827sj4q2zRXBLt7gqwyjeCXDlfXc/exec";
 
 /* بيانات الأستاذ */
 let currentTeacher = null;
@@ -1134,12 +1134,12 @@ function loadProfile(st) {
       <tr><th>الكتب</th><td>${st["الكتب"] || ""}</td></tr>
       <tr><th>الملاحظات</th><td>${st["الملاحظات"] || ""}</td></tr>
 
+    
       <tr><th>الرمز</th>
-        <td><input id="الرمز" class="table-input" value="${st["الرمز"] || ""}"></td>
+ <td><input id="الرمز" class="table-input" inputmode="numeric" placeholder=" رمز خاص بك لا احد غيرك يستطيع التحدث بالدردشة باسمك " value="${st["الرمز "] || ""}"></td>
       </tr>
-
       <tr><th>رقم الخط</th>
-        <td><input id="رقم الخط" class="table-input" inputmode="numeric" placeholder="مثال: 0770xxxxxxx" value="${st["رقم الخط"] || ""}"></td>
+        <td><input id="رقم الخط" class="table-input" inputmode="numeric" placeholder="رقم خط النقل الخاص بالطالب " value="${st["رقم الخط"] || ""}"></td>
       </tr>
     </table>
   `;
