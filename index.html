@@ -120,9 +120,7 @@ header {
 /* =============================
    ✅ منع الزوم عند الكتابة (مهم للموبايل)
    ============================= */
-input, select, textarea {
-  font-size: 16px !important;
-}
+input, select, textarea { font-size: 16px !important; }
 
 /* حقل الإدخال */
 .login-box input {
@@ -160,7 +158,6 @@ input, select, textarea {
   0%   { opacity:0; transform: translateY(25px); }
   100% { opacity:1; transform: translateY(0); }
 }
-
 .section {
   padding: 15px;
   margin: 20px;
@@ -174,7 +171,7 @@ input, select, textarea {
 }
 
 /* =============================
-   ⚙️ Bottom Navigation (طالب) — ثابت لكل الأجهزة
+   ⚙️ Bottom Navigation (طالب)
    ============================= */
 #bottomBar {
   position: fixed;
@@ -197,7 +194,6 @@ input, select, textarea {
 
   opacity: 0;
   pointer-events: none;
-
   z-index: 2000;
   will-change: opacity;
   isolation: isolate;
@@ -378,7 +374,7 @@ th { text-align: right; }
 .objection-cell { color: #ffcdd2; font-size: 12px; max-width: 160px; white-space: normal; }
 
 .teacher-actions { margin-top: 14px; display: flex; flex-direction: column; gap: 8px; }
-.teacher-save-btn, .teacher-pdf-btn, .teacher-clear-btn {
+.teacher-save-btn, .teacher-clear-btn {
   width: 100%;
   padding: 11px;
   border-radius: 14px;
@@ -389,7 +385,6 @@ th { text-align: right; }
   box-shadow: 0 4px 14px rgba(0,0,0,0.35);
 }
 .teacher-save-btn { background: linear-gradient(135deg, #19e05a, #0a9b32); }
-.teacher-pdf-btn  { background: linear-gradient(135deg, #42a5f5, #1e88e5); }
 .teacher-clear-btn{ background: linear-gradient(135deg, #ef5350, #e53935); }
 
 /* =============================
@@ -488,7 +483,7 @@ th { text-align: right; }
 
 <!-- تسجيل الدخول -->
 <div class="login-box" id="loginBox">
-  <input id="studentCode" placeholder="أدخل كود الطالب هنا أو إيميل الأستاذ">
+  <input id="studentCode" placeholder="  أدخل كود الطالب ">
   <button onclick="searchStudent()">تسجيل الدخول</button>
   <div id="output"></div>
 </div>
@@ -528,7 +523,7 @@ th { text-align: right; }
 
 <script>
 /* ✅ غيّر هذا الرابط فقط بعد نشر الـWeb App */
-const API_URL = "https://script.google.com/macros/s/AKfycbyIpWhB4EhnN0AOzATqU2r3GGoTMeohz70T159KZmcTukfbbgMtkd9vjWj9jrrKcAfi/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx9v4mQRU4H6hzKoW2R7sYq_gwvmhVB3PdKeRsvhCGEkAVcOjxrtMJNzEIIGklZryt2/exec";
 
 /* بيانات الأستاذ */
 let currentTeacher = null;
@@ -825,13 +820,11 @@ function bindAutoCalc() {
    ============================ */
 function renderTeacherGrades(info) {
   const page = document.getElementById("teacherGradesPage");
-
   const subject   = info.subject;
   const className = info.className;
   let students    = info.students;
 
   const teacherName = currentTeacher["اسم الاستاذ"] || currentTeacher["اسم الأستاذ"] || "-";
-
   students.sort((a, b) => a.name.localeCompare(b.name, "ar"));
 
   let html = `
@@ -904,7 +897,6 @@ function renderTeacherGrades(info) {
 
     <div class="teacher-actions">
       <button class="teacher-save-btn" onclick="saveTeacherGrades()">💾 حفظ الدرجات</button>
-      <button class="teacher-pdf-btn" onclick="downloadPDF()">📄 تحميل PDF</button>
       <button class="teacher-clear-btn" onclick="clearObjections()">🧹 حذف الاعتراضات</button>
     </div>
   `;
@@ -914,7 +906,7 @@ function renderTeacherGrades(info) {
 }
 
 /* ============================
-   حفظ الدرجات (يرسل فقط: شهر1/2/3/4/نصف السنة/نهائي + المحسوب)
+   حفظ الدرجات (يرسل المدخلات + المحسوب)
    ============================ */
 async function saveTeacherGrades() {
   let rows = document.querySelectorAll("#teacherGradesTable tbody tr");
@@ -929,7 +921,7 @@ async function saveTeacherGrades() {
       obj[inp.dataset.key] = inp.value;
     });
 
-    // المحسوب (الأستاذ ما يكتبه بيده)
+    // المحسوب
     obj.term1 = tr.querySelector('[data-static="term1"]')?.innerText ?? "";
     obj.term2 = tr.querySelector('[data-static="term2"]')?.innerText ?? "";
     obj.saay  = tr.querySelector('[data-static="saay"]')?.innerText ?? "";
@@ -983,62 +975,6 @@ async function clearObjections() {
     }
   } catch (e) {
     showToast("❌ خطأ اتصال", true);
-  }
-}
-
-/* ============================
-   تحميل PDF (تأكيد + إظهار سبب الخطأ إن وجد)
-   ============================ */
-async function downloadPDF() {
-  const ok = confirm("هل تود تحميل قائمة الصف كـ PDF لك يا استاذ؟");
-  if (!ok) return;
-
-  const teacherName = currentTeacher?.["اسم الاستاذ"] || currentTeacher?.["اسم الأستاذ"] || "-";
-
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        action: "download_grades_pdf",
-        subject: currentTeacherSubject,
-        className: currentTeacherClassName,
-        teacherName: teacherName
-      })
-    });
-
-    const text = await res.text();
-    let data = null;
-    try { data = JSON.parse(text); } catch(e) {}
-
-    if (!data) {
-      showToast("❌ السيرفر لم يرجّع JSON (تأكد من رابط الـAPI والنشر)", true);
-      return;
-    }
-
-    if (data.status !== "success" || !data.b64) {
-      showToast("❌ فشل إنشاء PDF: " + (data.details || data.data || "غير معروف"), true);
-      return;
-    }
-
-    const byteCharacters = atob(data.b64);
-    const byteNumbers = new Array(byteCharacters.length);
-    for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
-    const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: "application/pdf" });
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = data.filename || `قائمة_${currentTeacherClassName}_${currentTeacherSubject}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-
-    showToast("✔ بدأ التحميل");
-  } catch (e) {
-    showToast("❌ خطأ اتصال: " + String(e), true);
   }
 }
 
@@ -1124,7 +1060,10 @@ function loadProfile(st) {
       </tr>
 
       <tr><th>اسم الأم</th>
-        <td><input id="اسم الام" class="table-input" value="${st["اسم الام"] || ""}"></td>
+            <td><input id="اسم الام" class="table-input" inputmode="numeric"
+            placeholder="اسم الام الثلاثي "
+            value="${st["اسم الام"] || ""}">
+            
       </tr>
 
       <tr><th>المدرسة القادم منها</th>
@@ -1134,12 +1073,18 @@ function loadProfile(st) {
       <tr><th>الكتب</th><td>${st["الكتب"] || ""}</td></tr>
       <tr><th>الملاحظات</th><td>${st["الملاحظات"] || ""}</td></tr>
 
-    
       <tr><th>الرمز</th>
- <td><input id="الرمز" class="table-input" inputmode="numeric" placeholder=" رمز خاص بك لا احد غيرك يستطيع التحدث بالدردشة باسمك " value="${st["الرمز "] || ""}"></td>
+        <td><input id="الرمز" class="table-input" inputmode="numeric"
+            placeholder="رمز خاص بك لا احد غيرك يستطيع التحدث بالدردشة باسمك"
+            value="${st["الرمز"] || st["الرمز "] || ""}">
+        </td>
       </tr>
+
       <tr><th>رقم الخط</th>
-        <td><input id="رقم الخط" class="table-input" inputmode="numeric" placeholder="رقم خط النقل الخاص بالطالب " value="${st["رقم الخط"] || ""}"></td>
+        <td><input id="رقم الخط" class="table-input" inputmode="numeric"
+            placeholder="رقم خط النقل الخاص بالطالب"
+            value="${st["رقم الخط"] || ""}">
+        </td>
       </tr>
     </table>
   `;
@@ -1198,7 +1143,7 @@ function openObjectionModal(subjectName) {
   document.getElementById("objectionModal").style.display = "flex";
   setTimeout(() => document.getElementById("objectionText").focus(), 0);
 }
-function closeObjectionModal(fromOverlay) {
+function closeObjectionModal() {
   document.getElementById("objectionModal").style.display = "none";
   currentObjectionSubject = "";
 }
@@ -1230,7 +1175,7 @@ async function sendObjection() {
     const data = await res.json();
     if (data.status === "success") {
       showToast("✔ تم إرسال الاعتراض");
-      closeObjectionModal(false);
+      closeObjectionModal();
 
       await searchStudent(false);
       const gradesTab = document.querySelector('#bottomBar .nav-item[data-page="gradesPage"]');
@@ -1250,42 +1195,18 @@ function loadGrades(st) {
   let html = ``;
 
   const subjects = {
-    "الإسلامية": ["اسلامية شهر 1","اسلامية شهر 2","اسلامية فصل 1","اسلامية نصف سنة",
-                  "اسلامية شهر 3","اسلامية شهر 4","اسلامية فصل 2","اسلامية الامتحان النهائي",
-                  "اسلامية السعي","اسلامية التقدير"],
-    "العربي": ["العربي شهر 1","العربي شهر 2","العربي فصل 1","العربي نصف سنة",
-               "العربي شهر 3","العربي شهر 4","العربي فصل 2","العربي الامتحان النهائي",
-               "العربي السعي","العربي التقدير"],
-    "الانكليزي": ["الانكليزي شهر 1","الانكليزي شهر 2","الانكليزي فصل 1","الانكليزي نصف سنة",
-                  "الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي",
-                  "الانكليزي السعي","الانكليزي التقدير"],
-    "الرياضيات": ["الرياضيات شهر 1","الرياضيات شهر 2","الرياضيات فصل 1","الرياضيات نصف سنة",
-                  "الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي",
-                  "الرياضيات السعي","الرياضيات التقدير"],
-    "الكيمياء": ["الكيمياء شهر 1","الكيمياء شهر 2","الكيمياء فصل 1","الكيمياء نصف سنة",
-                 "الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي",
-                 "الكيمياء السعي","الكيمياء التقدير"],
-    "الفيزياء": ["الفيزياء شهر 1","الفيزياء شهر 2","الفيزياء فصل 1","الفيزياء نصف سنة",
-                 "الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي",
-                 "الفيزياء السعي","الفيزياء التقدير"],
-    "الاحياء": ["الاحياء شهر 1","الاحياء شهر 2","الاحياء فصل 1","الاحياء نصف سنة",
-                "الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي",
-                "الاحياء السعي","الاحياء التقدير"],
-    "الاجتماعيات": ["الاجتماعيات شهر 1","الاجتماعيات شهر 2","الاجتماعيات فصل 1","الاجتماعيات نصف سنة",
-                    "الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي",
-                    "الاجتماعيات السعي","الاجتماعيات التقدير"],
-    "الحاسوب": ["الحاسوب شهر 1","الحاسوب شهر 2","الحاسوب فصل 1","الحاسوب نصف سنة",
-                "الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي",
-                "الحاسوب السعي","الحاسوب التقدير"],
-    "رياضة": ["رياضة شهر 1","رياضة شهر 2","رياضة فصل 1","رياضة نصف سنة",
-              "رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي",
-              "رياضة السعي","رياضة التقدير"],
-    "الفنية": ["الفنية شهر 1","الفنية شهر 2","الفنية فصل 1","الفنية نصف سنة",
-              "الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي",
-              "الفنية السعي","الفنية التقدير"],
-    "السلوك": ["السلوك شهر 1","السلوك شهر 2","السلوك فصل 1","السلوك نصف سنة",
-              "السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي",
-              "السلوك السعي","السلوك التقدير"]
+    "الإسلامية": ["اسلامية شهر 1","اسلامية شهر 2","اسلامية فصل 1","اسلامية نصف سنة","اسلامية شهر 3","اسلامية شهر 4","اسلامية فصل 2","اسلامية الامتحان النهائي","اسلامية السعي","اسلامية التقدير"],
+    "العربي": ["العربي شهر 1","العربي شهر 2","العربي فصل 1","العربي نصف سنة","العربي شهر 3","العربي شهر 4","العربي فصل 2","العربي الامتحان النهائي","العربي السعي","العربي التقدير"],
+    "الانكليزي": ["الانكليزي شهر 1","الانكليزي شهر 2","الانكليزي فصل 1","الانكليزي نصف سنة","الانكليزي شهر 3","الانكليزي شهر 4","الانكليزي فصل 2","الانكليزي الامتحان النهائي","الانكليزي السعي","الانكليزي التقدير"],
+    "الرياضيات": ["الرياضيات شهر 1","الرياضيات شهر 2","الرياضيات فصل 1","الرياضيات نصف سنة","الرياضيات شهر 3","الرياضيات شهر 4","الرياضيات فصل 2","الرياضيات الامتحان النهائي","الرياضيات السعي","الرياضيات التقدير"],
+    "الكيمياء": ["الكيمياء شهر 1","الكيمياء شهر 2","الكيمياء فصل 1","الكيمياء نصف سنة","الكيمياء شهر 3","الكيمياء شهر 4","الكيمياء فصل 2","الكيمياء الامتحان النهائي","الكيمياء السعي","الكيمياء التقدير"],
+    "الفيزياء": ["الفيزياء شهر 1","الفيزياء شهر 2","الفيزياء فصل 1","الفيزياء نصف سنة","الفيزياء شهر 3","الفيزياء شهر 4","الفيزياء فصل 2","الفيزياء الامتحان النهائي","الفيزياء السعي","الفيزياء التقدير"],
+    "الاحياء": ["الاحياء شهر 1","الاحياء شهر 2","الاحياء فصل 1","الاحياء نصف سنة","الاحياء شهر 3","الاحياء شهر 4","الاحياء فصل 2","الاحياء الامتحان النهائي","الاحياء السعي","الاحياء التقدير"],
+    "الاجتماعيات": ["الاجتماعيات شهر 1","الاجتماعيات شهر 2","الاجتماعيات فصل 1","الاجتماعيات نصف سنة","الاجتماعيات شهر 3","الاجتماعيات شهر 4","الاجتماعيات فصل 2","الاجتماعيات الامتحان النهائي","الاجتماعيات السعي","الاجتماعيات التقدير"],
+    "الحاسوب": ["الحاسوب شهر 1","الحاسوب شهر 2","الحاسوب فصل 1","الحاسوب نصف سنة","الحاسوب شهر 3","الحاسوب شهر 4","الحاسوب فصل 2","الحاسوب الامتحان النهائي","الحاسوب السعي","الحاسوب التقدير"],
+    "رياضة": ["رياضة شهر 1","رياضة شهر 2","رياضة فصل 1","رياضة نصف سنة","رياضة شهر 3","رياضة شهر 4","رياضة فصل 2","رياضة الامتحان النهائي","رياضة السعي","رياضة التقدير"],
+    "الفنية": ["الفنية شهر 1","الفنية شهر 2","الفنية فصل 1","الفنية نصف سنة","الفنية شهر 3","الفنية شهر 4","الفنية فصل 2","الفنية الامتحان النهائي","الفنية السعي","الفنية التقدير"],
+    "السلوك": ["السلوك شهر 1","السلوك شهر 2","السلوك فصل 1","السلوك نصف سنة","السلوك شهر 3","السلوك شهر 4","السلوك فصل 2","السلوك الامتحان النهائي","السلوك السعي","السلوك التقدير"]
   };
 
   for (let sub in subjects) {
