@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>معالجة الدرجات</title>
+
+<style>
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Cairo", sans-serif;
+    overflow: hidden;
+}
+
+/* الخلفية المتدرجة */
+body {
+    background: linear-gradient(
+        120deg,
+        #ffffff,
+        #000000,
+        #ff8c00,
+        #ff0033,
+        #005bea,
+        #00c6ff,
+        #2ecc71,
+        #6f4e37
+    );
+    background-size: 800% 800%;
+    animation: bgFlow 30s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+}
+
+@keyframes bgFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* الكانفاس */
+canvas {
+    position: absolute;
+    inset: 0;
+}
+
+/* الصندوق الرئيسي */
+.container {
+    position: relative;
+    z-index: 10;
+    padding: 36px 55px;
+    border-radius: 24px;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(14px);
+    box-shadow:
+        0 0 80px rgba(255,255,255,0.18),
+        inset 0 0 35px rgba(255,255,255,0.08);
+    text-align: center;
+    animation: fadeUp 2.5s ease;
+}
+
+.title {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 17px;
+    opacity: 0.9;
+    margin-bottom: 22px;
+}
+
+/* عنوان العداد */
+.countdown-title {
+    font-size: 15px;
+    opacity: 0.85;
+    margin-bottom: 12px;
+}
+
+/* كرتات الوقت */
+.countdown {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.time-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(6px);
+    border-radius: 14px;
+    padding: 10px 14px;
+    min-width: 70px;
+    box-shadow:
+        inset 0 0 10px rgba(255,255,255,0.15),
+        0 0 15px rgba(0,0,0,0.35);
+}
+
+.time-card span {
+    font-size: 22px;
+    font-weight: 600;
+    display: block;
+}
+
+.time-card small {
+    font-size: 11px;
+    opacity: 0.8;
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- طبقات الذرات -->
+<canvas id="canvasBack"></canvas>
+<canvas id="canvasFront"></canvas>
+
+<div class="container">
+    <div class="title" id="statusTitle">المنصة متوقفة حالياً</div>
+    <div class="subtitle">
+        يتم الآن معالجة الدرجات ورفعها إلى الكرتات
+    </div>
+
+    <div class="countdown-title">
+         الوقت المتبقي لإعادة فتح المنصة
+    </div>
+
+    <div class="countdown" id="countdown">
+        <div class="time-card">
+            <span id="hours">00</span>
+            <small>ساعة</small>
+        </div>
+        <div class="time-card">
+            <span id="minutes">00</span>
+            <small>دقيقة</small>
+        </div>
+        <div class="time-card">
+            <span id="seconds">00</span>
+            <small>ثانية</small>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ===== العداد التنازلي ===== */
+const targetDate = new Date();
+targetDate.setDate(targetDate.getDate() + 2);
+targetDate.setHours(20, 0, 0, 0); // الأحد الساعة 8 مساءً
+
+const hoursEl = document.getElementById("hours");
+const minutesEl = document.getElementById("minutes");
+const secondsEl = document.getElementById("seconds");
+const titleEl = document.getElementById("statusTitle");
+
+function updateCountdown() {
+    const now = new Date();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+        titleEl.textContent = "✅ تم فتح المنصة";
+        document.getElementById("countdown").style.display = "none";
+        document.querySelector(".countdown-title").style.display = "none";
+        return;
+    }
+
+    const totalSeconds = Math.floor(diff / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    hoursEl.textContent = String(hours).padStart(2, "0");
+    minutesEl.textContent = String(minutes).padStart(2, "0");
+    secondsEl.textContent = String(seconds).padStart(2, "0");
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
+
+<script>
+/* ===== الذرات ثلاثية الأبعاد ===== */
+const back = document.getElementById("canvasBack");
+const front = document.getElementById("canvasFront");
+const ctxB = back.getContext("2d");
+const ctxF = front.getContext("2d");
+
+function resize() {
+    back.width = front.width = innerWidth;
+    back.height = front.height = innerHeight;
+}
+resize();
+addEventListener("resize", resize);
+
+let mouse = { x: innerWidth/2, y: innerHeight/2 };
+addEventListener("mousemove", e => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+});
+
+class Atom {
+    constructor(layer) {
+        this.layer = layer;
+        this.angle = Math.random() * Math.PI * 2;
+        this.radius = 150 + Math.random() * 260;
+        this.z = Math.random();
+        this.speed = (Math.random() * 0.004 + 0.001) * (Math.random()<0.5?-1:1);
+        this.baseSize = layer === "front" ? 4 : 2.5;
+        this.hue = Math.random() * 360;
+    }
+
+    update(cx, cy, t) {
+        this.angle += this.speed;
+        this.z += Math.sin(t * 0.001 + this.angle) * 0.002;
+        this.z = Math.max(0, Math.min(1, this.z));
+
+        const depth = this.layer === "front" ? 0.06 : 0.03;
+        const dx = (mouse.x - cx) * depth * this.z;
+        const dy = (mouse.y - cy) * depth * this.z;
+
+        this.x = cx + Math.cos(this.angle) * this.radius + dx;
+        this.y = cy + Math.sin(this.angle) * this.radius + dy;
+        this.size = this.baseSize + this.z * 6;
+    }
+
+    draw(ctx) {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue},85%,65%,${0.4 + this.z * 0.6})`;
+        ctx.shadowBlur = 35 * this.z;
+        ctx.shadowColor = `hsla(${this.hue},85%,65%,1)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+}
+
+const backAtoms = Array.from({length:80}, ()=>new Atom("back"));
+const frontAtoms = Array.from({length:55}, ()=>new Atom("front"));
+
+function animate(t) {
+    ctxB.clearRect(0,0,back.width,back.height);
+    ctxF.clearRect(0,0,front.width,front.height);
+
+    const cx = innerWidth/2;
+    const cy = innerHeight/2;
+
+    backAtoms.forEach(a => { a.update(cx,cy,t); a.draw(ctxB); });
+    frontAtoms.forEach(a => { a.update(cx,cy,t); a.draw(ctxF); });
+
+    requestAnimationFrame(animate);
+}
+animate(0);
+</script>
+
+</body>
+</html>
